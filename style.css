@@ -14,29 +14,30 @@ html, body {
   background-color: #e9dbc3;
   height: 100vh;
   width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  flex-direction: column;
   position: relative;
-  padding-bottom: 100px;
 }
 
 .tagline {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
   color: white;
   font-size: 1.2rem;
-  margin-bottom: 20px;
   font-family: 'Playfair Display', serif;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .chatbox {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   backdrop-filter: blur(8px);
   background: rgba(255, 255, 255, 0.1);
   padding: 0.5rem;
   border-radius: 16px;
-  margin-bottom: 20px;
 }
 
 .chatbox input {
@@ -61,7 +62,7 @@ html, body {
 
 .chat-response {
   position: absolute;
-  bottom: 10px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
