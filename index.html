@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layme — Uncensored AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="hero">
+    <div class="chatbox">
+      <input type="text" id="userInput" placeholder="Ask anything..." />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+    <div class="chat-response" id="responseBox"></div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const responseBox = document.getElementById("responseBox");
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      input.disabled = true;
+      responseBox.innerHTML = "<em>Thinking...</em>";
+
+      try {
+        const res = await fetch("https://api.justlay.me/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer lm-studio"
+          },
+          body: JSON.stringify({
+            model: "solar-10b-instruct",
+            messages: [
+              { role: "user", content: prompt }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "No response.";
+        responseBox.innerHTML = reply;
+      } catch (err) {
+        responseBox.innerHTML = "<span style='color:red'>Error: " + err.message + "</span>";
+      }
+
+      input.disabled = false;
+    }
+  </script>
+</body>
+</html>
+
