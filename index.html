@@ -7,6 +7,48 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script defer data-domain="justlay.me" src="https://plausible.io/js/script.js"></script>
+  <style>
+    .chatbox {
+      position: absolute;
+      bottom: 20px; /* was lower, now raised slightly */
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .chatbox input {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .chatbox button {
+      padding: 12px 18px;
+      font-size: 16px;
+      border-radius: 8px;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .chat-response {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 80%;
+      color: white;
+      font-size: 18px;
+      text-align: center;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 <body>
   <div class="hero">
