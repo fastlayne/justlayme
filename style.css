@@ -10,24 +10,22 @@ html, body {
 
 .hero {
   background: url('background.jpg') no-repeat center center;
-  background-size: contain;
+  background-size: cover;
   background-color: #e9dbc3;
-  height: 100vh;
+  height: 100dvh;
   width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   position: relative;
+  overflow: hidden;
 }
 
 .chatbox {
   position: absolute;
-  bottom: 80px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.15);
   padding: 0.5rem;
   border-radius: 16px;
 }
@@ -54,7 +52,7 @@ html, body {
 
 .chat-response {
   position: absolute;
-  bottom: 30px;
+  bottom: 70px;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
