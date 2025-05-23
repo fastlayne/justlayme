@@ -1,17 +1,22 @@
-body, html {
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
   font-family: 'Playfair Display', serif;
   overflow: hidden;
+  background-color: #e9dbc3;
 }
 
 .hero {
-  background: url('background.jpg') no-repeat center center fixed;
-  background-size: cover;
+  background: url('background.jpg') no-repeat center center;
+  background-size: contain;
+  background-color: #e9dbc3;
   height: 100vh;
-  width: 100%;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
@@ -52,7 +57,8 @@ body, html {
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
+  width: 80%;
+  max-width: 600px;
   text-align: center;
   color: #fff;
   background: rgba(0, 0, 0, 0.4);
