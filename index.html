@@ -1,99 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Layme — Uncensored AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script defer data-domain="justlay.me" src="https://plausible.io/js/script.js"></script>
-  <style>
-    .chatbox {
-      position: absolute;
-      bottom: 60px; /* 👈 slightly raised from original */
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 8px;
-      width: 90%;
-      max-width: 600px;
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .chatbox input {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-    }
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: 'Playfair Display', serif;
+  overflow: hidden;
+}
 
-    .chatbox button {
-      padding: 12px 18px;
-      font-size: 16px;
-      border-radius: 8px;
-      background: black;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+.hero {
+  background: url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+}
 
-    .chat-response {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      max-width: 80%;
-      color: white;
-      font-size: 18px;
-      text-align: center;
-      line-height: 1.4;
-    }
-  </style>
-</head>
-<body>
-  <div class="hero">
-    <div class="chatbox">
-      <input type="text" id="userInput" placeholder="Ask anything..." />
-      <button onclick="sendMessage()">➤</button>
-    </div>
-    <div class="chat-response" id="responseBox"></div>
-  </div>
+.chatbox {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  width: 90%;
+  max-width: 600px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 12px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
 
-  <script>
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const responseBox = document.getElementById("responseBox");
-      const prompt = input.value.trim();
-      if (!prompt) return;
+.chatbox input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+}
 
-      input.disabled = true;
-      responseBox.innerHTML = "<em>Thinking...</em>";
+.chatbox button {
+  background: white;
+  color: black;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-      try {
-        const res = await fetch("https://api.justlay.me/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer lm-studio"
-          },
-          body: JSON.stringify({
-            model: "solar-10.7b-instruct-v1.0-uncensored@q4_k_s",
-            messages: [
-              { role: "user", content: prompt }
-            ]
-          })
-        });
-
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "No response.";
-        responseBox.innerHTML = reply;
-      } catch (err) {
-        responseBox.innerHTML = "<span style='color:red'>Error: " + err.message + "</span>";
-      }
-
-      input.disabled = false;
-    }
-  </script>
-</body>
-</html>
+.chat-response {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 90%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 14px;
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  font-size: 16px;
+  line-height: 1.5;
+  max-height: 30vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
 
