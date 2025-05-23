@@ -6,10 +6,10 @@
   <title>Layme — Uncensored AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script defer data-domain="justlay.me" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
   <div class="hero">
-    <div class="tagline">Fully uncensored AI coming soon</div>
     <div class="chatbox">
       <input type="text" id="userInput" placeholder="Ask anything..." />
       <button onclick="sendMessage()">➤</button>
@@ -35,7 +35,7 @@
             "Authorization": "Bearer lm-studio"
           },
           body: JSON.stringify({
-            model: "solar-10b-instruct",
+            model: "solar-10.7b-instruct-v1.0-uncensored@q4_k_s",
             messages: [
               { role: "user", content: prompt }
             ]
