@@ -1,72 +1,53 @@
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
-body, html {
-  margin: 0;
-  padding: 0;
+html, body {
   height: 100%;
   width: 100%;
   font-family: 'Playfair Display', serif;
-  overflow: hidden;
-}
-
-.hero {
   background: url('background.jpg') no-repeat center center fixed;
   background-size: cover;
-  height: 100vh;
-  width: 100%;
-  position: relative;
+  background-color: #000; /* fallback for dark blend */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .chatbox {
-  position: absolute;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
-  gap: 10px;
-  width: 90%;
-  max-width: 600px;
+  justify-content: center;
+  align-items: center;
+  margin: 2vh auto;
+  padding: 0.5em;
   background: rgba(0, 0, 0, 0.6);
-  padding: 12px;
   border-radius: 12px;
-  backdrop-filter: blur(8px);
+  max-width: 90vw;
 }
 
 .chatbox input {
   flex: 1;
-  padding: 10px;
+  padding: 0.5em;
   border: none;
+  outline: none;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .chatbox button {
-  background: white;
-  color: black;
+  padding: 0.5em 1em;
+  margin-left: 0.5em;
   border: none;
-  padding: 10px 16px;
-  font-size: 16px;
+  background: white;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .chat-response {
-  position: absolute;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 90%;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 14px;
-  border-radius: 12px;
-  backdrop-filter: blur(6px);
-  font-size: 16px;
-  line-height: 1.5;
-  max-height: 30vh;
-  overflow-y: auto;
-  white-space: pre-wrap;
+  display: none;
 }
 
