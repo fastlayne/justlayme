@@ -10,25 +10,27 @@
 </head>
 <body>
   <div class="hero">
-    <div class="logo">Layme</div>
-
     <div class="chat-response" id="responseBox"></div>
-
     <div class="chatbox">
-      <input type="text" id="userInput" placeholder="Ask anything..." />
-      <button onclick="sendMessage()">➤</button>
+      <input type="text" id="userInput" placeholder="Ask anything..." autocomplete="off" />
+      <button onclick="sendMessage()" id="sendBtn">➤</button>
     </div>
   </div>
 
   <script>
+    const input = document.getElementById("userInput");
+    const responseBox = document.getElementById("responseBox");
+    const sendBtn = document.getElementById("sendBtn");
+
     async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const responseBox = document.getElementById("responseBox");
       const prompt = input.value.trim();
       if (!prompt) return;
 
+      // Disable input and show loading
       input.disabled = true;
+      sendBtn.disabled = true;
       responseBox.innerHTML = "<em>Thinking...</em>";
+      responseBox.style.display = "block";
 
       try {
         const res = await fetch("https://api.justlay.me/v1/chat/completions", {
@@ -48,13 +50,29 @@
         const data = await res.json();
         const reply = data.choices?.[0]?.message?.content || "No response.";
         responseBox.innerHTML = reply;
+        input.value = "";
       } catch (err) {
         responseBox.innerHTML = "<span style='color:red'>Error: " + err.message + "</span>";
       }
 
+      // Re-enable input
       input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
     }
+
+    // Enter key support
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Focus input on page load
+    window.addEventListener("load", function() {
+      input.focus();
+    });
   </script>
 </body>
 </html>
-
