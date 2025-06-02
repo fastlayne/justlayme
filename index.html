@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JustLayMe - AI Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline poster="poster.jpg" id="backgroundVideo">
+            <source src="background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="hero">
+            <p class="hero-subtitle">Uncensored AI Conversations</p>
+        </header>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-messages-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <p>Welcome to JustLayMe! I'm your uncensored AI companion. Ask me anything!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Chat Input at Bottom -->
+    <div class="chat-input-fixed">
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+                <button id="sendButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="status-indicator" id="statusIndicator">Ready</div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const backgroundVideo = document.getElementById('backgroundVideo');
+
+        let isLoading = false;
+
+        // Ensure video plays on mobile
+        backgroundVideo.addEventListener('loadeddata', () => {
+            backgroundVideo.play().catch(e => console.log('Video autoplay prevented'));
+        });
+
+        // Auto-resize input
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        // Send message on Enter key
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isLoading) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            // Set loading state
+            isLoading = true;
+            sendButton.disabled = true;
+            statusIndicator.textContent = 'Thinking...';
+            statusIndicator.className = 'status-indicator loading';
+
+            try {
+                // Call local LM Studio API
+                const response = await fetch('http://localhost:1234/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer lm-studio'
+                    },
+                    body: JSON.stringify({
+                        model: "solar-10.7b-instruct-v1.0-uncensored",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are an uncensored AI assistant. Be helpful, creative, and honest. You can discuss any topic freely."
+                            },
+                            {
+                                role: "user",
+                                content: message
+                            }
+                        ],
+                        temperature: 0.8,
+                        max_tokens: 500,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                // Add AI response to chat
+                addMessage(aiResponse, 'ai');
+                
+                statusIndicator.textContent = 'Ready';
+                statusIndicator.className = 'status-indicator ready';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error. Make sure LM Studio is running on localhost:1234.', 'ai', true);
+                statusIndicator.textContent = 'Error - Check LM Studio';
+                statusIndicator.className = 'status-indicator error';
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function addMessage(content, sender, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message${isError ? ' error' : ''}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            const messageText = document.createElement('p');
+            messageText.textContent = content;
+            
+            messageContent.appendChild(messageText);
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            chatInput.focus();
+        });
+
+        // Adjust chat area for fixed input
+        function adjustChatHeight() {
+            const chatContainer = document.querySelector('.chat-messages-container');
+            const fixedInput = document.querySelector('.chat-input-fixed');
+            const inputHeight = fixedInput.offsetHeight;
+            chatContainer.style.paddingBottom = (inputHeight + 20) + 'px';
+        }
+
+        // Adjust on load and resize
+        window.addEventListener('load', adjustChatHeight);
+        window.addEventListener('resize', adjustChatHeight);
+    </script>
+</body>
+</html>
