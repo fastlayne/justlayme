@@ -14,10 +14,11 @@
     <div class="video-background">
         <video autoplay muted loop playsinline poster="background.jpg" id="backgroundVideo">
             <source src="background.mp4" type="video/mp4">
+            <source src="https://cdn.jsdelivr.net/gh/fastlayne/justlayme@main/background.mp4" type="video/mp4">
             <source src="https://raw.githubusercontent.com/fastlayne/justlayme/main/background.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
-        <img src="background.jpg" alt="Background" class="fallback-image">
+        <img src="background.jpg" alt="Background" class="fallback-image" style="display: none;">
         <div class="video-overlay"></div>
     </div>
 
@@ -63,6 +64,15 @@
         // Ensure video plays on mobile
         backgroundVideo.addEventListener('loadeddata', () => {
             backgroundVideo.play().catch(e => console.log('Video autoplay prevented'));
+        });
+
+        // Fallback to image if video fails
+        backgroundVideo.addEventListener('error', () => {
+            console.log('Video failed to load, using fallback image');
+            const fallbackImg = document.querySelector('.fallback-image');
+            if (fallbackImg) {
+                fallbackImg.style.display = 'block';
+            }
         });
 
         // Auto-resize input
