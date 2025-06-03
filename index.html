@@ -6,7 +6,7 @@
     <title>JustLayMe - AI Chat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,11 +29,6 @@
         <!-- Chat Messages Area -->
         <div class="chat-messages-container">
             <div class="chat-messages" id="chatMessages">
-                <div class="message ai-message">
-                    <div class="message-content">
-                        <p>Welcome to JustLayMe! I'm your uncensored AI companion. Ask me anything!</p>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -101,15 +96,26 @@
             statusIndicator.className = 'status-indicator loading';
 
             try {
-                // Call local LM Studio API
-                const response = await fetch('http://localhost:1234/v1/chat/completions', {
+                // Test connection first
+                try {
+                    const testResponse = await fetch('http://100.94.92.44:1234/v1/models', {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    console.log('Models endpoint test:', testResponse.status);
+                } catch (testError) {
+                    console.log('Models endpoint failed:', testError);
+                }
+
+                // Call local AI API
+                const response = await fetch('http://100.94.92.44:1234/v1/chat/completions', {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer lm-studio'
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: "solar-10.7b-instruct-v1.0-uncensored",
                         messages: [
                             {
                                 role: "system",
@@ -140,9 +146,26 @@
                 statusIndicator.className = 'status-indicator ready';
                 
             } catch (error) {
-                console.error('Error:', error);
-                addMessage('Sorry, I encountered an error. Make sure LM Studio is running on localhost:1234.', 'ai', true);
-                statusIndicator.textContent = 'AI is being naughty...';
+                console.error('Full error details:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                
+                let errorMessage = 'AI is being naughty...';
+                let userMessage = `Sorry, I'm having some technical difficulties. Please try again in a moment.`;
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = 'Connection failed - Server temporarily unavailable';
+                    userMessage = 'Connection to AI service failed. Please check that the AI server is running and try again.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'Connection error - Try refreshing the page';
+                    userMessage = 'Cross-origin request blocked. Try refreshing the page.';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = 'Network error - Check connection';
+                    userMessage = 'Network error occurred. Please check your connection and try again.';
+                }
+                
+                addMessage(userMessage, 'ai', true);
+                statusIndicator.textContent = errorMessage;
                 statusIndicator.className = 'status-indicator error';
             } finally {
                 isLoading = false;
