@@ -13,11 +13,12 @@
     <!-- Video Background -->
     <div class="video-background">
         <video autoplay muted loop playsinline poster="background.jpg" id="backgroundVideo">
-            <!-- Primary source: Free video hosting -->
-            <source src="https://github.com/fastlayne/justlayme/releases/download/v1.0/background.mp4" type="video/mp4">
-            <!-- Fallback sources -->
+            <!-- Try the renamed file first -->
+            <source src="video-bg.mp4" type="video/mp4">
+            <!-- GitHub raw URL -->
+            <source src="https://raw.githubusercontent.com/fastlayne/justlayme/main/video-bg.mp4" type="video/mp4">
+            <!-- Original filename fallback -->
             <source src="background.mp4" type="video/mp4">
-            <source src="https://raw.githubusercontent.com/fastlayne/justlayme/main/background.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <img src="background.jpg" alt="Background" class="fallback-image" style="display: none;">
