@@ -142,7 +142,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 addMessage('Sorry, I encountered an error. Make sure LM Studio is running on localhost:1234.', 'ai', true);
-                statusIndicator.textContent = 'Error - Check LM Studio';
+                statusIndicator.textContent = 'AI is being naughty...';
                 statusIndicator.className = 'status-indicator error';
             } finally {
                 isLoading = false;
