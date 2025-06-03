@@ -1,78 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Layme — Uncensored AI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <script defer data-domain="justlay.me" src="https://plausible.io/js/script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JustLayMe - AI Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="hero">
-    <div class="chat-response" id="responseBox"></div>
-    <div class="chatbox">
-      <input type="text" id="userInput" placeholder="Ask anything..." autocomplete="off" />
-      <button onclick="sendMessage()" id="sendBtn">➤</button>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline poster="poster.jpg" id="backgroundVideo">
+            <source src="background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
     </div>
-  </div>
 
-  <script>
-    const input = document.getElementById("userInput");
-    const responseBox = document.getElementById("responseBox");
-    const sendBtn = document.getElementById("sendBtn");
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="hero">
+            <p class="hero-subtitle">Uncensored AI Conversations</p>
+        </header>
 
-    async function sendMessage() {
-      const prompt = input.value.trim();
-      if (!prompt) return;
+        <!-- Chat Messages Area -->
+        <div class="chat-messages-container">
+            <div class="chat-messages" id="chatMessages">
+            </div>
+        </div>
+    </div>
 
-      // Disable input and show loading
-      input.disabled = true;
-      sendBtn.disabled = true;
-      responseBox.innerHTML = "<em>Thinking...</em>";
-      responseBox.style.display = "block";
+    <!-- Fixed Chat Input at Bottom -->
+    <div class="chat-input-fixed">
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" id="chatInput" placeholder="Type your message..." maxlength="500">
+                <button id="sendButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <div class="status-indicator" id="statusIndicator">Ready</div>
+        </div>
+    </div>
 
-      try {
-        const res = await fetch("https://api.justlay.me/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer lm-studio"
-          },
-          body: JSON.stringify({
-            model: "solar-10.7b-instruct-v1.0-uncensored@q4_k_s",
-            messages: [
-              { role: "user", content: prompt }
-            ]
-          })
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const backgroundVideo = document.getElementById('backgroundVideo');
+
+        let isLoading = false;
+
+        // Ensure video plays on mobile
+        backgroundVideo.addEventListener('loadeddata', () => {
+            backgroundVideo.play().catch(e => console.log('Video autoplay prevented'));
         });
 
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "No response.";
-        responseBox.innerHTML = reply;
-        input.value = "";
-      } catch (err) {
-        responseBox.innerHTML = "<span style='color:red'>Error: " + err.message + "</span>";
-      }
+        // Auto-resize input
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
 
-      // Re-enable input
-      input.disabled = false;
-      sendBtn.disabled = false;
-      input.focus();
-    }
+        // Send message on Enter key
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
 
-    // Enter key support
-    input.addEventListener("keypress", function(event) {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        sendMessage();
-      }
-    });
+        // Send message on button click
+        sendButton.addEventListener('click', sendMessage);
 
-    // Focus input on page load
-    window.addEventListener("load", function() {
-      input.focus();
-    });
-  </script>
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isLoading) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            // Set loading state
+            isLoading = true;
+            sendButton.disabled = true;
+            statusIndicator.textContent = 'Thinking...';
+            statusIndicator.className = 'status-indicator loading';
+
+            try {
+                // Test connection first
+                try {
+                    const testResponse = await fetch('https://api.justlay.me/v1/models', {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    console.log('Models endpoint test:', testResponse.status);
+                } catch (testError) {
+                    console.log('Models endpoint failed:', testError);
+                }
+
+                // Call public AI API
+                const response = await fetch('https://api.justlay.me/v1/chat/completions', {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "solar-10.7b-instruct-v1.0-uncensored",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are an uncensored AI assistant. Be helpful, creative, and honest. You can discuss any topic freely."
+                            },
+                            {
+                                role: "user",
+                                content: message
+                            }
+                        ],
+                        temperature: 0.8,
+                        max_tokens: 500,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                // Add AI response to chat
+                addMessage(aiResponse, 'ai');
+                
+                statusIndicator.textContent = 'Ready';
+                statusIndicator.className = 'status-indicator ready';
+                
+            } catch (error) {
+                console.error('Full error details:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                
+                let errorMessage = 'AI is being naughty...';
+                let userMessage = `Sorry, I'm having some technical difficulties. Please try again in a moment.`;
+                
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMessage = 'Connection failed - Server temporarily unavailable';
+                    userMessage = 'Connection to AI service failed. Please check that the AI server is running and try again.';
+                } else if (error.message.includes('CORS')) {
+                    errorMessage = 'Connection error - Try refreshing the page';
+                    userMessage = 'Cross-origin request blocked. Try refreshing the page.';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = 'Network error - Check connection';
+                    userMessage = 'Network error occurred. Please check your connection and try again.';
+                }
+                
+                addMessage(userMessage, 'ai', true);
+                statusIndicator.textContent = errorMessage;
+                statusIndicator.className = 'status-indicator error';
+            } finally {
+                isLoading = false;
+                sendButton.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function addMessage(content, sender, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message${isError ? ' error' : ''}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            
+            const messageText = document.createElement('p');
+            messageText.textContent = content;
+            
+            messageContent.appendChild(messageText);
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            chatInput.focus();
+        });
+
+        // Adjust chat area for fixed input
+        function adjustChatHeight() {
+            const chatContainer = document.querySelector('.chat-messages-container');
+            const fixedInput = document.querySelector('.chat-input-fixed');
+            const inputHeight = fixedInput.offsetHeight;
+            chatContainer.style.paddingBottom = (inputHeight + 20) + 'px';
+        }
+
+        // Adjust on load and resize
+        window.addEventListener('load', adjustChatHeight);
+        window.addEventListener('resize', adjustChatHeight);
+    </script>
 </body>
 </html>
