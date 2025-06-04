@@ -1,0 +1,43 @@
+# Deploy justlay.me to Vercel - Simple Steps
+
+## Quick Deploy (5 minutes):
+
+1. Open Command Prompt or Terminal
+2. Navigate to your project:
+   ```
+   cd C:\Users\fastl\justlayme
+   ```
+
+3. Deploy to Vercel:
+   ```
+   vercel
+   ```
+
+4. Follow the prompts:
+   - Link to existing project? **No**
+   - What's your project name? **justlayme**
+   - In which directory? **Hit Enter (current directory)**
+   - Want to override settings? **No**
+
+5. Add your custom domain:
+   ```
+   vercel domains add justlay.me
+   ```
+
+## The site will be live at justlay.me in minutes!
+
+## About the API Issue:
+Your site tries to call api.justlay.me for AI responses. You have two options:
+
+### Option 1: Use a free AI API (Recommended for now)
+I can update your code to use a free AI service
+
+### Option 2: Set up your own API backend
+This requires running an AI server
+
+## Next Steps:
+1. Run `vercel` in the justlayme folder
+2. Your site will work everywhere - PC and mobile!
+3. No special URLs, no Tailscale needed
+
+The deployment will handle everything automatically!
