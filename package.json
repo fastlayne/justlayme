@@ -1,0 +1,8 @@
+{
+  "name": "justlayme",
+  "version": "1.0.0",
+  "description": "Uncensored AI Chat",
+  "dependencies": {
+    "@vercel/speed-insights": "^1.0.0"
+  }
+}
