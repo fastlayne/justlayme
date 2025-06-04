@@ -51,14 +51,8 @@
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendButton');
         const statusIndicator = document.getElementById('statusIndicator');
-        const backgroundVideo = document.getElementById('backgroundVideo');
 
         let isLoading = false;
-
-        // Ensure video plays on mobile
-        backgroundVideo.addEventListener('loadeddata', () => {
-            backgroundVideo.play().catch(e => console.log('Video autoplay prevented'));
-        });
 
         // Auto-resize input
         chatInput.addEventListener('input', function() {
@@ -105,8 +99,6 @@
                 }
 
                 // Call public AI API
-                // TEMPORARY: Using a mock response until API backend is set up
-                // To enable real AI: Deploy an AI backend and update this URL
                 const response = await fetch('https://api.justlay.me/v1/chat/completions', {
                     method: 'POST',
                     mode: 'cors',
