@@ -30,6 +30,18 @@ body {
     overflow: hidden;
 }
 
+.video-background .background-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 110%;
+    min-height: 110%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%) scale(0.85);
+    object-fit: cover;
+}
+
 .video-background video {
     position: absolute;
     top: 50%;
