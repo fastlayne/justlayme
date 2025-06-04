@@ -345,53 +345,50 @@ body {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+    .video-background video {
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    
     .main-container {
         padding: 20px 16px;
-        padding-bottom: 160px;
-        max-width: 100%;
+        padding-bottom: 140px;
     }
     
     .hero {
-        padding: 80px 0 40px 0;
-        margin-bottom: 24px;
+        padding: 60px 0 30px 0;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.8rem;
     }
     
     .chat-messages-container {
-        border-radius: 24px;
-        max-height: 200px;
-        min-height: 140px;
+        bottom: 100px;
+        padding-top: 80px;
     }
     
     .chat-messages {
-        padding: 24px 20px;
-        gap: 18px;
+        padding: 20px;
     }
     
     .chat-input-fixed {
-        padding: 20px 16px 28px 16px;
+        padding: 16px;
     }
     
     .message-content {
-        max-width: 85%;
-        padding: 16px 20px;
-        font-size: 14px;
+        max-width: 90%;
+        padding: 14px 18px;
+        font-size: 15px;
     }
     
     #chatInput {
         font-size: 16px;
-        padding: 14px 18px;
+        padding: 12px 16px;
     }
     
     #sendButton {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-    }
-    
-    .chat-input-wrapper {
-        gap: 12px;
-        padding: 6px;
-        border-radius: 18px;
+        width: 48px;
+        height: 48px;
     }
 }
 
