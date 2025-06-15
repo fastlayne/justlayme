@@ -1,8 +1,8 @@
 // Payment Integration for JustLayMe Premium
 // This integrates with Stripe for payment processing
 
-// Initialize Stripe (you'll need to add your publishable key)
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_KEY_HERE';
+// Initialize Stripe using a global variable for your publishable key
+const STRIPE_PUBLISHABLE_KEY = window.STRIPE_PUBLISHABLE_KEY || '';
 let stripe = null;
 
 // Price IDs from Stripe Dashboard
@@ -179,7 +179,7 @@ function addStripeEndpoints(app) {
 }
 
 // Alternative: PayPal Integration
-const PAYPAL_CLIENT_ID = 'YOUR_PAYPAL_CLIENT_ID';
+const PAYPAL_CLIENT_ID = window.PAYPAL_CLIENT_ID || '';
 
 function initializePayPal() {
     // Add PayPal script to page
