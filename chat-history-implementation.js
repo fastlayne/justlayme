@@ -299,7 +299,7 @@ class ConversationManager {
 // API Endpoints for chat history
 const chatHistoryEndpoints = {
     // Get user's conversations
-    '/api/conversations': async (req, res, pg, conversationManager) => {
+    '/api/conversations': async (req, res, db, conversationManager) => {
         try {
             const userId = req.user.id;
             const options = {
@@ -321,7 +321,7 @@ const chatHistoryEndpoints = {
     },
 
     // Get specific conversation messages
-    '/api/conversations/:id/messages': async (req, res, pg, conversationManager) => {
+    '/api/conversations/:id/messages': async (req, res, db, conversationManager) => {
         try {
             const userId = req.user.id;
             const conversationId = req.params.id;
@@ -344,7 +344,7 @@ const chatHistoryEndpoints = {
     },
 
     // Search conversations
-    '/api/conversations/search': async (req, res, pg, conversationManager) => {
+    '/api/conversations/search': async (req, res, db, conversationManager) => {
         try {
             const userId = req.user.id;
             const { q: searchQuery } = req.query;
@@ -365,7 +365,7 @@ const chatHistoryEndpoints = {
     },
 
     // Archive conversation
-    '/api/conversations/:id/archive': async (req, res, pg, conversationManager) => {
+    '/api/conversations/:id/archive': async (req, res, db, conversationManager) => {
         try {
             const userId = req.user.id;
             const conversationId = req.params.id;
@@ -384,7 +384,7 @@ const chatHistoryEndpoints = {
     },
 
     // Delete conversation
-    '/api/conversations/:id': async (req, res, pg, conversationManager) => {
+    '/api/conversations/:id': async (req, res, db, conversationManager) => {
         if (req.method !== 'DELETE') {
             return res.status(405).json({ error: 'Method not allowed' });
         }
@@ -402,14 +402,14 @@ const chatHistoryEndpoints = {
     },
 
     // Export conversation
-    '/api/conversations/:id/export': async (req, res, pg, conversationManager) => {
+    '/api/conversations/:id/export': async (req, res, db, conversationManager) => {
         try {
             const userId = req.user.id;
             const conversationId = req.params.id;
             const { format = 'json' } = req.query;
 
             // Check if user is premium
-            const userResult = await pg.query(`
+            const userResult = await db.query(`
                 SELECT subscription_status FROM users WHERE id = $1
             `, [userId]);
 
@@ -445,11 +445,11 @@ const chatHistoryEndpoints = {
     },
 
     // Tag management
-    '/api/tags': async (req, res, pg) => {
+    '/api/tags': async (req, res, db) => {
         if (req.method === 'GET') {
             try {
                 const userId = req.user.id;
-                const result = await pg.query(`
+                const result = await db.query(`
                     SELECT * FROM conversation_tags 
                     WHERE user_id = $1 
                     ORDER BY tag_name
@@ -463,7 +463,7 @@ const chatHistoryEndpoints = {
                 const userId = req.user.id;
                 const { tag_name, color } = req.body;
 
-                const result = await pg.query(`
+                const result = await db.query(`
                     INSERT INTO conversation_tags (user_id, tag_name, color)
                     VALUES ($1, $2, $3)
                     RETURNING *
@@ -481,14 +481,14 @@ const chatHistoryEndpoints = {
     },
 
     // Add tag to conversation
-    '/api/conversations/:id/tags': async (req, res, pg) => {
+    '/api/conversations/:id/tags': async (req, res, db) => {
         try {
             const userId = req.user.id;
             const conversationId = req.params.id;
             const { tag_id } = req.body;
 
             // Verify ownership
-            const ownerCheck = await pg.query(`
+            const ownerCheck = await db.query(`
                 SELECT id FROM conversations WHERE id = $1 AND user_id = $2
             `, [conversationId, userId]);
 
@@ -496,7 +496,7 @@ const chatHistoryEndpoints = {
                 return res.status(404).json({ error: 'Conversation not found' });
             }
 
-            await pg.query(`
+            await db.query(`
                 INSERT INTO conversation_tag_mappings (conversation_id, tag_id)
                 VALUES ($1, $2)
                 ON CONFLICT DO NOTHING
@@ -509,19 +509,10 @@ const chatHistoryEndpoints = {
     }
 };
 
-// Middleware to check premium status for chat history
+// Middleware to check premium status for chat history  
 function requirePremiumForHistory(req, res, next) {
-    pg.query(`
-        SELECT subscription_status FROM users WHERE id = $1
-    `, [req.user.id]).then(result => {
-        if (result.rows.length > 0 && result.rows[0].subscription_status === 'free') {
-            // Allow limited access for free users (last 3 conversations)
-            req.limitedAccess = true;
-        }
-        next();
-    }).catch(err => {
-        res.status(500).json({ error: 'Subscription check failed' });
-    });
+    // This will be replaced by the version in character-api.js that has access to db
+    next();
 }
 
 module.exports = {

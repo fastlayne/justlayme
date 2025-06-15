@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="referrer" content="no-referrer">
+    <title>JustLayMe - AI Companions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="premium-style.css">
+    <style>
+        /* Additional styles for new features */
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-input {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 70, 255, 0.1);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: var(--premium-gradient);
+            border-color: transparent;
+            color: white;
+        }
+
+        .character-selector {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            z-index: 100;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .character-card {
+            flex-shrink: 0;
+            width: 120px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover, .character-card.active {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 0.5rem;
+            border-radius: 50%;
+            background: var(--premium-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .character-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .character-trait {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .user-menu.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--premium-gradient);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .create-character-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .create-character-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Premium Background -->
+    <div class="premium-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="premium-nav">
+        <div class="nav-content">
+            <div class="logo">JustLayMe</div>
+            <div class="nav-right">
+                <button class="create-character-btn" onclick="showCharacterCreator()">+ Create Character</button>
+                <div class="premium-badge hidden">
+                    <span>✨</span>
+                    <span>Premium</span>
+                </div>
+                <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar">
+                    <span id="userInitial">?</span>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <div class="menu-item" onclick="showProfile()">
+                        <span>👤</span> Profile
+                    </div>
+                    <div class="menu-item" onclick="showSubscription()">
+                        <span>💎</span> Subscription
+                    </div>
+                    <div class="menu-item" onclick="showSettings()">
+                        <span>⚙️</span> Settings
+                    </div>
+                    <hr style="margin: 0.5rem 0; border: none; border-top: 1px solid var(--border-color);">
+                    <div class="menu-item" onclick="logout()">
+                        <span>🚪</span> Logout
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Auth Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+            
+            <form class="auth-form" onsubmit="handleAuth(event)">
+                <input type="email" class="form-input" placeholder="Email" id="authEmail" required>
+                <input type="password" class="form-input" placeholder="Password" id="authPassword" required>
+                <input type="password" class="form-input hidden" placeholder="Confirm Password" id="authConfirmPassword">
+                
+                <button type="submit" class="premium-button primary" id="authSubmitBtn">Login</button>
+                
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <a href="#" onclick="continueAsGuest()" style="color: var(--text-secondary); text-decoration: underline;">
+                        Continue as guest (limited features)
+                    </a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Character Selector -->
+    <div class="character-selector hidden" id="characterSelector">
+        <div class="character-card active" onclick="selectCharacter('sophia', this)">
+            <div class="character-avatar">👩‍💼</div>
+            <div class="character-name">Sophia</div>
+            <div class="character-trait">Intellectual</div>
+        </div>
+        <div class="character-card" onclick="selectCharacter('luna', this)">
+            <div class="character-avatar">🦄</div>
+            <div class="character-name">Luna</div>
+            <div class="character-trait">Playful</div>
+        </div>
+        <div class="character-card" onclick="selectCharacter('alex', this)">
+            <div class="character-avatar">🎮</div>
+            <div class="character-name">Alex</div>
+            <div class="character-trait">Gamer</div>
+        </div>
+        <div class="character-card" onclick="selectCharacter('maya', this)">
+            <div class="character-avatar">🎨</div>
+            <div class="character-name">Maya</div>
+            <div class="character-trait">Creative</div>
+        </div>
+        <div class="character-card" onclick="selectCharacter('kai', this)">
+            <div class="character-avatar">🏃</div>
+            <div class="character-name">Kai</div>
+            <div class="character-trait">Adventurous</div>
+        </div>
+    </div>
+
+    <!-- Paywall Overlay -->
+    <div id="paywall" class="paywall-overlay">
+        <div class="paywall-content">
+            <div class="paywall-card">
+                <div class="paywall-header">
+                    <h1 class="paywall-title">Unlock Premium</h1>
+                    <p class="paywall-subtitle">Get unlimited access to all AI companions</p>
+                </div>
+
+                <div class="pricing-container">
+                    <!-- Monthly Plan -->
+                    <div class="pricing-card" onclick="selectPlan('monthly', this)">
+                        <div class="price-header">
+                            <span class="price">$9.99</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Unlimited messages</li>
+                            <li>All AI personalities</li>
+                            <li>Priority responses</li>
+                            <li>Cancel anytime</li>
+                        </ul>
+                    </div>
+
+                    <!-- Yearly Plan -->
+                    <div class="pricing-card recommended" onclick="selectPlan('yearly', this)">
+                        <div class="price-header">
+                            <span class="price">$79.99</span>
+                            <span class="price-period">/year</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Everything in monthly</li>
+                            <li>Save 33%</li>
+                            <li>Custom personalities</li>
+                            <li>Early access features</li>
+                        </ul>
+                    </div>
+
+                    <!-- Lifetime Plan -->
+                    <div class="pricing-card" onclick="selectPlan('lifetime', this)">
+                        <div class="price-header">
+                            <span class="price">$199</span>
+                            <span class="price-period">once</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Lifetime access</li>
+                            <li>All future updates</li>
+                            <li>VIP support</li>
+                            <li>API access</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="premium-button primary" onclick="proceedToPayment()">
+                    Continue to Payment
+                </button>
+
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <a href="#" onclick="skipPaywall()" style="color: var(--text-secondary); text-decoration: underline;">
+                        Try limited free version
+                    </a>
+                </p>
+                
+                <p style="text-align: center; margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+                    🔒 Your privacy is protected. No data is stored without consent.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-container hidden" id="chatContainer">
+        <div class="messages-area" id="messages" style="padding-bottom: 160px;">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    placeholder="Type your message..."
+                    id="messageInput"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-button" onclick="sendMessage()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentUser = null;
+        let selectedPlan = 'yearly';
+        let messageCount = 0;
+        const FREE_MESSAGE_LIMIT = 3;
+        let isPremium = false;
+        let currentCharacter = 'sophia';
+        let authMode = 'login';
+
+        // Initialize
+        window.onload = function() {
+            checkAuth();
+        };
+
+        // Auth functions
+        function checkAuth() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // Validate token and load user
+                currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                showMainApp();
+            } else {
+                document.getElementById('authContainer').classList.remove('hidden');
+            }
+        }
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const confirmPassword = document.getElementById('authConfirmPassword');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            
+            if (mode === 'signup') {
+                confirmPassword.classList.remove('hidden');
+                submitBtn.textContent = 'Sign Up';
+            } else {
+                confirmPassword.classList.add('hidden');
+                submitBtn.textContent = 'Login';
+            }
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            
+            try {
+                const endpoint = authMode === 'login' ? '/api/login' : '/api/register';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    isPremium = data.user.subscription_status === 'premium';
+                    showMainApp();
+                } else {
+                    alert(data.error || 'Authentication failed');
+                }
+            } catch (error) {
+                // For demo, just simulate login
+                currentUser = { 
+                    id: '123', 
+                    email: email,
+                    name: email.split('@')[0],
+                    subscription_status: 'free'
+                };
+                localStorage.setItem('authToken', 'demo-token');
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showMainApp();
+            }
+        }
+
+        function continueAsGuest() {
+            currentUser = { 
+                id: 'guest', 
+                email: 'guest@demo.com',
+                name: 'Guest',
+                subscription_status: 'free'
+            };
+            showMainApp();
+        }
+
+        function showMainApp() {
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('chatContainer').classList.remove('hidden');
+            document.getElementById('characterSelector').classList.remove('hidden');
+            
+            // Update UI
+            const userInitial = document.getElementById('userInitial');
+            userInitial.textContent = currentUser.name ? currentUser.name[0].toUpperCase() : 'G';
+            
+            if (isPremium || currentUser.subscription_status === 'premium') {
+                document.querySelector('.premium-badge').classList.remove('hidden');
+            }
+            
+            // Add welcome message
+            addMessage(`Welcome back, ${currentUser.name}! I'm ${getCharacterName(currentCharacter)}. How can I help you today?`, 'ai');
+        }
+
+        function toggleUserMenu() {
+            const menu = document.getElementById('userMenu');
+            menu.classList.toggle('show');
+        }
+
+        function selectCharacter(characterId, element) {
+            currentCharacter = characterId;
+            document.querySelectorAll('.character-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Clear chat and add intro
+            document.getElementById('messages').innerHTML = '';
+            messageCount = 0;
+            addMessage(`Hi! I'm ${getCharacterName(characterId)}. ${getCharacterIntro(characterId)}`, 'ai');
+        }
+
+        function getCharacterName(id) {
+            const characters = {
+                sophia: 'Sophia',
+                luna: 'Luna',
+                alex: 'Alex',
+                maya: 'Maya',
+                kai: 'Kai'
+            };
+            return characters[id] || 'Your AI Companion';
+        }
+
+        function getCharacterIntro(id) {
+            const intros = {
+                sophia: "I love discussing philosophy, science, and the mysteries of the universe. What intellectual adventure shall we embark on?",
+                luna: "Ready for some fun? I'm all about games, jokes, and making you smile! What shall we play today?",
+                alex: "Yo! Whether it's gaming, tech, or just chilling, I'm your companion. What's on your mind?",
+                maya: "Let's create something beautiful together! I'm inspired by art, music, and all forms of creativity.",
+                kai: "Adventure awaits! I'm here to explore new ideas and push boundaries with you. Where shall we go?"
+            };
+            return intros[id] || "I'm here to chat about anything you'd like!";
+        }
+
+        function selectPlan(plan, element) {
+            selectedPlan = plan;
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.style.borderColor = '';
+            });
+            element.style.borderColor = 'var(--primary)';
+        }
+
+        function proceedToPayment() {
+            // Here you would integrate with Stripe
+            alert(`Proceeding to payment for ${selectedPlan} plan. Stripe integration needed.`);
+            
+            // For demo
+            isPremium = true;
+            currentUser.subscription_status = 'premium';
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            document.getElementById('paywall').classList.remove('show');
+            document.querySelector('.premium-badge').classList.remove('hidden');
+            addMessage("🎉 Welcome to Premium! You now have unlimited messages and access to all characters.", 'ai');
+        }
+
+        function skipPaywall() {
+            document.getElementById('paywall').classList.remove('show');
+        }
+
+        function checkMessageLimit() {
+            if (!isPremium && currentUser.subscription_status !== 'premium' && messageCount >= FREE_MESSAGE_LIMIT) {
+                document.getElementById('paywall').classList.add('show');
+                return false;
+            }
+            return true;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Increment message count
+            messageCount++;
+            
+            // Check limit before sending
+            if (!checkMessageLimit()) {
+                return;
+            }
+            
+            // Show typing indicator
+            const typingId = showTypingIndicator();
+            
+            try {
+                // Call API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        character_id: currentCharacter
+                    })
+                });
+                
+                const data = await response.json();
+                removeTypingIndicator(typingId);
+                
+                if (response.ok) {
+                    addMessage(data.response, 'ai');
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                
+                // Fallback response
+                const responses = getCharacterResponses(currentCharacter);
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                
+                setTimeout(() => {
+                    let fullResponse = response;
+                    if (!isPremium && messageCount < FREE_MESSAGE_LIMIT) {
+                        const remaining = FREE_MESSAGE_LIMIT - messageCount;
+                        fullResponse += ` (${remaining} free message${remaining === 1 ? '' : 's'} remaining)`;
+                    }
+                    addMessage(fullResponse, 'ai');
+                }, 1000);
+            }
+        }
+
+        function getCharacterResponses(characterId) {
+            const responses = {
+                sophia: [
+                    "That's a fascinating perspective! Have you considered the philosophical implications?",
+                    "Interesting thought. It reminds me of what Aristotle said about human nature...",
+                    "I love how you think! Let's explore this idea deeper."
+                ],
+                luna: [
+                    "Hehe, that's awesome! Want to play a game?",
+                    "You're so fun to talk to! Tell me more!",
+                    "Ooh, I have an idea! What if we tried something silly?"
+                ],
+                alex: [
+                    "Dude, that's pretty cool! Have you tried the new update?",
+                    "Nice! That reminds me of this sick gameplay I saw...",
+                    "Yo, that's what I'm talking about! High five!"
+                ],
+                maya: [
+                    "How beautifully expressed! You have such a creative soul.",
+                    "That inspires me! Let's create something together.",
+                    "I can visualize what you're saying... it's like a painting!"
+                ],
+                kai: [
+                    "Now that's the spirit of adventure! Let's do it!",
+                    "I love your energy! What's our next challenge?",
+                    "That's bold! Adventure is calling us!"
+                ]
+            };
+            return responses[characterId] || ["That's interesting! Tell me more."];
+        }
+
+        function showTypingIndicator() {
+            const id = 'typing-' + Date.now();
+            const messagesArea = document.getElementById('messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = id;
+            typingDiv.className = 'message ai';
+            typingDiv.innerHTML = `
+                <div class="message-avatar"></div>
+                <div class="message-content">
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            messagesArea.appendChild(typingDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const element = document.getElementById(id);
+            if (element) element.remove();
+        }
+
+        function addMessage(text, sender) {
+            const messagesArea = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'ai' ? getCharacterEmoji(currentCharacter) : ''}</div>
+                <div class="message-content">${text}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function getCharacterEmoji(id) {
+            const emojis = {
+                sophia: '👩‍💼',
+                luna: '🦄',
+                alex: '🎮',
+                maya: '🎨',
+                kai: '🏃'
+            };
+            return emojis[id] || '🤖';
+        }
+
+        function showProfile() {
+            alert('Profile page coming soon!');
+        }
+
+        function showSubscription() {
+            document.getElementById('paywall').classList.add('show');
+        }
+
+        function showSettings() {
+            alert('Settings page coming soon!');
+        }
+
+        function showCharacterCreator() {
+            alert('Character creator coming soon! Premium feature.');
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('userMenu');
+            const avatar = document.getElementById('userAvatar');
+            if (!menu.contains(e.target) && !avatar.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

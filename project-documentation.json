@@ -1,0 +1,276 @@
+{
+  "project": {
+    "name": "JustLayMe",
+    "description": "Premium AI Companion Platform with Character Selection and Load Balancing",
+    "domain": "https://justlay.me",
+    "version": "2.0.0",
+    "status": "live",
+    "created": "2025-06-14",
+    "last_updated": "2025-06-14"
+  },
+  "infrastructure": {
+    "hosting": {
+      "type": "self-hosted",
+      "server": "dell-server",
+      "os": "Linux 6.8.0-40-generic",
+      "tunnel": "cloudflare",
+      "tunnel_id": "4d8d28b1-ac3c-41c5-a46c-178a4678dac2"
+    },
+    "database": {
+      "type": "PostgreSQL",
+      "host": "localhost",
+      "database": "justlayme",
+      "user": "justlayme",
+      "password": "2883"
+    },
+    "gpu_servers": {
+      "local": {
+        "type": "RTX 4060",
+        "vram": "8GB",
+        "url": "http://localhost:1234",
+        "capacity": 60
+      },
+      "planned": {
+        "type": "RTX 4090",
+        "vram": "24GB",
+        "url": "http://TAILSCALE_IP:1234",
+        "capacity": 100,
+        "status": "pending_configuration"
+      }
+    },
+    "load_balancer": {
+      "status": "configured",
+      "port": 3000,
+      "enabled": false,
+      "algorithm": "least_connections"
+    }
+  },
+  "features": {
+    "authentication": {
+      "implemented": true,
+      "types": ["email_password", "guest_mode"],
+      "jwt_enabled": true,
+      "demo_mode": true
+    },
+    "characters": {
+      "implemented": true,
+      "count": 5,
+      "list": [
+        {
+          "id": "sophia",
+          "name": "Sophia",
+          "trait": "Intellectual",
+          "emoji": "👩‍💼",
+          "personality": "Philosophy, science, mysteries of universe"
+        },
+        {
+          "id": "luna",
+          "name": "Luna",
+          "trait": "Playful",
+          "emoji": "🦄",
+          "personality": "Games, jokes, fun activities"
+        },
+        {
+          "id": "alex",
+          "name": "Alex",
+          "trait": "Gamer",
+          "emoji": "🎮",
+          "personality": "Gaming, tech, casual conversations"
+        },
+        {
+          "id": "maya",
+          "name": "Maya",
+          "trait": "Creative",
+          "emoji": "🎨",
+          "personality": "Art, music, creativity"
+        },
+        {
+          "id": "kai",
+          "name": "Kai",
+          "trait": "Adventurous",
+          "emoji": "🏃",
+          "personality": "Adventure, exploration, challenges"
+        }
+      ]
+    },
+    "premium_system": {
+      "implemented": true,
+      "free_message_limit": 3,
+      "pricing": {
+        "monthly": "$9.99",
+        "yearly": "$79.99",
+        "lifetime": "$199"
+      },
+      "payment_processor": "stripe_configured",
+      "demo_mode": true
+    },
+    "mobile_optimization": {
+      "implemented": true,
+      "features": ["responsive_design", "touch_targets", "horizontal_scroll", "optimized_inputs"]
+    },
+    "privacy_security": {
+      "implemented": true,
+      "features": [
+        "security_headers",
+        "csp_policy",
+        "hsts_enabled",
+        "no_referrer_policy",
+        "permissions_policy"
+      ]
+    }
+  },
+  "files": {
+    "frontend": [
+      {
+        "name": "index.html",
+        "description": "Complete application with auth, characters, premium features",
+        "size": "~500 lines",
+        "features": ["login_system", "character_selector", "paywall", "user_menu"]
+      },
+      {
+        "name": "premium-style.css",
+        "description": "Premium glassmorphism design with mobile optimization",
+        "size": "~400 lines",
+        "features": ["glassmorphism", "gradients", "animations", "responsive"]
+      },
+      {
+        "name": "index-simple.html",
+        "description": "Backup of simple chat interface",
+        "status": "backup"
+      }
+    ],
+    "backend": [
+      {
+        "name": "character-api.js",
+        "description": "Main Express server with database, auth, chat API",
+        "port": 8081,
+        "features": ["postgresql", "jwt_auth", "stripe_integration", "privacy_headers"]
+      },
+      {
+        "name": "gpu-load-balancer.js",
+        "description": "Load balancer for multiple GPU servers",
+        "port": 3000,
+        "features": ["health_checks", "least_connections", "monitoring"]
+      },
+      {
+        "name": "load-balancer-server.js",
+        "description": "Standalone load balancer server",
+        "status": "configured"
+      }
+    ],
+    "configuration": [
+      {
+        "name": "package.json",
+        "dependencies": ["express", "pg", "stripe", "bcrypt", "jwt", "cors", "axios", "http-proxy-middleware"]
+      },
+      {
+        "name": "setup-gpu-servers.sh",
+        "description": "GPU server setup script with Docker support",
+        "executable": true
+      },
+      {
+        "name": "payment-integration.js",
+        "description": "Stripe and PayPal payment integration code"
+      }
+    ],
+    "cloudflare": [
+      {
+        "name": "config.yml",
+        "path": "/home/fastl/.cloudflared/config.yml",
+        "tunnel_id": "4d8d28b1-ac3c-41c5-a46c-178a4678dac2"
+      }
+    ]
+  },
+  "api_endpoints": {
+    "authentication": [
+      "POST /api/login",
+      "POST /api/register"
+    ],
+    "chat": [
+      "POST /api/chat"
+    ],
+    "characters": [
+      "GET /api/characters",
+      "POST /api/characters",
+      "PUT /api/characters/:id",
+      "DELETE /api/characters/:id"
+    ],
+    "payments": [
+      "POST /api/create-checkout-session",
+      "POST /api/verify-payment",
+      "POST /api/stripe-webhook"
+    ],
+    "monitoring": [
+      "GET /gpu-status",
+      "GET /health"
+    ]
+  },
+  "database_schema": {
+    "users": {
+      "columns": ["id (UUID)", "email", "password_hash", "subscription_status", "subscription_end", "message_count", "created_at"]
+    },
+    "characters": {
+      "columns": ["id (UUID)", "user_id", "name", "backstory", "personality_traits (JSONB)", "speech_patterns (JSONB)", "avatar_url", "is_public", "created_at", "updated_at"]
+    },
+    "character_memories": {
+      "columns": ["id (UUID)", "character_id", "user_message", "character_response", "context_summary", "importance_score", "created_at"]
+    },
+    "conversations": {
+      "columns": ["id (UUID)", "user_id", "character_id", "title", "last_message_at", "created_at"]
+    },
+    "messages": {
+      "columns": ["id (UUID)", "conversation_id", "sender_type", "content", "metadata (JSONB)", "created_at"]
+    }
+  },
+  "deployment_status": {
+    "live_url": "https://justlay.me",
+    "server_status": "running",
+    "database_status": "connected",
+    "tunnel_status": "active",
+    "ssl_status": "active",
+    "last_deployment": "2025-06-14T21:30:00Z"
+  },
+  "next_steps": {
+    "immediate": [
+      "Configure RTX 4090 server with Tailscale IP",
+      "Test load balancer with multiple GPU servers",
+      "Set up Stripe webhook endpoints"
+    ],
+    "planned": [
+      "Add character creation interface",
+      "Implement conversation history",
+      "Add voice chat capabilities",
+      "Mobile app development"
+    ]
+  },
+  "conversation_summary": {
+    "session_date": "2025-06-14",
+    "duration": "~3 hours",
+    "major_accomplishments": [
+      "Built complete premium AI companion platform",
+      "Implemented authentication and user management",
+      "Created 5 unique AI characters with distinct personalities",
+      "Added working paywall with 3-tier pricing",
+      "Deployed live to justlay.me with Cloudflare tunnel",
+      "Configured GPU load balancing system",
+      "Added privacy-focused security headers",
+      "Made fully mobile-responsive design"
+    ],
+    "problems_solved": [
+      "Fixed Cloudflare tunnel connection issues",
+      "Resolved database authentication problems",
+      "Fixed premium button functionality",
+      "Addressed iPhone Safari privacy warnings",
+      "Corrected paywall display timing"
+    ],
+    "technologies_used": [
+      "Node.js/Express",
+      "PostgreSQL",
+      "Cloudflare Tunnels",
+      "Stripe (configured)",
+      "JWT Authentication",
+      "CSS Glassmorphism",
+      "Mobile-first responsive design"
+    ]
+  }
+}

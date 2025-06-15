@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { Pool } = require('pg');
+const DatabaseAdapter = require('./database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
@@ -85,11 +85,12 @@ const EMAIL_CONFIG = {
 };
 
 // Database connection
-const pg = new Pool({ connectionString: DATABASE_URL });
+const db = new DatabaseAdapter();
 
 // Initialize database
 async function initDB() {
-  await pg.query(`
+  if (db.usePostgres) {
+    await db.query(`
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) UNIQUE NOT NULL,
@@ -178,6 +179,7 @@ async function initDB() {
     CREATE INDEX IF NOT EXISTS idx_users_email_verified ON users(email_verified);
     CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);
   `);
+  }
   
   console.log('Database initialized');
 }
@@ -271,7 +273,7 @@ async function sendVerificationEmail(email, token, userName) {
 
 async function logEmailAction(userId, action, req) {
   try {
-    await pg.query(`
+    await db.query(`
       INSERT INTO email_verification_logs (user_id, action, ip_address, user_agent)
       VALUES ($1, $2, $3, $4)
     `, [
@@ -299,7 +301,7 @@ function authenticateToken(req, res, next) {
 
 // Check message limits for free users
 async function checkMessageLimit(userId) {
-  const result = await pg.query(`
+  const result = await db.query(`
     SELECT subscription_status, message_count 
     FROM users WHERE id = $1
   `, [userId]);
@@ -310,7 +312,7 @@ async function checkMessageLimit(userId) {
   }
   
   // Increment message count
-  await pg.query(`
+  await db.query(`
     UPDATE users SET message_count = message_count + 1 
     WHERE id = $1
   `, [userId]);
@@ -324,7 +326,7 @@ app.post('/api/register', async (req, res) => {
   
   try {
     // Check if user already exists
-    const existingUser = await pg.query('SELECT id, email_verified FROM users WHERE email = $1', [email]);
+    const existingUser = await db.query('SELECT id, email_verified FROM users WHERE email = $1', [email]);
     
     if (existingUser.rows.length > 0) {
       if (existingUser.rows[0].email_verified) {
@@ -340,7 +342,7 @@ app.post('/api/register', async (req, res) => {
     const verificationToken = generateVerificationToken();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
     
-    const result = await pg.query(`
+    const result = await db.query(`
       INSERT INTO users (
         email, password_hash, verification_token, verification_expires, 
         subscription_status
@@ -361,16 +363,19 @@ app.post('/api/register', async (req, res) => {
     const emailSent = await sendVerificationEmail(email, verificationToken, email.split('@')[0]);
     
     // Log the registration
-    await logEmailAction(user.id, 'registration', req);
+    if (user && user.id) {
+      await logEmailAction(user.id, 'registration', req);
+    }
     
     if (!emailSent) {
-      console.error('Failed to send verification email');
+      console.error('Failed to send verification email, but user was created');
     }
     
     res.json({ 
       message: 'Registration successful! Please check your email to verify your account.',
       email: email,
-      requiresVerification: true
+      requiresVerification: true,
+      emailSent: emailSent
     });
     
   } catch (error) {
@@ -383,7 +388,7 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   
   try {
-    const result = await pg.query(`
+    const result = await db.query(`
       SELECT * FROM users WHERE email = $1
     `, [email]);
     
@@ -408,7 +413,7 @@ app.post('/api/login', async (req, res) => {
     }
     
     // Update last login
-    await pg.query(`
+    await db.query(`
       UPDATE users SET last_login = NOW() WHERE id = $1
     `, [user.id]);
     
@@ -446,7 +451,7 @@ app.get('/api/verify-email', async (req, res) => {
   }
   
   try {
-    const result = await pg.query(`
+    const result = await db.query(`
       SELECT id, email, verification_expires, email_verified 
       FROM users 
       WHERE verification_token = $1
@@ -467,7 +472,7 @@ app.get('/api/verify-email', async (req, res) => {
     }
     
     // Mark email as verified
-    await pg.query(`
+    await db.query(`
       UPDATE users 
       SET email_verified = true, verification_token = NULL, verification_expires = NULL
       WHERE id = $1
@@ -492,7 +497,7 @@ app.post('/api/resend-verification', async (req, res) => {
   const { email } = req.body;
   
   try {
-    const result = await pg.query(`
+    const result = await db.query(`
       SELECT id, email_verified FROM users WHERE email = $1
     `, [email]);
     
@@ -510,7 +515,7 @@ app.post('/api/resend-verification', async (req, res) => {
     const verificationToken = generateVerificationToken();
     const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
     
-    await pg.query(`
+    await db.query(`
       UPDATE users 
       SET verification_token = $1, verification_expires = $2
       WHERE id = $3
@@ -549,14 +554,14 @@ app.post('/api/auth/google', async (req, res) => {
     const { sub: googleId, email, name, picture } = payload;
     
     // Check if user exists
-    let result = await pg.query('SELECT * FROM users WHERE email = $1', [email]);
+    let result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     
     if (result.rows.length > 0) {
       // User exists, log them in
       const user = result.rows[0];
       
       // Update last login and Google ID if not set
-      await pg.query(`
+      await db.query(`
         UPDATE users 
         SET last_login = NOW(), google_id = COALESCE(google_id, $1), email_verified = true
         WHERE id = $2
@@ -576,7 +581,7 @@ app.post('/api/auth/google', async (req, res) => {
       });
     } else {
       // Create new user
-      const newUserResult = await pg.query(`
+      const newUserResult = await db.query(`
         INSERT INTO users (
           email, name, google_id, email_verified, subscription_status
         )
@@ -601,7 +606,7 @@ app.post('/api/auth/google', async (req, res) => {
 // Character endpoints
 app.get('/api/characters', authenticateToken, async (req, res) => {
   try {
-    const result = await pg.query(`
+    const result = await db.query(`
       SELECT * FROM characters 
       WHERE user_id = $1 OR is_public = true
       ORDER BY created_at DESC
@@ -618,11 +623,11 @@ app.post('/api/characters', authenticateToken, async (req, res) => {
   
   try {
     // Check character limit for free users
-    const countResult = await pg.query(`
+    const countResult = await db.query(`
       SELECT COUNT(*) FROM characters WHERE user_id = $1
     `, [req.user.id]);
     
-    const userResult = await pg.query(`
+    const userResult = await db.query(`
       SELECT subscription_status FROM users WHERE id = $1
     `, [req.user.id]);
     
@@ -633,7 +638,7 @@ app.post('/api/characters', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Free users can only create 1 character' });
     }
     
-    const result = await pg.query(`
+    const result = await db.query(`
       INSERT INTO characters 
       (user_id, name, backstory, personality_traits, speech_patterns)
       VALUES ($1, $2, $3, $4, $5)
@@ -650,7 +655,7 @@ app.put('/api/characters/:id', authenticateToken, async (req, res) => {
   const { personality_traits, backstory, speech_patterns } = req.body;
   
   try {
-    const result = await pg.query(`
+    const result = await db.query(`
       UPDATE characters 
       SET personality_traits = $1, backstory = $2, speech_patterns = $3, 
           updated_at = NOW()
@@ -683,7 +688,7 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     }
     
     // Get character
-    const charResult = await pg.query(`
+    const charResult = await db.query(`
       SELECT * FROM characters 
       WHERE id = $1 AND (user_id = $2 OR is_public = true)
     `, [characterId, req.user.id]);
@@ -695,7 +700,7 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     const character = charResult.rows[0];
     
     // Get recent memories
-    const memories = await pg.query(`
+    const memories = await db.query(`
       SELECT user_message, ai_response, corrected_response
       FROM character_memories
       WHERE character_id = $1
@@ -704,7 +709,7 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     `, [characterId]);
     
     // Get learned patterns
-    const patterns = await pg.query(`
+    const patterns = await db.query(`
       SELECT user_input, expected_output
       FROM character_learning
       WHERE character_id = $1 AND confidence > 0.7
@@ -778,27 +783,27 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     const conversation = await conversationManager.getOrCreateConversation(req.user.id, characterId);
     
     // Store user message
-    await pg.query(`
+    await db.query(`
       INSERT INTO messages (conversation_uuid, sender_type, content, metadata)
       VALUES ($1, $2, $3, $4)
     `, [conversation.id, 'human', message, JSON.stringify({ model_type: characterId })]);
     
     // Store AI response
-    const messageResult = await pg.query(`
+    const messageResult = await db.query(`
       INSERT INTO messages (conversation_uuid, sender_type, content, metadata)
       VALUES ($1, $2, $3, $4)
       RETURNING id
     `, [conversation.id, 'ai', aiResponse, JSON.stringify({ character_name: character.name, model_type: characterId })]);
     
     // Update conversation timestamp
-    await pg.query(`
+    await db.query(`
       UPDATE conversations 
       SET updated_at = NOW(), message_count = message_count + 2
       WHERE id = $1
     `, [conversation.id]);
     
     // Also store in memory for backwards compatibility with learning system
-    const memoryResult = await pg.query(`
+    const memoryResult = await db.query(`
       INSERT INTO character_memories 
       (character_id, user_message, ai_response)
       VALUES ($1, $2, $3)
@@ -824,7 +829,7 @@ app.post('/api/feedback/:memory_id', authenticateToken, async (req, res) => {
   
   try {
     // Update memory with feedback
-    const memory = await pg.query(`
+    const memory = await db.query(`
       UPDATE character_memories 
       SET feedback_score = $1, corrected_response = $2
       WHERE id = $3
@@ -837,7 +842,7 @@ app.post('/api/feedback/:memory_id', authenticateToken, async (req, res) => {
     
     // If correction provided, add to learning
     if (corrected_response) {
-      await pg.query(`
+      await db.query(`
         INSERT INTO character_learning
         (character_id, pattern_type, user_input, expected_output, confidence)
         VALUES ($1, $2, $3, $4, $5)
@@ -852,7 +857,7 @@ app.post('/api/feedback/:memory_id', authenticateToken, async (req, res) => {
     
     // Update importance score
     const multiplier = score > 3 ? 1.2 : 0.8;
-    await pg.query(`
+    await db.query(`
       UPDATE character_memories
       SET importance_score = LEAST(importance_score * $1, 1.0)
       WHERE id = $2
@@ -897,7 +902,7 @@ async function getUserCharacterCustomization(userId, characterId) {
         }
         
         // Use character ID as a string identifier, not UUID
-        const result = await pg.query(`
+        const result = await db.query(`
             SELECT personality_traits, speech_patterns, backstory, name
             FROM characters 
             WHERE user_id = $1 AND name = $2
@@ -989,7 +994,7 @@ app.post('/api/chat', async (req, res) => {
         // Store conversation in database if user is authenticated (skip for guest users)
         if (user_id && user_id !== 'guest') {
             try {
-                await pg.query(`
+                await db.query(`
                     INSERT INTO messages (conversation_id, sender_type, content, metadata, created_at)
                     VALUES ($1, $2, $3, $4, NOW())
                 `, [
@@ -999,7 +1004,7 @@ app.post('/api/chat', async (req, res) => {
                     JSON.stringify({ character_id, model: selectedModel })
                 ]);
                 
-                await pg.query(`
+                await db.query(`
                     INSERT INTO messages (conversation_id, sender_type, content, metadata, created_at)
                     VALUES ($1, $2, $3, $4, NOW())
                 `, [
@@ -1070,13 +1075,13 @@ app.post('/api/characters/:id/customize', async (req, res) => {
         }
 
         // Check if character exists for user, create if not
-        const existingChar = await pg.query(`
+        const existingChar = await db.query(`
             SELECT id FROM characters WHERE user_id = $1 AND name = $2
         `, [userId, characterId]);
 
         if (existingChar.rows.length === 0) {
             // Create new character
-            await pg.query(`
+            await db.query(`
                 INSERT INTO characters (user_id, name, backstory, personality_traits, speech_patterns, created_at, updated_at)
                 VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
             `, [
@@ -1098,7 +1103,7 @@ app.post('/api/characters/:id/customize', async (req, res) => {
             ]);
         } else {
             // Update existing character
-            await pg.query(`
+            await db.query(`
                 UPDATE characters 
                 SET backstory = $3, personality_traits = $4, speech_patterns = $5, updated_at = NOW()
                 WHERE user_id = $1 AND name = $2
@@ -1225,7 +1230,7 @@ app.get('/api/models/recommendations/:character_id', async (req, res) => {
 
 // Create a premium check middleware that has access to pg
 const checkPremiumForHistory = (req, res, next) => {
-    pg.query(`
+    db.query(`
         SELECT subscription_status FROM users WHERE id = $1
     `, [req.user.id]).then(result => {
         if (result.rows.length > 0 && result.rows[0].subscription_status === 'free') {
@@ -1240,48 +1245,46 @@ const checkPremiumForHistory = (req, res, next) => {
 
 // Get user's conversations
 app.get('/api/conversations', authenticateToken, checkPremiumForHistory, (req, res) => {
-    chatHistoryEndpoints['/api/conversations'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations'](req, res, db, conversationManager);
 });
 
 // Get specific conversation messages
 app.get('/api/conversations/:id/messages', authenticateToken, (req, res) => {
-    chatHistoryEndpoints['/api/conversations/:id/messages'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations/:id/messages'](req, res, db, conversationManager);
 });
 
 // Search conversations
 app.get('/api/conversations/search', authenticateToken, checkPremiumForHistory, (req, res) => {
-    chatHistoryEndpoints['/api/conversations/search'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations/search'](req, res, db, conversationManager);
 });
 
 // Archive conversation
 app.post('/api/conversations/:id/archive', authenticateToken, (req, res) => {
-    chatHistoryEndpoints['/api/conversations/:id/archive'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations/:id/archive'](req, res, db, conversationManager);
 });
 
 // Delete conversation
 app.delete('/api/conversations/:id', authenticateToken, (req, res) => {
-    chatHistoryEndpoints['/api/conversations/:id'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations/:id'](req, res, db, conversationManager);
 });
 
 // Export conversation
 app.get('/api/conversations/:id/export', authenticateToken, (req, res) => {
-    chatHistoryEndpoints['/api/conversations/:id/export'](req, res, pg, conversationManager);
+    chatHistoryEndpoints['/api/conversations/:id/export'](req, res, db, conversationManager);
 });
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(__dirname));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  });
-}
+// Serve static files
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // Start server
 async function start() {
   await initDB();
   
   // Initialize conversation manager
-  conversationManager = new ConversationManager(pg);
+  conversationManager = new ConversationManager(db);
   
   // Initialize model manager
   console.log('Discovering available models...');

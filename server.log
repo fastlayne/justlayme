@@ -1,0 +1,37 @@
+
+> justlayme-character-system@2.0.0 start
+> node character-api.js
+
+Using SQLite database
+Database initialized
+Discovering available models...
+SQLite database initialized
+Found 1 models: [ 'zephyr:7b-alpha-q4_0' ]
+Default model: zephyr:7b-alpha-q4_0
+JustLayMe Character API running on port 3000
+Ollama URL: http://localhost:11434
+Multi-model support: 1 models available
+Error sending verification email: Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
+535 5.7.8  https://support.google.com/mail/?p=BadCredentials 46e09a7af769-73a284fea94sm1002165a34.42 - gsmtp
+    at SMTPConnection._formatError (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:809:19)
+    at SMTPConnection._actionAUTHComplete (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:1588:34)
+    at SMTPConnection.<anonymous> (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:556:26)
+    at SMTPConnection._processResponse (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:993:20)
+    at SMTPConnection._onData (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:774:14)
+    at SMTPConnection._onSocketData (/home/fastl/JustLayme/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
+    at TLSSocket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5) {
+  code: 'EAUTH',
+  response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
+    '535 5.7.8  https://support.google.com/mail/?p=BadCredentials 46e09a7af769-73a284fea94sm1002165a34.42 - gsmtp',
+  responseCode: 535,
+  command: 'AUTH PLAIN'
+}
+Failed to send verification email, but user was created
+Google auth error: Error: Wrong number of segments in token: fake-token-for-test
+    at OAuth2Client.verifySignedJwtWithCertsAsync (/home/fastl/JustLayme/node_modules/google-auth-library/build/src/auth/oauth2client.js:692:19)
+    at OAuth2Client.verifyIdTokenAsync (/home/fastl/JustLayme/node_modules/google-auth-library/build/src/auth/oauth2client.js:541:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /home/fastl/JustLayme/character-api.js:548:20

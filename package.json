@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.3",
     "pg": "^8.11.3",
+    "sqlite3": "^5.1.7",
     "stripe": "^18.2.1",
     "uuid": "^9.0.1"
   },

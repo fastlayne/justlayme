@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JustLayMe Premium - AI Companions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="premium-style.css">
+</head>
+<body>
+    <!-- Premium Background -->
+    <div class="premium-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="premium-nav">
+        <div class="nav-content">
+            <div class="logo">JustLayMe</div>
+            <div class="premium-badge">
+                <span>✨</span>
+                <span>Premium</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Paywall Overlay -->
+    <div id="paywall" class="paywall-overlay">
+        <div class="paywall-content">
+            <div class="paywall-card">
+                <div class="paywall-header">
+                    <h1 class="paywall-title">Unlock Premium</h1>
+                    <p class="paywall-subtitle">Get unlimited access to all AI companions</p>
+                </div>
+
+                <div class="pricing-container">
+                    <!-- Monthly Plan -->
+                    <div class="pricing-card" onclick="selectPlan('monthly')">
+                        <div class="price-header">
+                            <span class="price">$9.99</span>
+                            <span class="price-period">/month</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Unlimited messages</li>
+                            <li>All AI personalities</li>
+                            <li>Priority responses</li>
+                            <li>Cancel anytime</li>
+                        </ul>
+                    </div>
+
+                    <!-- Yearly Plan -->
+                    <div class="pricing-card recommended" onclick="selectPlan('yearly')">
+                        <div class="price-header">
+                            <span class="price">$79.99</span>
+                            <span class="price-period">/year</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Everything in monthly</li>
+                            <li>Save 33%</li>
+                            <li>Custom personalities</li>
+                            <li>Early access features</li>
+                        </ul>
+                    </div>
+
+                    <!-- Lifetime Plan -->
+                    <div class="pricing-card" onclick="selectPlan('lifetime')">
+                        <div class="price-header">
+                            <span class="price">$199</span>
+                            <span class="price-period">once</span>
+                        </div>
+                        <ul class="price-features">
+                            <li>Lifetime access</li>
+                            <li>All future updates</li>
+                            <li>VIP support</li>
+                            <li>API access</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button class="premium-button primary" onclick="proceedToPayment()">
+                    Continue to Payment
+                </button>
+
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <a href="#" onclick="skipPaywall()" style="color: var(--text-secondary); text-decoration: underline;">
+                        Try limited free version
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Interface -->
+    <div class="chat-container">
+        <div class="messages-area" id="messages">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    class="message-input" 
+                    placeholder="Type your message..."
+                    id="messageInput"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-button" onclick="sendMessage()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        let selectedPlan = 'yearly';
+        let messageCount = 0;
+        const FREE_MESSAGE_LIMIT = 3;
+        let isPremium = localStorage.getItem('isPremium') === 'true';
+
+        // Check for premium status on load
+        window.onload = function() {
+            if (!isPremium) {
+                // Show paywall after 3 messages
+                checkMessageLimit();
+            }
+        };
+
+        function selectPlan(plan) {
+            selectedPlan = plan;
+            document.querySelectorAll('.pricing-card').forEach(card => {
+                card.style.borderColor = '';
+            });
+            event.currentTarget.style.borderColor = 'var(--primary)';
+        }
+
+        function proceedToPayment() {
+            // Here you would integrate with Stripe, PayPal, etc.
+            alert(`Proceeding to payment for ${selectedPlan} plan. Integration with payment processor needed.`);
+            
+            // For demo, mark as premium
+            localStorage.setItem('isPremium', 'true');
+            isPremium = true;
+            document.getElementById('paywall').style.display = 'none';
+        }
+
+        function skipPaywall() {
+            document.getElementById('paywall').style.display = 'none';
+        }
+
+        function checkMessageLimit() {
+            if (!isPremium && messageCount >= FREE_MESSAGE_LIMIT) {
+                document.getElementById('paywall').style.display = 'flex';
+                return false;
+            }
+            return true;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            if (!checkMessageLimit()) return;
+            
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            
+            // Increment message count
+            messageCount++;
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const aiResponse = "I'm your AI companion. This is a demo response. Premium users get unlimited messages!";
+                addMessage(aiResponse, 'ai');
+            }, 1000);
+        }
+
+        function addMessage(text, sender) {
+            const messagesArea = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar"></div>
+                <div class="message-content">${text}</div>
+            `;
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+    </script>
+</body>
+</html>
