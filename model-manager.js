@@ -93,13 +93,13 @@ class ModelManager {
             return this.defaultModel || 'zephyr:7b-alpha-q4_0';
         }
 
-        // Character-based model selection
-        const characterModelMap = {
-            sophia: ['solar:10.7b-instruct-v1-q8_0', 'mistral:7b-instruct'],
-            luna: ['zephyr:7b-alpha-q4_0', 'dolphin-mistral:7b'],
-            alex: ['zephyr:7b-alpha-q4_0', 'neural-chat:7b'],
-            maya: ['solar:10.7b-instruct-v1-q8_0', 'dolphin-mistral:7b'],
-            kai: ['zephyr:7b-alpha-q4_0', 'dolphin-mistral:7b']
+        // Model type-based model selection
+        const modelTypeMap = {
+            uncensored_gpt: ['solar:10.7b-instruct-v1-q8_0', 'dolphin-mistral:7b'],
+            roleplay: ['dolphin-mistral:7b', 'zephyr:7b-alpha-q4_0'],
+            companion: ['neural-chat:7b', 'mistral:7b-instruct'],
+            dominant: ['solar:10.7b-instruct-v1-q8_0', 'zephyr:7b-alpha-q4_0'],
+            submissive: ['neural-chat:7b', 'dolphin-mistral:7b']
         };
 
         // User preference-based selection
@@ -116,8 +116,8 @@ class ModelManager {
             return this.getBestModelByQuality();
         }
 
-        // Character-based selection
-        const preferredModels = characterModelMap[characterId] || [];
+        // Model type-based selection
+        const preferredModels = modelTypeMap[characterId] || [];
         for (const modelName of preferredModels) {
             if (this.models.find(m => m.name === modelName)) {
                 return modelName;

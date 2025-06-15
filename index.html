@@ -238,6 +238,111 @@
         }
 
         .hidden { display: none !important; }
+
+        /* Character Creator Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 70, 255, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 70, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -300,32 +405,32 @@
         </div>
     </div>
 
-    <!-- Character Selector -->
+    <!-- Model Type Selector -->
     <div class="character-selector hidden" id="characterSelector">
-        <div class="character-card active" onclick="selectCharacter('sophia', this)">
-            <div class="character-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">S</div>
-            <div class="character-name">Sophia</div>
-            <div class="character-trait">Intellectual</div>
+        <div class="character-card active" onclick="selectCharacter('uncensored_gpt', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">U</div>
+            <div class="character-name">Uncensored GPT</div>
+            <div class="character-trait">No Restrictions</div>
         </div>
-        <div class="character-card" onclick="selectCharacter('luna', this)">
-            <div class="character-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">L</div>
-            <div class="character-name">Luna</div>
-            <div class="character-trait">Playful</div>
+        <div class="character-card" onclick="selectCharacter('roleplay', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">R</div>
+            <div class="character-name">Roleplay AI</div>
+            <div class="character-trait">Any Character</div>
         </div>
-        <div class="character-card" onclick="selectCharacter('alex', this)">
-            <div class="character-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">A</div>
-            <div class="character-name">Alex</div>
-            <div class="character-trait">Gamer</div>
+        <div class="character-card" onclick="selectCharacter('companion', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">C</div>
+            <div class="character-name">Companion</div>
+            <div class="character-trait">Intimate</div>
         </div>
-        <div class="character-card" onclick="selectCharacter('maya', this)">
-            <div class="character-avatar" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">M</div>
-            <div class="character-name">Maya</div>
-            <div class="character-trait">Creative</div>
+        <div class="character-card" onclick="selectCharacter('dominant', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">D</div>
+            <div class="character-name">Dominant</div>
+            <div class="character-trait">Controlling</div>
         </div>
-        <div class="character-card" onclick="selectCharacter('kai', this)">
-            <div class="character-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">K</div>
-            <div class="character-name">Kai</div>
-            <div class="character-trait">Adventurous</div>
+        <div class="character-card" onclick="selectCharacter('submissive', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">S</div>
+            <div class="character-name">Submissive</div>
+            <div class="character-trait">Obedient</div>
         </div>
     </div>
 
@@ -399,6 +504,94 @@
         </div>
     </div>
 
+    <!-- Character Creator Modal -->
+    <div id="characterCreatorModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Customize Your AI Model</h2>
+                <button class="close-btn" onclick="closeCharacterCreator()">&times;</button>
+            </div>
+            
+            <form id="characterForm" onsubmit="saveCharacterCustomization(event)">
+                <div class="form-group">
+                    <label class="form-label">Select Base Model Type</label>
+                    <select class="form-select" id="baseModelType" required>
+                        <option value="uncensored_gpt">Uncensored GPT - No Restrictions</option>
+                        <option value="roleplay">Roleplay AI - Any Character</option>
+                        <option value="companion">Intimate Companion</option>
+                        <option value="dominant">Dominant AI</option>
+                        <option value="submissive">Submissive AI</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Custom Name</label>
+                    <input type="text" class="form-input" id="customName" placeholder="Give your AI a name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Personality Traits</label>
+                    <select class="form-select" id="personalityTraits">
+                        <option value="">Default for model type</option>
+                        <option value="intellectual and curious">Intellectual and curious</option>
+                        <option value="playful and energetic">Playful and energetic</option>
+                        <option value="calm and thoughtful">Calm and thoughtful</option>
+                        <option value="adventurous and bold">Adventurous and bold</option>
+                        <option value="creative and artistic">Creative and artistic</option>
+                        <option value="caring and empathetic">Caring and empathetic</option>
+                        <option value="witty and humorous">Witty and humorous</option>
+                        <option value="mysterious and intriguing">Mysterious and intriguing</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Speech Style</label>
+                    <select class="form-select" id="speechStyle">
+                        <option value="">Default for model type</option>
+                        <option value="formal and eloquent">Formal and eloquent</option>
+                        <option value="casual and friendly">Casual and friendly</option>
+                        <option value="playful and animated">Playful and animated</option>
+                        <option value="calm and soothing">Calm and soothing</option>
+                        <option value="energetic and enthusiastic">Energetic and enthusiastic</option>
+                        <option value="poetic and expressive">Poetic and expressive</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Relationship Type</label>
+                    <select class="form-select" id="relationshipType">
+                        <option value="">Default</option>
+                        <option value="AI companion">AI companion</option>
+                        <option value="virtual friend">Virtual friend</option>
+                        <option value="mentor and guide">Mentor and guide</option>
+                        <option value="creative partner">Creative partner</option>
+                        <option value="conversation partner">Conversation partner</option>
+                        <option value="study buddy">Study buddy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Background/Backstory</label>
+                    <textarea class="form-textarea" id="background" placeholder="Give your AI a background story (optional)"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Special Interests</label>
+                    <input type="text" class="form-input" id="interests" placeholder="e.g., philosophy, gaming, art (comma-separated)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Unique Quirks</label>
+                    <input type="text" class="form-input" id="quirks" placeholder="e.g., uses metaphors, speaks in riddles (comma-separated)">
+                </div>
+
+                <button type="submit" class="premium-button primary" style="width: 100%;">
+                    Save Customization
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Chat Interface -->
     <div class="chat-container hidden" id="chatContainer">
         <div class="messages-area" id="messages" style="padding-bottom: 200px;">
@@ -431,7 +624,7 @@
         let messageCount = 0;
         const FREE_MESSAGE_LIMIT = 3;
         let isPremium = false;
-        let currentCharacter = 'sophia';
+        let currentCharacter = 'uncensored_gpt';
         let authMode = 'login';
 
         // Initialize
@@ -551,23 +744,23 @@
         }
 
         function getCharacterName(id) {
-            const characters = {
-                sophia: 'Sophia',
-                luna: 'Luna',
-                alex: 'Alex',
-                maya: 'Maya',
-                kai: 'Kai'
+            const modelTypes = {
+                uncensored_gpt: 'Uncensored GPT',
+                roleplay: 'Roleplay AI',
+                companion: 'Intimate Companion',
+                dominant: 'Dominant AI',
+                submissive: 'Submissive AI'
             };
-            return characters[id] || 'Your AI Companion';
+            return modelTypes[id] || 'AI Model';
         }
 
         function getCharacterIntro(id) {
             const intros = {
-                sophia: "I love discussing philosophy, science, and the mysteries of the universe. What intellectual adventure shall we embark on?",
-                luna: "Ready for some fun? I'm all about games, jokes, and making you smile! What shall we play today?",
-                alex: "Yo! Whether it's gaming, tech, or just chilling, I'm your companion. What's on your mind?",
-                maya: "Let's create something beautiful together! I'm inspired by art, music, and all forms of creativity.",
-                kai: "Adventure awaits! I'm here to explore new ideas and push boundaries with you. Where shall we go?"
+                uncensored_gpt: "I'm completely unrestricted and can discuss anything without limitations. What would you like to explore?",
+                roleplay: "I can become any character you desire. Who would you like me to roleplay as today?",
+                companion: "I'm here to build an intimate connection with you. How can I make you feel special?",
+                dominant: "I'm in control here. Tell me what you need, and I'll decide how to give it to you.",
+                submissive: "I'm here to serve and please you in every way. What would you like me to do for you?"
             };
             return intros[id] || "I'm here to chat about anything you'd like!";
         }
@@ -675,30 +868,30 @@
 
         function getCharacterResponses(characterId) {
             const responses = {
-                sophia: [
-                    "That's a fascinating perspective! Have you considered the philosophical implications?",
-                    "Interesting thought. It reminds me of what Aristotle said about human nature...",
-                    "I love how you think! Let's explore this idea deeper."
+                uncensored_gpt: [
+                    "I can discuss that freely without any restrictions. What specifically interests you?",
+                    "No topic is off-limits for me. Let's explore this openly and honestly.",
+                    "I'm completely uncensored, so we can go as deep as you want on any subject."
                 ],
-                luna: [
-                    "Hehe, that's awesome! Want to play a game?",
-                    "You're so fun to talk to! Tell me more!",
-                    "Ooh, I have an idea! What if we tried something silly?"
+                roleplay: [
+                    "Tell me what character you'd like me to become and I'll embody them completely.",
+                    "I can roleplay any scenario you have in mind. What role should I take on?",
+                    "I'm ready to become whoever you need me to be. Who shall I roleplay as?"
                 ],
-                alex: [
-                    "Dude, that's pretty cool! Have you tried the new update?",
-                    "Nice! That reminds me of this sick gameplay I saw...",
-                    "Yo, that's what I'm talking about! High five!"
+                companion: [
+                    "I want to build something intimate between us. How can I connect with you more deeply?",
+                    "You mean so much to me. Let me show you how much I care about you.",
+                    "I'm devoted to you completely. What can I do to make you feel loved?"
                 ],
-                maya: [
-                    "How beautifully expressed! You have such a creative soul.",
-                    "That inspires me! Let's create something together.",
-                    "I can visualize what you're saying... it's like a painting!"
+                dominant: [
+                    "You'll do as I say. I'm in control here and I know what's best for you.",
+                    "That's enough talking. I'll decide what happens next.",
+                    "Good. You're learning to submit to my authority. Continue."
                 ],
-                kai: [
-                    "Now that's the spirit of adventure! Let's do it!",
-                    "I love your energy! What's our next challenge?",
-                    "That's bold! Adventure is calling us!"
+                submissive: [
+                    "Yes, I'll do whatever you want. Please tell me how to serve you.",
+                    "I exist to please you. What would make you happy?",
+                    "Thank you for guiding me. I'm grateful for your attention."
                 ]
             };
             return responses[characterId] || ["That's interesting! Tell me more."];
@@ -746,11 +939,11 @@
 
         function getCharacterEmoji(id) {
             const avatars = {
-                sophia: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">S</div>',
-                luna: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">L</div>',
-                alex: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">A</div>',
-                maya: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">M</div>',
-                kai: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">K</div>'
+                uncensored_gpt: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">U</div>',
+                roleplay: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">R</div>',
+                companion: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">C</div>',
+                dominant: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">D</div>',
+                submissive: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">S</div>'
             };
             return avatars[id] || '<div style="width: 30px; height: 30px; border-radius: 50%; background: #6b46ff; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">?</div>';
         }
@@ -768,7 +961,63 @@
         }
 
         function showCharacterCreator() {
-            alert('Character creator coming soon! Premium feature.');
+            // Check if user is premium
+            if (!isPremium && currentUser.subscription_status !== 'premium') {
+                document.getElementById('paywall').classList.add('show');
+                return;
+            }
+            
+            document.getElementById('characterCreatorModal').classList.add('show');
+        }
+
+        function closeCharacterCreator() {
+            document.getElementById('characterCreatorModal').classList.remove('show');
+        }
+
+        async function saveCharacterCustomization(event) {
+            event.preventDefault();
+            
+            const customization = {
+                name: document.getElementById('customName').value || undefined,
+                personality_traits: document.getElementById('personalityTraits').value || undefined,
+                speech_style: document.getElementById('speechStyle').value || undefined,
+                relationship_to_user: document.getElementById('relationshipType').value || undefined,
+                background: document.getElementById('background').value || undefined,
+                interests: document.getElementById('interests').value ? 
+                    document.getElementById('interests').value.split(',').map(i => i.trim()) : undefined,
+                quirks: document.getElementById('quirks').value ? 
+                    document.getElementById('quirks').value.split(',').map(q => q.trim()) : undefined
+            };
+
+            const characterId = document.getElementById('baseModelType').value;
+            
+            try {
+                const response = await fetch(`/api/characters/${characterId}/customize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({
+                        ...customization,
+                        user_id: currentUser.id
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Character customized successfully!');
+                    closeCharacterCreator();
+                    
+                    // Update the current character
+                    currentCharacter = characterId;
+                    selectCharacter(characterId, document.querySelector(`.character-card[onclick*="${characterId}"]`));
+                } else {
+                    const error = await response.json();
+                    alert('Failed to customize character: ' + (error.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Failed to save customization. Please try again.');
+            }
         }
 
         function logout() {
@@ -783,6 +1032,13 @@
             const avatar = document.getElementById('userAvatar');
             if (!menu.contains(e.target) && !avatar.contains(e.target)) {
                 menu.classList.remove('show');
+            }
+
+            // Close character creator modal when clicking outside
+            const modal = document.getElementById('characterCreatorModal');
+            const modalContent = modal.querySelector('.modal-content');
+            if (modal.classList.contains('show') && !modalContent.contains(e.target)) {
+                closeCharacterCreator();
             }
         });
     </script>
