@@ -12,6 +12,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="premium-style.css">
+    <!-- Google OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         /* Additional styles for new features */
         .auth-container {
@@ -81,6 +83,52 @@
             background: var(--premium-gradient);
             border-color: transparent;
             color: white;
+        }
+
+        .google-signin-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .google-signin-btn:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .auth-divider span {
+            padding: 0 1rem;
         }
 
         .character-selector {
@@ -390,6 +438,20 @@
             </div>
             
             <form class="auth-form" onsubmit="handleAuth(event)">
+                <button type="button" class="google-signin-btn" onclick="signInWithGoogle()">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+                
+                <div class="auth-divider">
+                    <span>or</span>
+                </div>
+                
                 <input type="email" class="form-input" placeholder="Email" id="authEmail" required>
                 <input type="password" class="form-input" placeholder="Password" id="authPassword" required>
                 <input type="password" class="form-input hidden" placeholder="Confirm Password" id="authConfirmPassword">
@@ -402,6 +464,31 @@
                     </a>
                 </p>
             </form>
+        </div>
+    </div>
+
+    <!-- Email Verification Container -->
+    <div id="verificationContainer" class="auth-container hidden">
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">📧</div>
+                <h2 style="color: var(--text-primary); margin-bottom: 0.5rem;">Check Your Email</h2>
+                <p style="color: var(--text-secondary); line-height: 1.6;" id="verificationMessage">
+                    We've sent a verification link to your email address.
+                </p>
+            </div>
+            
+            
+            <div style="text-align: center;">
+                <button class="premium-button secondary" onclick="resendVerificationEmail()" id="resendBtn">
+                    Resend Email
+                </button>
+                <p style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                    <a href="#" onclick="backToAuth()" style="color: var(--text-secondary); text-decoration: underline;">
+                        Back to login
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -629,7 +716,9 @@
 
         // Initialize
         window.onload = function() {
+            checkEmailVerification();
             checkAuth();
+            initializeGoogleSignIn();
         };
 
         // Auth functions
@@ -678,11 +767,20 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    currentUser = data.user;
-                    isPremium = data.user.subscription_status === 'premium';
-                    showMainApp();
+                    if (authMode === 'signup' && data.requiresVerification) {
+                        // Show verification message
+                        showVerificationMessage(data.email);
+                    } else if (authMode === 'login' && data.user && !data.user.email_verified) {
+                        // User logged in but email not verified
+                        showVerificationRequired(data.user.email);
+                    } else {
+                        // Successful login with verified email
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        currentUser = data.user;
+                        isPremium = data.user.subscription_status === 'premium';
+                        showMainApp();
+                    }
                 } else {
                     alert(data.error || 'Authentication failed');
                 }
@@ -708,6 +806,132 @@
                 subscription_status: 'free'
             };
             showMainApp();
+        }
+
+        // Email verification functions
+        let currentVerificationEmail = '';
+
+        function showVerificationMessage(email) {
+            currentVerificationEmail = email;
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('verificationContainer').classList.remove('hidden');
+            
+            const message = document.getElementById('verificationMessage');
+            message.textContent = `We've sent a verification link to ${email}. Please check your email and click the link to verify your account.`;
+            
+            // Simplified email verification flow
+        }
+
+        function showVerificationRequired(email) {
+            currentVerificationEmail = email;
+            document.getElementById('authContainer').classList.add('hidden');
+            document.getElementById('verificationContainer').classList.remove('hidden');
+            
+            const message = document.getElementById('verificationMessage');
+            message.textContent = `Your email ${email} needs to be verified before you can continue. Please check your email for the verification link.`;
+        }
+
+        async function resendVerificationEmail() {
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Sending...';
+            
+            try {
+                const response = await fetch('/api/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentVerificationEmail })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Verification email sent successfully! Please check your email.');
+                } else {
+                    alert(data.error || 'Failed to resend verification email');
+                }
+            } catch (error) {
+                alert('Failed to resend verification email');
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend Email';
+            }
+        }
+
+        function backToAuth() {
+            document.getElementById('verificationContainer').classList.add('hidden');
+            document.getElementById('authContainer').classList.remove('hidden');
+        }
+
+        // Check for email verification on page load
+        function checkEmailVerification() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (token && window.location.pathname === '/verify-email') {
+                verifyEmail(token);
+            }
+        }
+
+        async function verifyEmail(token) {
+            try {
+                const response = await fetch(`/api/verify-email?token=${token}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Email verified successfully! You can now log in.');
+                    // Redirect to main page or login
+                    window.location.href = '/';
+                } else {
+                    alert(data.error || 'Email verification failed');
+                }
+            } catch (error) {
+                alert('Email verification failed');
+            }
+        }
+
+        // Google Sign-In functions
+        function initializeGoogleSignIn() {
+            if (typeof google !== 'undefined') {
+                google.accounts.id.initialize({
+                    client_id: "YOUR_GOOGLE_CLIENT_ID", // You'll need to set this up
+                    callback: handleGoogleSignIn
+                });
+            }
+        }
+
+        function signInWithGoogle() {
+            if (typeof google !== 'undefined') {
+                google.accounts.id.prompt();
+            } else {
+                alert('Google Sign-In is not available. Please try again later.');
+            }
+        }
+
+        async function handleGoogleSignIn(response) {
+            try {
+                // Send the ID token to your backend
+                const backendResponse = await fetch('/api/auth/google', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+                
+                const data = await backendResponse.json();
+                
+                if (backendResponse.ok) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    currentUser = data.user;
+                    isPremium = data.user.subscription_status === 'premium';
+                    showMainApp();
+                } else {
+                    alert(data.error || 'Google sign-in failed');
+                }
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                alert('Google sign-in failed. Please try again.');
+            }
         }
 
         function showMainApp() {

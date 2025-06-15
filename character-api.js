@@ -6,14 +6,19 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const {OAuth2Client} = require('google-auth-library');
 const PromptLayer = require('./prompt-layer');
 const ModelManager = require('./model-manager');
+const { ConversationManager, chatHistoryEndpoints, requirePremiumForHistory } = require('./chat-history-implementation');
 // Initialize Stripe only if secret key is provided
 const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 
 // Initialize prompt layer and model manager
 const promptLayer = new PromptLayer();
 const modelManager = new ModelManager();
+let conversationManager;
 
 const app = express();
 
@@ -66,6 +71,18 @@ const AI_MODEL = process.env.AI_MODEL || 'solar:10.7b-instruct-v1-q8_0';
 const USE_GPU_LOAD_BALANCER = process.env.USE_GPU_LOAD_BALANCER === 'true';
 const LOAD_BALANCER_URL = process.env.LOAD_BALANCER_URL || 'http://localhost:3000';
 const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://localhost/justlayme';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'your-google-client-id';
+
+// Google OAuth client
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// Email configuration
+const EMAIL_CONFIG = {
+  service: 'gmail', // or your email service
+  user: process.env.EMAIL_USER || 'noreply@justlayme.com',
+  pass: process.env.EMAIL_PASSWORD || 'your-app-password',
+  from: process.env.EMAIL_FROM || 'JustLayMe <noreply@justlayme.com>'
+};
 
 // Database connection
 const pg = new Pool({ connectionString: DATABASE_URL });
@@ -76,11 +93,17 @@ async function initDB() {
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(255) UNIQUE NOT NULL,
-      password_hash VARCHAR(255) NOT NULL,
+      password_hash VARCHAR(255),
+      name VARCHAR(255),
+      google_id VARCHAR(255) UNIQUE,
       subscription_status VARCHAR(50) DEFAULT 'free',
       subscription_end DATE,
       message_count INTEGER DEFAULT 0,
-      created_at TIMESTAMP DEFAULT NOW()
+      email_verified BOOLEAN DEFAULT false,
+      verification_token VARCHAR(255),
+      verification_expires TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW(),
+      last_login TIMESTAMP
     );
 
     CREATE TABLE IF NOT EXISTS characters (
@@ -117,21 +140,149 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT NOW()
     );
 
+    CREATE TABLE IF NOT EXISTS conversations (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+      model_type VARCHAR(50) NOT NULL,
+      title VARCHAR(255),
+      message_count INTEGER DEFAULT 0,
+      is_archived BOOLEAN DEFAULT false,
+      tags TEXT[],
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+
     CREATE TABLE IF NOT EXISTS messages (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      conversation_id VARCHAR(255) NOT NULL,
+      conversation_id UUID REFERENCES conversations(id) ON DELETE CASCADE,
       sender_type VARCHAR(10) NOT NULL,
       content TEXT NOT NULL,
       metadata JSONB DEFAULT '{}',
       created_at TIMESTAMP DEFAULT NOW()
     );
 
+    CREATE TABLE IF NOT EXISTS email_verification_logs (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+      action VARCHAR(50) NOT NULL,
+      ip_address VARCHAR(45),
+      user_agent TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+
     CREATE INDEX IF NOT EXISTS idx_memories_character ON character_memories(character_id);
     CREATE INDEX IF NOT EXISTS idx_learning_character ON character_learning(character_id);
     CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
+    CREATE INDEX IF NOT EXISTS idx_conversations_user ON conversations(user_id);
+    CREATE INDEX IF NOT EXISTS idx_conversations_updated ON conversations(updated_at);
+    CREATE INDEX IF NOT EXISTS idx_users_email_verified ON users(email_verified);
+    CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);
   `);
   
   console.log('Database initialized');
+}
+
+// Email utility functions
+const transporter = nodemailer.createTransport({
+  service: EMAIL_CONFIG.service,
+  auth: {
+    user: EMAIL_CONFIG.user,
+    pass: EMAIL_CONFIG.pass
+  }
+});
+
+// Removed professional email detection - all users start as free tier
+
+function generateVerificationToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+async function sendVerificationEmail(email, token, userName) {
+  const verificationUrl = `https://justlay.me/verify-email?token=${token}`;
+  
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 14px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to JustLayMe!</h1>
+          <p>Verify your email to get started</p>
+        </div>
+        <div class="content">
+          <h2>Hi ${userName || 'there'}!</h2>
+          <p>Thanks for joining JustLayMe! To complete your registration and start chatting with our AI companions, please verify your email address.</p>
+          
+          <p style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" class="button">Verify Email Address</a>
+          </p>
+          
+          <p>If the button doesn't work, copy and paste this link into your browser:</p>
+          <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 5px;">${verificationUrl}</p>
+          
+          <p><strong>This verification link will expire in 24 hours.</strong></p>
+          
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+          
+          <h3>What's Next?</h3>
+          <ul>
+            <li>🤖 Chat with 5 different AI model types</li>
+            <li>🔓 Completely uncensored conversations</li>
+            <li>🎭 Roleplay as any character</li>
+            <li>💬 Premium users get unlimited chat history</li>
+          </ul>
+        </div>
+        <div class="footer">
+          <p>This email was sent by JustLayMe. If you didn't create an account, you can safely ignore this email.</p>
+          <p>Need help? Contact us at support@justlayme.com</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const mailOptions = {
+    from: EMAIL_CONFIG.from,
+    to: email,
+    subject: 'Verify your JustLayMe account',
+    html: htmlContent,
+    text: `Welcome to JustLayMe! Please verify your email by visiting: ${verificationUrl}`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    return false;
+  }
+}
+
+async function logEmailAction(userId, action, req) {
+  try {
+    await pg.query(`
+      INSERT INTO email_verification_logs (user_id, action, ip_address, user_agent)
+      VALUES ($1, $2, $3, $4)
+    `, [
+      userId,
+      action,
+      req.ip || req.connection.remoteAddress,
+      req.get('User-Agent')
+    ]);
+  } catch (error) {
+    console.error('Error logging email action:', error);
+  }
 }
 
 // Middleware
@@ -172,23 +323,59 @@ app.post('/api/register', async (req, res) => {
   const { email, password } = req.body;
   
   try {
+    // Check if user already exists
+    const existingUser = await pg.query('SELECT id, email_verified FROM users WHERE email = $1', [email]);
+    
+    if (existingUser.rows.length > 0) {
+      if (existingUser.rows[0].email_verified) {
+        return res.status(400).json({ error: 'Email already registered and verified' });
+      } else {
+        return res.status(400).json({ 
+          error: 'Email already registered but not verified. Check your email for verification link.' 
+        });
+      }
+    }
+    
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = generateVerificationToken();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
     const result = await pg.query(`
-      INSERT INTO users (email, password_hash)
-      VALUES ($1, $2)
+      INSERT INTO users (
+        email, password_hash, verification_token, verification_expires, 
+        subscription_status
+      )
+      VALUES ($1, $2, $3, $4, $5)
       RETURNING id, email, subscription_status
-    `, [email, hashedPassword]);
+    `, [
+      email, 
+      hashedPassword, 
+      verificationToken, 
+      verificationExpires,
+      'free'
+    ]);
     
     const user = result.rows[0];
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
     
-    res.json({ token, user });
-  } catch (error) {
-    if (error.code === '23505') {
-      res.status(400).json({ error: 'Email already exists' });
-    } else {
-      res.status(500).json({ error: 'Registration failed' });
+    // Send verification email
+    const emailSent = await sendVerificationEmail(email, verificationToken, email.split('@')[0]);
+    
+    // Log the registration
+    await logEmailAction(user.id, 'registration', req);
+    
+    if (!emailSent) {
+      console.error('Failed to send verification email');
     }
+    
+    res.json({ 
+      message: 'Registration successful! Please check your email to verify your account.',
+      email: email,
+      requiresVerification: true
+    });
+    
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed' });
   }
 });
 
@@ -211,6 +398,23 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
+    // Check email verification
+    if (!user.email_verified) {
+      return res.status(403).json({ 
+        error: 'Email not verified. Please check your email and click the verification link.',
+        requiresVerification: true,
+        email: user.email
+      });
+    }
+    
+    // Update last login
+    await pg.query(`
+      UPDATE users SET last_login = NOW() WHERE id = $1
+    `, [user.id]);
+    
+    // Log the login
+    await logEmailAction(user.id, 'login', req);
+    
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
     
     res.json({ 
@@ -218,16 +422,180 @@ app.post('/api/login', async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        subscription_status: user.subscription_status
+        subscription_status: user.subscription_status,
+        email_verified: user.email_verified,
+        is_professional_email: user.is_professional_email
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
 app.get('/api/verify', authenticateToken, async (req, res) => {
   res.json(req.user);
+});
+
+// Email verification endpoint
+app.get('/api/verify-email', async (req, res) => {
+  const { token } = req.query;
+  
+  if (!token) {
+    return res.status(400).json({ error: 'Verification token is required' });
+  }
+  
+  try {
+    const result = await pg.query(`
+      SELECT id, email, verification_expires, email_verified 
+      FROM users 
+      WHERE verification_token = $1
+    `, [token]);
+    
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: 'Invalid verification token' });
+    }
+    
+    const user = result.rows[0];
+    
+    if (user.email_verified) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+    
+    if (new Date() > user.verification_expires) {
+      return res.status(400).json({ error: 'Verification token has expired' });
+    }
+    
+    // Mark email as verified
+    await pg.query(`
+      UPDATE users 
+      SET email_verified = true, verification_token = NULL, verification_expires = NULL
+      WHERE id = $1
+    `, [user.id]);
+    
+    // Log the verification
+    await logEmailAction(user.id, 'email_verified', req);
+    
+    res.json({ 
+      message: 'Email verified successfully! You can now log in.',
+      email: user.email
+    });
+    
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ error: 'Email verification failed' });
+  }
+});
+
+// Resend verification email
+app.post('/api/resend-verification', async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const result = await pg.query(`
+      SELECT id, email_verified FROM users WHERE email = $1
+    `, [email]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const user = result.rows[0];
+    
+    if (user.email_verified) {
+      return res.status(400).json({ error: 'Email already verified' });
+    }
+    
+    // Generate new verification token
+    const verificationToken = generateVerificationToken();
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    
+    await pg.query(`
+      UPDATE users 
+      SET verification_token = $1, verification_expires = $2
+      WHERE id = $3
+    `, [verificationToken, verificationExpires, user.id]);
+    
+    // Send verification email
+    const emailSent = await sendVerificationEmail(email, verificationToken, email.split('@')[0]);
+    
+    // Log the resend
+    await logEmailAction(user.id, 'resend_verification', req);
+    
+    if (emailSent) {
+      res.json({ message: 'Verification email sent! Please check your email.' });
+    } else {
+      res.status(500).json({ error: 'Failed to send verification email' });
+    }
+    
+  } catch (error) {
+    console.error('Resend verification error:', error);
+    res.status(500).json({ error: 'Failed to resend verification email' });
+  }
+});
+
+// Google OAuth endpoint
+app.post('/api/auth/google', async (req, res) => {
+  const { credential } = req.body;
+  
+  try {
+    // Verify the Google ID token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name, picture } = payload;
+    
+    // Check if user exists
+    let result = await pg.query('SELECT * FROM users WHERE email = $1', [email]);
+    
+    if (result.rows.length > 0) {
+      // User exists, log them in
+      const user = result.rows[0];
+      
+      // Update last login and Google ID if not set
+      await pg.query(`
+        UPDATE users 
+        SET last_login = NOW(), google_id = COALESCE(google_id, $1), email_verified = true
+        WHERE id = $2
+      `, [googleId, user.id]);
+      
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+      
+      res.json({ 
+        token, 
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name || name,
+          subscription_status: user.subscription_status,
+          email_verified: true
+        }
+      });
+    } else {
+      // Create new user
+      const newUserResult = await pg.query(`
+        INSERT INTO users (
+          email, name, google_id, email_verified, subscription_status
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, email, name, subscription_status
+      `, [email, name, googleId, true, 'free']);
+      
+      const newUser = newUserResult.rows[0];
+      const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET);
+      
+      res.json({ 
+        token, 
+        user: newUser
+      });
+    }
+  } catch (error) {
+    console.error('Google auth error:', error);
+    res.status(400).json({ error: 'Invalid Google token' });
+  }
 });
 
 // Character endpoints
@@ -406,7 +774,30 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
     
-    // Store in memory
+    // Store in conversation system
+    const conversation = await conversationManager.getOrCreateConversation(req.user.id, characterId);
+    
+    // Store user message
+    await pg.query(`
+      INSERT INTO messages (conversation_uuid, sender_type, content, metadata)
+      VALUES ($1, $2, $3, $4)
+    `, [conversation.id, 'human', message, JSON.stringify({ model_type: characterId })]);
+    
+    // Store AI response
+    const messageResult = await pg.query(`
+      INSERT INTO messages (conversation_uuid, sender_type, content, metadata)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id
+    `, [conversation.id, 'ai', aiResponse, JSON.stringify({ character_name: character.name, model_type: characterId })]);
+    
+    // Update conversation timestamp
+    await pg.query(`
+      UPDATE conversations 
+      SET updated_at = NOW(), message_count = message_count + 2
+      WHERE id = $1
+    `, [conversation.id]);
+    
+    // Also store in memory for backwards compatibility with learning system
     const memoryResult = await pg.query(`
       INSERT INTO character_memories 
       (character_id, user_message, ai_response)
@@ -416,7 +807,9 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     
     res.json({ 
       response: aiResponse,
-      memory_id: memoryResult.rows[0].id
+      memory_id: memoryResult.rows[0].id,
+      conversation_id: conversation.id,
+      message_id: messageResult.rows[0].id
     });
     
   } catch (error) {
@@ -828,6 +1221,53 @@ app.get('/api/models/recommendations/:character_id', async (req, res) => {
     }
 });
 
+// Chat History API Endpoints
+
+// Create a premium check middleware that has access to pg
+const checkPremiumForHistory = (req, res, next) => {
+    pg.query(`
+        SELECT subscription_status FROM users WHERE id = $1
+    `, [req.user.id]).then(result => {
+        if (result.rows.length > 0 && result.rows[0].subscription_status === 'free') {
+            // Allow limited access for free users (last 3 conversations)
+            req.limitedAccess = true;
+        }
+        next();
+    }).catch(err => {
+        res.status(500).json({ error: 'Subscription check failed' });
+    });
+};
+
+// Get user's conversations
+app.get('/api/conversations', authenticateToken, checkPremiumForHistory, (req, res) => {
+    chatHistoryEndpoints['/api/conversations'](req, res, pg, conversationManager);
+});
+
+// Get specific conversation messages
+app.get('/api/conversations/:id/messages', authenticateToken, (req, res) => {
+    chatHistoryEndpoints['/api/conversations/:id/messages'](req, res, pg, conversationManager);
+});
+
+// Search conversations
+app.get('/api/conversations/search', authenticateToken, checkPremiumForHistory, (req, res) => {
+    chatHistoryEndpoints['/api/conversations/search'](req, res, pg, conversationManager);
+});
+
+// Archive conversation
+app.post('/api/conversations/:id/archive', authenticateToken, (req, res) => {
+    chatHistoryEndpoints['/api/conversations/:id/archive'](req, res, pg, conversationManager);
+});
+
+// Delete conversation
+app.delete('/api/conversations/:id', authenticateToken, (req, res) => {
+    chatHistoryEndpoints['/api/conversations/:id'](req, res, pg, conversationManager);
+});
+
+// Export conversation
+app.get('/api/conversations/:id/export', authenticateToken, (req, res) => {
+    chatHistoryEndpoints['/api/conversations/:id/export'](req, res, pg, conversationManager);
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(__dirname));
@@ -839,6 +1279,9 @@ if (process.env.NODE_ENV === 'production') {
 // Start server
 async function start() {
   await initDB();
+  
+  // Initialize conversation manager
+  conversationManager = new ConversationManager(pg);
   
   // Initialize model manager
   console.log('Discovering available models...');
