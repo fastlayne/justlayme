@@ -1,0 +1,395 @@
+{
+  "project_info": {
+    "name": "JustLayMe",
+    "domain": "https://justlay.me",
+    "version": "3.0.0",
+    "started": "2025-06-14",
+    "status": "live"
+  },
+  "sessions": [
+    {
+      "id": "session_2025_06_14_initial",
+      "timestamp": "2025-06-14T13:00:00Z",
+      "duration": "~3 hours",
+      "summary": "Complete build and deployment of JustLayMe premium AI companion platform",
+      "accomplishments": [
+        "Built complete premium AI companion platform from scratch",
+        "Implemented full authentication system with email/password and guest mode",
+        "Created 5 unique AI characters with distinct personalities (Sophia, Luna, Alex, Maya, Kai)",
+        "Added working paywall system with 3-tier pricing (monthly $9.99, yearly $79.99, lifetime $199)",
+        "Successfully deployed live to https://justlay.me using Cloudflare tunnel",
+        "Configured GPU load balancing system for multiple servers",
+        "Added comprehensive privacy-focused security headers",
+        "Created fully mobile-responsive glassmorphism design",
+        "Set up PostgreSQL database with complete schema",
+        "Integrated Stripe payment processing (demo mode)",
+        "Built character selection interface with personality switching",
+        "Added user account management with profile/settings menu"
+      ],
+      "problems_solved": [
+        "Fixed Cloudflare tunnel connection errors (502 gateway timeout)",
+        "Resolved PostgreSQL database authentication issues",
+        "Fixed premium button functionality and paywall timing",
+        "Addressed iPhone Safari privacy warnings with proper headers",
+        "Corrected CSS display issues with paywall overlay",
+        "Fixed Stripe initialization errors with conditional loading",
+        "Resolved character API server startup issues"
+      ],
+      "next_steps": [
+        "Configure RTX 4090 server with Tailscale IP address",
+        "Test load balancer with multiple GPU servers",
+        "Set up Stripe webhook endpoints for production",
+        "Add character creation interface for premium users",
+        "Implement conversation history persistence"
+      ],
+      "files_created": [
+        "index.html (complete app with auth and characters)",
+        "premium-style.css (glassmorphism mobile-optimized design)",
+        "character-api.js (main Express server)",
+        "gpu-load-balancer.js (load balancing system)",
+        "load-balancer-server.js (standalone load balancer)",
+        "payment-integration.js (Stripe/PayPal integration)",
+        "setup-gpu-servers.sh (GPU server setup script)",
+        "project-documentation.json (comprehensive documentation)",
+        "mcp-memory-server.js (this memory system)"
+      ],
+      "technologies": [
+        "Node.js/Express",
+        "PostgreSQL",
+        "Cloudflare Tunnels",
+        "Stripe Payments",
+        "JWT Authentication",
+        "CSS Glassmorphism",
+        "Mobile-first Design",
+        "GPU Load Balancing",
+        "Docker (for GPU servers)",
+        "MCP Server Protocol"
+      ]
+    },
+    {
+      "id": "session_2025_06_14_prompt_layer",
+      "timestamp": "2025-06-14T22:00:00Z",
+      "duration": "~1 hour",
+      "summary": "Implemented dynamic prompt layer system for character personalization",
+      "accomplishments": [
+        "Created sophisticated PromptLayer class for dynamic system prompt generation",
+        "Built character customization system with 8+ personalization options",
+        "Added API endpoints for character customization and preview",
+        "Integrated prompt layer with Ollama API for Solar 10.7B model",
+        "Added conversation history persistence to database",
+        "Created validation system for user customizations",
+        "Built dynamic prompt merging of base personalities + user preferences",
+        "Added character relationship types (companion, mentor, friend, etc.)",
+        "Implemented speech style, tone, and quirk customization",
+        "Added real-time prompt preview functionality"
+      ],
+      "problems_solved": [
+        "Fixed character API endpoint structure for customization",
+        "Resolved dynamic prompt generation complexity",
+        "Added proper error handling for invalid customizations",
+        "Fixed user_id passing from frontend to backend",
+        "Corrected database schema for character storage"
+      ],
+      "next_steps": [
+        "Install Ollama with Solar 10.7B Instruct model",
+        "Build character customization UI interface",
+        "Test personalized AI responses with real Solar model",
+        "Add character creation wizard for premium users",
+        "Implement conversation memory and context"
+      ],
+      "files_created": [
+        "prompt-layer.js (dynamic prompt generation system)",
+        "update-memory.js (memory system updater)"
+      ],
+      "files_modified": [
+        "character-api.js (added prompt layer integration)",
+        "index.html (added user_id passing to chat API)"
+      ],
+      "technologies": [
+        "Dynamic Prompt Engineering",
+        "Ollama API Integration",
+        "Character Personalization System",
+        "Database-driven AI Customization"
+      ]
+    },
+    {
+      "id": "session_2025_06_14_multi_model_uncensored",
+      "timestamp": "2025-06-14T23:30:00Z",
+      "duration": "~2 hours",
+      "summary": "Implemented multi-model AI system with uncensored prompts and premium UI redesign",
+      "accomplishments": [
+        "Created comprehensive ModelManager class for handling multiple Ollama models",
+        "Implemented smart model selection based on character personality traits",
+        "Added multi-model API endpoints (/api/models, /api/models/test, /api/models/health)",
+        "Successfully integrated Zephyr 7B Alpha model with automatic discovery",
+        "Updated character prompts to be uncensored and sexually suggestive while keeping public descriptions clean",
+        "Enhanced Luna character with flirtatious personality ('loves making her man happy ;)')",
+        "Redesigned UI with elegant gradient letter avatars instead of emojis",
+        "Fixed character selector positioning to prevent chat input overlap",
+        "Implemented premium glassmorphism design with backdrop blur effects",
+        "Added smooth hover animations and shine effects for character avatars",
+        "Created unique gradient backgrounds for each character (S, L, A, M, K)",
+        "Fixed database schema issues for guest users and message storage",
+        "Added hidden personality traits system for dual-layer character behavior"
+      ],
+      "problems_solved": [
+        "Fixed PostgreSQL UUID errors for guest users",
+        "Resolved missing 'messages' table in database schema",
+        "Fixed character selector overlapping chat input (moved from 80px to 100px bottom)",
+        "Corrected emoji-based avatars with elegant gradient letter design",
+        "Solved JSON parsing errors in API calls",
+        "Fixed prompt layer integration with multi-model system"
+      ],
+      "technical_implementations": [
+        "ModelManager.selectBestModel() for character-specific model selection",
+        "Dynamic prompt generation with hidden sexual traits",
+        "Clean public API vs uncensored AI behavior separation",
+        "Gradient avatar system with CSS animations",
+        "Multi-model health checking and testing endpoints",
+        "Backdrop filter blur effects for premium feel"
+      ],
+      "files_created": [
+        "model-manager.js (comprehensive multi-model management)",
+        "test_request.json, test_sophia.json, test_luna_dark.json (API testing files)",
+        "update-memory-final.js (this memory updater)"
+      ],
+      "files_modified": [
+        "character-api.js (added ModelManager integration, uncensored prompts, database fixes)",
+        "prompt-layer.js (added hidden_traits system, uncensored guidelines)",
+        "index.html (redesigned character selector with gradient avatars, fixed positioning)",
+        "project-memory.json (comprehensive updates)"
+      ],
+      "technologies": [
+        "Multi-Model AI Management",
+        "Ollama API Integration",
+        "Uncensored Prompt Engineering",
+        "Premium UI/UX Design",
+        "Glassmorphism CSS Effects",
+        "Dynamic Character Personality System"
+      ]
+    }
+  ],
+  "project_state": {
+    "authentication_system": {
+      "status": "completed",
+      "details": "Full email/password auth with JWT tokens and guest mode",
+      "files_affected": [
+        "character-api.js",
+        "index.html"
+      ],
+      "last_updated": "2025-06-14T20:00:00Z"
+    },
+    "character_system": {
+      "status": "completed",
+      "details": "5 unique AI personalities with distinct responses and traits",
+      "files_affected": [
+        "index.html",
+        "premium-style.css"
+      ],
+      "last_updated": "2025-06-14T20:30:00Z"
+    },
+    "premium_paywall": {
+      "status": "completed",
+      "details": "3-tier pricing with working upgrade flow and demo mode",
+      "files_affected": [
+        "index.html",
+        "character-api.js",
+        "payment-integration.js"
+      ],
+      "last_updated": "2025-06-14T21:00:00Z"
+    },
+    "mobile_optimization": {
+      "status": "completed",
+      "details": "Fully responsive design with touch-friendly interfaces",
+      "files_affected": [
+        "premium-style.css",
+        "index.html"
+      ],
+      "last_updated": "2025-06-14T21:15:00Z"
+    },
+    "gpu_load_balancing": {
+      "status": "in_progress",
+      "details": "System configured, awaiting RTX 4090 server setup",
+      "files_affected": [
+        "gpu-load-balancer.js",
+        "load-balancer-server.js"
+      ],
+      "last_updated": "2025-06-14T21:30:00Z"
+    },
+    "cloudflare_deployment": {
+      "status": "completed",
+      "details": "Live at https://justlay.me with tunnel and SSL",
+      "files_affected": [
+        "cloudflare config"
+      ],
+      "last_updated": "2025-06-14T21:00:00Z"
+    },
+    "privacy_security": {
+      "status": "completed",
+      "details": "Comprehensive security headers and privacy protections",
+      "files_affected": [
+        "character-api.js"
+      ],
+      "last_updated": "2025-06-14T21:20:00Z"
+    },
+    "prompt_layer_system": {
+      "status": "completed",
+      "details": "Dynamic prompt generation with user customization",
+      "files_affected": [
+        "prompt-layer.js",
+        "character-api.js"
+      ],
+      "last_updated": "2025-06-14T22:00:00Z"
+    },
+    "character_customization": {
+      "status": "completed",
+      "details": "API endpoints for character personalization",
+      "files_affected": [
+        "character-api.js",
+        "prompt-layer.js"
+      ],
+      "last_updated": "2025-06-14T22:00:00Z"
+    },
+    "ollama_integration": {
+      "status": "completed",
+      "details": "Zephyr 7B Alpha active, multi-model discovery working",
+      "files_affected": [
+        "character-api.js"
+      ],
+      "last_updated": "2025-06-14T22:00:00Z"
+    },
+    "multi_model_system": {
+      "status": "completed",
+      "details": "ModelManager with Zephyr 7B Alpha, smart character-based selection",
+      "files_affected": [
+        "model-manager.js",
+        "character-api.js"
+      ],
+      "last_updated": "2025-06-14T23:30:00Z"
+    },
+    "uncensored_prompts": {
+      "status": "completed",
+      "details": "Hidden sexual traits with clean public descriptions, enhanced Luna personality",
+      "files_affected": [
+        "character-api.js",
+        "prompt-layer.js"
+      ],
+      "last_updated": "2025-06-14T23:30:00Z"
+    },
+    "premium_ui_redesign": {
+      "status": "completed",
+      "details": "Gradient letter avatars, glassmorphism effects, fixed positioning",
+      "files_affected": [
+        "index.html"
+      ],
+      "last_updated": "2025-06-14T23:30:00Z"
+    }
+  },
+  "todos": [
+    {
+      "id": "todo_additional_models",
+      "task": "Wait for Dolphin Mixtral and Mythomax models to finish downloading",
+      "priority": "medium",
+      "category": "infrastructure",
+      "status": "pending",
+      "estimated_time": "varies",
+      "dependencies": [],
+      "created_at": "2025-06-14T23:30:00Z"
+    },
+    {
+      "id": "todo_test_all_models",
+      "task": "Test all three models with different characters once downloaded",
+      "priority": "high",
+      "category": "testing",
+      "status": "pending",
+      "estimated_time": "30 minutes",
+      "dependencies": [
+        "todo_additional_models"
+      ],
+      "created_at": "2025-06-14T23:30:00Z"
+    },
+    {
+      "id": "todo_character_customization_ui",
+      "task": "Build character customization UI interface for premium users",
+      "priority": "high",
+      "category": "frontend",
+      "status": "pending",
+      "estimated_time": "2 hours",
+      "dependencies": [],
+      "created_at": "2025-06-14T23:30:00Z"
+    }
+  ],
+  "knowledge_graph": {
+    "entities": {
+      "justlay.me": {
+        "type": "domain",
+        "status": "live",
+        "ssl": true,
+        "tunnel": "cloudflare"
+      },
+      "dell-server": {
+        "type": "server",
+        "os": "Linux",
+        "gpu": "RTX 4060 8GB",
+        "role": "primary"
+      },
+      "postgresql": {
+        "type": "database",
+        "status": "configured",
+        "credentials": "justlayme:2883@localhost/justlayme"
+      },
+      "cloudflare_tunnel": {
+        "type": "service",
+        "id": "4d8d28b1-ac3c-41c5-a46c-178a4678dac2",
+        "status": "active"
+      },
+      "prompt_layer": {
+        "type": "system",
+        "status": "implemented",
+        "capabilities": [
+          "dynamic_prompts",
+          "character_customization",
+          "personality_merging"
+        ]
+      },
+      "ollama": {
+        "type": "ai_service",
+        "status": "pending_install",
+        "model": "solar:10.7b-instruct-v1-q8_0",
+        "port": 11434
+      },
+      "model_manager": {
+        "type": "system",
+        "status": "implemented",
+        "capabilities": [
+          "multi_model_selection",
+          "health_checking",
+          "character_optimization"
+        ]
+      },
+      "zephyr_model": {
+        "type": "ai_model",
+        "status": "active",
+        "model": "zephyr:7b-alpha-q4_0",
+        "size": "4.1GB",
+        "capabilities": [
+          "fast",
+          "conversational",
+          "helpful"
+        ]
+      }
+    },
+    "relationships": {
+      "justlay.me -> cloudflare_tunnel": "routed_through",
+      "cloudflare_tunnel -> dell-server": "connects_to",
+      "dell-server -> postgresql": "hosts",
+      "character-api.js -> postgresql": "uses",
+      "character-api.js -> prompt_layer": "uses",
+      "prompt_layer -> ollama": "generates_prompts_for",
+      "character-api.js -> model_manager": "uses",
+      "model_manager -> ollama": "manages"
+    }
+  },
+  "created_at": "2025-06-14T21:45:00Z",
+  "last_updated": "2025-06-14T23:30:00Z"
+}
