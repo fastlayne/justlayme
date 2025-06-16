@@ -2,21 +2,8 @@ Using SQLite database
 Database initialized
 Discovering available models...
 SQLite database initialized
-Found 3 models: [
-  'dolphin-mixtral:latest',
-  'mythomax-13b:latest',
-  'zephyr:7b-alpha-q4_0'
-]
+Found 2 models: [ 'mythomax-13b:latest', 'zephyr:7b-alpha-q4_0' ]
 Default model: mythomax-13b:latest
 JustLayMe Character API running on port 3000
 Ollama URL: http://localhost:11434
-Multi-model support: 3 models available
-Chat error: Error: AI API error: Internal Server Error
-    at /home/fastl/JustLayme/character-api.js:995:19
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Chat error: Error: AI API error: Internal Server Error
-    at /home/fastl/JustLayme/character-api.js:995:19
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-Chat error: Error: AI API error: Internal Server Error
-    at /home/fastl/JustLayme/character-api.js:995:19
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Multi-model support: 2 models available
