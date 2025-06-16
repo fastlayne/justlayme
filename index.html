@@ -1024,8 +1024,8 @@
 
                 const { sessionId } = await response.json();
 
-                // Initialize Stripe (Replace with your publishable key)
-                const stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY_HERE');
+                // Initialize Stripe
+                const stripe = Stripe('pk_test_51RaZdMBG18npwvfXQtexz8KmG0Mj59YHSaY4kp8i5hie2zztv1WHcWXKYGQzgzTAPkV9RpsgbsQKzDGPZvII6URY00J2wgzyRX');
 
                 const { error } = await stripe.redirectToCheckout({
                     sessionId: sessionId
