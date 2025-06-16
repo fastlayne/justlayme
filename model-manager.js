@@ -95,13 +95,13 @@ class ModelManager {
             return this.defaultModel || 'zephyr:7b-alpha-q4_0';
         }
 
-        // Model type-based model selection (temporarily using only working models)
+        // Model type-based model selection
         const modelTypeMap = {
-            uncensored_gpt: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
-            roleplay: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
-            companion: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
+            uncensored_gpt: ['dolphin-mixtral:latest'], // LayMe V1 Uncensored
+            roleplay: ['mythomax-13b:latest'], // Mythomax Roleplay
+            companion: ['zephyr:7b-alpha-q4_0'], // FastLayMe
             dominant: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
-            submissive: ['zephyr:7b-alpha-q4_0', 'mythomax-13b:latest']
+            submissive: ['zephyr:7b-alpha-q4_0', 'dolphin-mixtral:latest']
         };
 
         // User preference-based selection
