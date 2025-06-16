@@ -1,0 +1,25 @@
+[Unit]
+Description=JustLayMe Network Monitor
+After=network-online.target justlayme-api.service justlayme-tunnel.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=30
+User=fastl
+Group=fastl
+WorkingDirectory=/home/fastl/JustLayme
+ExecStart=/home/fastl/JustLayme/network-monitor.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=justlayme-monitor
+
+# Restart policy
+Restart=always
+RestartSec=30
+StartLimitBurst=3
+StartLimitIntervalSec=300
+
+[Install]
+WantedBy=multi-user.target

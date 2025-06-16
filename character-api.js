@@ -78,10 +78,14 @@ const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // Email configuration
 const EMAIL_CONFIG = {
-  service: 'gmail', // or your email service
-  user: process.env.EMAIL_USER || 'noreply@justlayme.com',
-  pass: process.env.EMAIL_PASSWORD || 'your-app-password',
-  from: process.env.EMAIL_FROM || 'JustLayMe <noreply@justlayme.com>'
+  host: process.env.BRIDGE_HOST || '127.0.0.1', // ProtonMail Bridge host
+  port: process.env.BRIDGE_PORT || 1025, // ProtonMail Bridge SMTP port
+  secure: false, // Bridge uses STARTTLS
+  auth: {
+    user: process.env.EMAIL_USER || 'please@justlay.me',
+    pass: process.env.EMAIL_PASSWORD || 'Luna2025'
+  },
+  from: process.env.EMAIL_FROM || `JustLayMe <${process.env.EMAIL_USER || 'please@justlay.me'}>`
 };
 
 // Database connection
@@ -186,10 +190,12 @@ async function initDB() {
 
 // Email utility functions
 const transporter = nodemailer.createTransport({
-  service: EMAIL_CONFIG.service,
-  auth: {
-    user: EMAIL_CONFIG.user,
-    pass: EMAIL_CONFIG.pass
+  host: EMAIL_CONFIG.host,
+  port: EMAIL_CONFIG.port,
+  secure: EMAIL_CONFIG.secure,
+  auth: EMAIL_CONFIG.auth,
+  tls: {
+    rejectUnauthorized: false  // Accept self-signed certificates for Proton Bridge
   }
 });
 
@@ -1276,6 +1282,11 @@ app.get('/api/conversations/:id/export', authenticateToken, (req, res) => {
 // Serve static files
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Serve index.html for email verification route
+app.get('/verify-email', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

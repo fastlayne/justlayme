@@ -293,8 +293,8 @@ body {
 
 /* Mobile Chat Interface */
 .chat-container {
-    margin-top: 80px;
-    min-height: calc(100vh - 80px);
+    margin-top: 134px;
+    min-height: calc(100vh - 134px);
     display: flex;
     flex-direction: column;
 }
@@ -430,7 +430,7 @@ body {
     
     .chat-container {
         max-width: 1200px;
-        margin: 80px auto 0;
+        margin: 134px auto 0;
     }
 }
 

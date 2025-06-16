@@ -64,10 +64,12 @@ class ModelManager {
                 }
             }));
 
-            // Set default model (prefer Solar, then Zephyr, then others)
+            // Set default model (prefer Mythomax, then Dolphin, then Zephyr)
             const preferredOrder = [
-                'solar:10.7b-instruct-v1-q8_0',
+                'mythomax-13b:latest',
+                'dolphin-mixtral:latest',
                 'zephyr:7b-alpha-q4_0',
+                'solar:10.7b-instruct-v1-q8_0',
                 'mistral:7b-instruct',
                 'dolphin-mistral:7b',
                 'neural-chat:7b',
@@ -95,11 +97,11 @@ class ModelManager {
 
         // Model type-based model selection
         const modelTypeMap = {
-            uncensored_gpt: ['solar:10.7b-instruct-v1-q8_0', 'dolphin-mistral:7b'],
-            roleplay: ['dolphin-mistral:7b', 'zephyr:7b-alpha-q4_0'],
-            companion: ['neural-chat:7b', 'mistral:7b-instruct'],
-            dominant: ['solar:10.7b-instruct-v1-q8_0', 'zephyr:7b-alpha-q4_0'],
-            submissive: ['neural-chat:7b', 'dolphin-mistral:7b']
+            uncensored_gpt: ['mythomax-13b:latest', 'dolphin-mixtral:latest'],
+            roleplay: ['dolphin-mixtral:latest', 'mythomax-13b:latest'],
+            companion: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
+            dominant: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
+            submissive: ['zephyr:7b-alpha-q4_0', 'dolphin-mixtral:latest']
         };
 
         // User preference-based selection
