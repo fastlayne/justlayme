@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Button Functions</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #333; border-radius: 8px; }
+        .debug-result { margin: 10px 0; padding: 10px; background: #2a2a2a; border-radius: 4px; }
+        .success { color: #4ade80; }
+        .error { color: #ef4444; }
+        .warning { color: #fbbf24; }
+        button { padding: 10px 15px; margin: 5px; background: #6b46ff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #5a3dd8; }
+    </style>
+</head>
+<body>
+    <h1>JustLayMe Button Debug Tool</h1>
+    
+    <div class="debug-section">
+        <h2>1. Check Authentication State</h2>
+        <div id="auth-status" class="debug-result">Checking...</div>
+        <button onclick="checkAuthStatus()">Refresh Auth Status</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>2. Test Modal Elements</h2>
+        <div id="modal-status" class="debug-result">Checking...</div>
+        <button onclick="checkModals()">Check Modals</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>3. Test Functions</h2>
+        <div id="function-status" class="debug-result">Checking...</div>
+        <button onclick="testShowProfile()">Test showProfile()</button>
+        <button onclick="testShowSettings()">Test showSettings()</button>
+        <button onclick="testShowCharacterCreator()">Test showCharacterCreator()</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>4. Simulate Login</h2>
+        <button onclick="simulateLogin()">Simulate Login</button>
+        <button onclick="simulateGuest()">Continue as Guest</button>
+        <button onclick="clearAuth()">Clear Auth</button>
+    </div>
+
+    <div class="debug-section">
+        <h2>5. JavaScript Console Errors</h2>
+        <div id="error-log" class="debug-result">No errors logged yet</div>
+        <button onclick="clearErrorLog()">Clear Error Log</button>
+    </div>
+
+    <script>
+        // Load the main app's JavaScript (copy relevant parts)
+        let currentUser = null;
+        let isPremium = false;
+        let errorLog = [];
+
+        // Override console.error to capture errors
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            errorLog.push(new Date().toISOString() + ': ' + args.join(' '));
+            updateErrorLog();
+            originalConsoleError.apply(console, args);
+        };
+
+        // Capture any JavaScript errors
+        window.onerror = function(message, source, lineno, colno, error) {
+            errorLog.push(`${new Date().toISOString()}: ${message} at ${source}:${lineno}:${colno}`);
+            updateErrorLog();
+            return false;
+        };
+
+        function updateErrorLog() {
+            const errorDiv = document.getElementById('error-log');
+            if (errorLog.length === 0) {
+                errorDiv.innerHTML = '<span class="success">No errors logged</span>';
+            } else {
+                errorDiv.innerHTML = errorLog.map(err => `<div class="error">${err}</div>`).join('');
+            }
+        }
+
+        function clearErrorLog() {
+            errorLog = [];
+            updateErrorLog();
+        }
+
+        function checkAuthStatus() {
+            const authDiv = document.getElementById('auth-status');
+            const token = localStorage.getItem('authToken');
+            const storedUser = localStorage.getItem('currentUser');
+            
+            let status = '';
+            status += `<div><strong>Token:</strong> ${token ? '<span class="success">Present</span>' : '<span class="error">Missing</span>'}</div>`;
+            status += `<div><strong>Stored User:</strong> ${storedUser ? '<span class="success">Present</span>' : '<span class="error">Missing</span>'}</div>`;
+            status += `<div><strong>Current User Object:</strong> ${currentUser ? '<span class="success">Set</span>' : '<span class="error">Null</span>'}</div>`;
+            
+            if (currentUser) {
+                status += `<div><strong>User Details:</strong></div>`;
+                status += `<div style="margin-left: 20px;">ID: ${currentUser.id}</div>`;
+                status += `<div style="margin-left: 20px;">Name: ${currentUser.name}</div>`;
+                status += `<div style="margin-left: 20px;">Email: ${currentUser.email}</div>`;
+                status += `<div style="margin-left: 20px;">Subscription: ${currentUser.subscription_status}</div>`;
+            }
+            
+            if (storedUser) {
+                try {
+                    const parsed = JSON.parse(storedUser);
+                    status += `<div><strong>Parsed Stored User:</strong></div>`;
+                    status += `<div style="margin-left: 20px;">${JSON.stringify(parsed, null, 2)}</div>`;
+                } catch (e) {
+                    status += `<div class="error"><strong>Error parsing stored user:</strong> ${e.message}</div>`;
+                }
+            }
+            
+            authDiv.innerHTML = status;
+        }
+
+        function checkModals() {
+            const modalDiv = document.getElementById('modal-status');
+            const modalIds = ['profileModal', 'settingsModal', 'characterCreatorModal'];
+            
+            let status = '';
+            modalIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    status += `<div class="success">✓ ${id} exists</div>`;
+                    status += `<div style="margin-left: 20px;">Classes: ${element.className}</div>`;
+                    status += `<div style="margin-left: 20px;">Display: ${getComputedStyle(element).display}</div>`;
+                } else {
+                    status += `<div class="error">✗ ${id} missing</div>`;
+                }
+            });
+            
+            modalDiv.innerHTML = status;
+        }
+
+        // Copy the main functions from the app
+        function showProfile() {
+            try {
+                console.log('showProfile() called');
+                console.log('currentUser:', currentUser);
+                
+                // Check if user is logged in
+                if (!currentUser) {
+                    alert('Please log in to view your profile');
+                    return;
+                }
+                
+                // Check if modal exists
+                const modal = document.getElementById('profileModal');
+                if (!modal) {
+                    alert('Profile modal not found in DOM');
+                    return;
+                }
+                
+                console.log('Showing profile modal...');
+                modal.classList.add('show');
+                alert('Profile modal should now be visible');
+                
+            } catch (error) {
+                console.error('Error in showProfile():', error);
+                alert('Error in showProfile(): ' + error.message);
+            }
+        }
+
+        function showSettings() {
+            try {
+                console.log('showSettings() called');
+                console.log('currentUser:', currentUser);
+                
+                // Check if user is logged in
+                if (!currentUser) {
+                    alert('Please log in to access settings');
+                    return;
+                }
+                
+                // Check if modal exists
+                const modal = document.getElementById('settingsModal');
+                if (!modal) {
+                    alert('Settings modal not found in DOM');
+                    return;
+                }
+                
+                console.log('Showing settings modal...');
+                modal.classList.add('show');
+                alert('Settings modal should now be visible');
+                
+            } catch (error) {
+                console.error('Error in showSettings():', error);
+                alert('Error in showSettings(): ' + error.message);
+            }
+        }
+
+        function showCharacterCreator() {
+            try {
+                console.log('showCharacterCreator() called');
+                console.log('currentUser:', currentUser);
+                console.log('isPremium:', isPremium);
+                
+                // Check if user is premium
+                if (!isPremium && (!currentUser || currentUser.subscription_status !== 'premium')) {
+                    alert('Premium subscription required for character creator');
+                    return;
+                }
+                
+                // Check if modal exists
+                const modal = document.getElementById('characterCreatorModal');
+                if (!modal) {
+                    alert('Character creator modal not found in DOM');
+                    return;
+                }
+                
+                console.log('Showing character creator modal...');
+                modal.classList.add('show');
+                alert('Character creator modal should now be visible');
+                
+            } catch (error) {
+                console.error('Error in showCharacterCreator():', error);
+                alert('Error in showCharacterCreator(): ' + error.message);
+            }
+        }
+
+        function testShowProfile() {
+            const funcDiv = document.getElementById('function-status');
+            funcDiv.innerHTML = '<div class="warning">Testing showProfile()...</div>';
+            showProfile();
+        }
+
+        function testShowSettings() {
+            const funcDiv = document.getElementById('function-status');
+            funcDiv.innerHTML = '<div class="warning">Testing showSettings()...</div>';
+            showSettings();
+        }
+
+        function testShowCharacterCreator() {
+            const funcDiv = document.getElementById('function-status');
+            funcDiv.innerHTML = '<div class="warning">Testing showCharacterCreator()...</div>';
+            showCharacterCreator();
+        }
+
+        function simulateLogin() {
+            currentUser = {
+                id: 'test123',
+                name: 'Test User',
+                email: 'test@example.com',
+                subscription_status: 'premium'
+            };
+            isPremium = true;
+            localStorage.setItem('authToken', 'test-token');
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('Simulated login complete');
+            checkAuthStatus();
+        }
+
+        function simulateGuest() {
+            currentUser = {
+                id: 'guest',
+                name: 'Guest',
+                email: 'guest@demo.com',
+                subscription_status: 'free'
+            };
+            isPremium = false;
+            localStorage.setItem('authToken', 'guest-token');
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            alert('Simulated guest login complete');
+            checkAuthStatus();
+        }
+
+        function clearAuth() {
+            currentUser = null;
+            isPremium = false;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            alert('Authentication cleared');
+            checkAuthStatus();
+        }
+
+        // Initialize
+        window.onload = function() {
+            checkAuthStatus();
+            checkModals();
+            
+            // Try to load existing auth
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        isPremium = currentUser.subscription_status === 'premium';
+                    } catch (e) {
+                        console.error('Error parsing stored user:', e);
+                    }
+                }
+            }
+            
+            setTimeout(() => {
+                checkAuthStatus();
+            }, 100);
+        };
+    </script>
+</body>
+</html>

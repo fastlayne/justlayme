@@ -1372,13 +1372,31 @@ app.delete('/api/clear-data', authenticateToken, async (req, res) => {
 });
 
 // Stripe payment endpoints
-app.post('/api/create-checkout-session', authenticateToken, async (req, res) => {
+// Optional authentication middleware
+const optionalAuth = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
+        } catch (error) {
+            // Ignore auth errors for optional auth
+        }
+    }
+    next();
+};
+
+app.post('/api/create-checkout-session', optionalAuth, async (req, res) => {
     if (!stripe) {
         return res.status(500).json({ error: 'Stripe not configured' });
     }
 
     try {
-        const { plan } = req.body;
+        const { plan, user_id, user_email } = req.body;
+        
+        // Get user ID from auth or from request body
+        const userId = req.user?.id || user_id || 'guest_' + Date.now();
         
         const prices = {
             monthly: { amount: 999, name: 'Monthly Premium' },
@@ -1408,7 +1426,8 @@ app.post('/api/create-checkout-session', authenticateToken, async (req, res) => 
             cancel_url: `${req.headers.origin || 'https://justlay.me'}/`,
             metadata: {
                 plan: plan,
-                user_id: req.user.id
+                user_id: userId,
+                user_email: user_email || 'guest@payment.com'
             }
         });
 

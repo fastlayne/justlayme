@@ -1258,25 +1258,42 @@
         }
 
         async function proceedToPayment() {
+            console.log('proceedToPayment() called, selectedPlan:', selectedPlan, 'currentUser:', currentUser);
+            
             if (!selectedPlan) {
                 alert('Please select a plan first');
                 return;
             }
 
-            if (!currentUser || !localStorage.getItem('authToken')) {
-                alert('Please log in to continue with payment');
-                return;
+            // Allow payment for both logged in and guest users
+            if (!currentUser) {
+                // Create a temporary user for payment
+                currentUser = {
+                    id: 'guest_' + Date.now(),
+                    email: 'guest@payment.com',
+                    name: 'Guest User'
+                };
             }
 
             try {
                 // Create checkout session
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                // Add auth header only if user is logged in
+                if (localStorage.getItem('authToken')) {
+                    headers['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
+                }
+                
                 const response = await fetch('/api/create-checkout-session', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    },
-                    body: JSON.stringify({ plan: selectedPlan })
+                    headers: headers,
+                    body: JSON.stringify({ 
+                        plan: selectedPlan,
+                        user_id: currentUser.id,
+                        user_email: currentUser.email
+                    })
                 });
 
                 if (!response.ok) {

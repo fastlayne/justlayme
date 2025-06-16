@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Button Fixes</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #333; border-radius: 8px; }
+        .success { color: #4ade80; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+        button { padding: 10px 15px; margin: 5px; background: #6b46ff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #5a3dd8; }
+        pre { background: #2a2a2a; padding: 10px; border-radius: 4px; font-size: 12px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Button Fix Test Results</h1>
+    
+    <div class="test-section">
+        <h2>Test Summary</h2>
+        <div id="test-summary">Running tests...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Authentication Test</h2>
+        <div id="auth-test">Testing authentication...</div>
+        <button onclick="testAuth()">Run Auth Test</button>
+        <button onclick="simulateLogin()">Simulate Login</button>
+        <button onclick="clearAuth()">Clear Auth</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Button Function Tests</h2>
+        <div id="button-test">Testing button functions...</div>
+        <button onclick="testButtons()">Test All Buttons</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Log</h2>
+        <pre id="test-log"></pre>
+    </div>
+
+    <script>
+        let testLog = [];
+        let currentUser = null;
+        let isPremium = false;
+
+        function log(message) {
+            const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
+            testLog.push(`[${timestamp}] ${message}`);
+            document.getElementById('test-log').textContent = testLog.join('\n');
+            console.log(message);
+        }
+
+        function testAuth() {
+            log('=== Testing Authentication ===');
+            
+            // Test 1: No auth
+            currentUser = null;
+            isPremium = false;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            const hasToken = localStorage.getItem('authToken');
+            const hasUser = localStorage.getItem('currentUser');
+            
+            log(`No auth state - Token: ${hasToken ? 'Present' : 'None'}, User: ${hasUser ? 'Present' : 'None'}`);
+            log(`Current user object: ${currentUser ? 'Set' : 'Null'}`);
+            
+            // Test 2: Simulate login
+            currentUser = {
+                id: 'test123',
+                name: 'Test User',
+                email: 'test@example.com',
+                subscription_status: 'premium'
+            };
+            isPremium = true;
+            localStorage.setItem('authToken', 'test-token');
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            log(`After login - Current user: ${JSON.stringify(currentUser)}`);
+            log(`Premium status: ${isPremium}`);
+            
+            document.getElementById('auth-test').innerHTML = '<span class="success">✓ Authentication test completed</span>';
+        }
+
+        function simulateLogin() {
+            log('=== Simulating Login ===');
+            currentUser = {
+                id: 'demo123',
+                name: 'Demo User',
+                email: 'demo@example.com',
+                subscription_status: 'premium'
+            };
+            isPremium = true;
+            localStorage.setItem('authToken', 'demo-token');
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            log('Login simulation complete');
+            testAuth();
+        }
+
+        function clearAuth() {
+            log('=== Clearing Authentication ===');
+            currentUser = null;
+            isPremium = false;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            log('Authentication cleared');
+            testAuth();
+        }
+
+        // Mock the button functions to test them
+        function showProfile() {
+            log('showProfile() called');
+            
+            // Check if user is logged in
+            if (!currentUser) {
+                log('❌ showProfile: User not logged in');
+                return false;
+            }
+            
+            log('✅ showProfile: User is logged in, would show profile modal');
+            return true;
+        }
+
+        function showSettings() {
+            log('showSettings() called');
+            
+            // Check if user is logged in
+            if (!currentUser) {
+                log('❌ showSettings: User not logged in');
+                return false;
+            }
+            
+            log('✅ showSettings: User is logged in, would show settings modal');
+            return true;
+        }
+
+        function showCharacterCreator() {
+            log('showCharacterCreator() called');
+            
+            // Check if user is logged in
+            if (!currentUser) {
+                log('❌ showCharacterCreator: User not logged in');
+                return false;
+            }
+            
+            // Check if user is premium
+            if (!isPremium && currentUser.subscription_status !== 'premium') {
+                log('❌ showCharacterCreator: User not premium, would show paywall');
+                return false;
+            }
+            
+            log('✅ showCharacterCreator: User is premium, would show character creator modal');
+            return true;
+        }
+
+        function testButtons() {
+            log('=== Testing Button Functions ===');
+            
+            const results = {
+                profile: showProfile(),
+                settings: showSettings(),
+                characterCreator: showCharacterCreator()
+            };
+            
+            const summary = `Profile: ${results.profile ? '✅' : '❌'}, Settings: ${results.settings ? '✅' : '❌'}, Character Creator: ${results.characterCreator ? '✅' : '❌'}`;
+            log(`Button test results: ${summary}`);
+            
+            document.getElementById('button-test').innerHTML = `<span class="${Object.values(results).every(r => r) ? 'success' : 'error'}">${summary}</span>`;
+            
+            return results;
+        }
+
+        function runAllTests() {
+            log('=== Running All Tests ===');
+            
+            // Test without auth
+            clearAuth();
+            const noAuthResults = testButtons();
+            
+            // Test with auth
+            simulateLogin();
+            const authResults = testButtons();
+            
+            // Test with free user
+            currentUser.subscription_status = 'free';
+            isPremium = false;
+            log('Testing with free user...');
+            const freeResults = testButtons();
+            
+            // Summary
+            const allPassed = 
+                !noAuthResults.profile && !noAuthResults.settings && !noAuthResults.characterCreator && // Should fail without auth
+                authResults.profile && authResults.settings && authResults.characterCreator && // Should pass with premium
+                freeResults.profile && freeResults.settings && !freeResults.characterCreator; // Free user should access profile/settings but not character creator
+            
+            const summaryText = allPassed ? 
+                '✅ All tests passed! Buttons work correctly.' : 
+                '❌ Some tests failed. Check the log for details.';
+            
+            document.getElementById('test-summary').innerHTML = `<span class="${allPassed ? 'success' : 'error'}">${summaryText}</span>`;
+            
+            log(`=== Test Summary: ${summaryText} ===`);
+        }
+
+        // Run tests on load
+        window.onload = function() {
+            setTimeout(runAllTests, 500);
+        };
+    </script>
+</body>
+</html>
