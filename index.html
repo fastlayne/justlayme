@@ -1441,6 +1441,12 @@
         }
 
         function showProfile() {
+            // Check if user is logged in
+            if (!currentUser) {
+                alert('Please log in to view your profile');
+                return;
+            }
+            
             // Load current user data into the form
             document.getElementById('profileName').value = currentUser.name || '';
             document.getElementById('profileEmail').value = currentUser.email || '';
@@ -1475,6 +1481,12 @@
         }
 
         function showSettings() {
+            // Check if user is logged in
+            if (!currentUser) {
+                alert('Please log in to access settings');
+                return;
+            }
+            
             // Load current settings
             document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || currentCharacter;
             document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
