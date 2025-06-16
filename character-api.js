@@ -1279,6 +1279,98 @@ app.get('/api/conversations/:id/export', authenticateToken, (req, res) => {
     chatHistoryEndpoints['/api/conversations/:id/export'](req, res, db, conversationManager);
 });
 
+// Profile management endpoints
+app.get('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        const result = await db.query(
+            'SELECT id, email, name, created_at, subscription_status, subscription_end FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Get profile error:', error);
+        res.status(500).json({ error: 'Failed to get profile' });
+    }
+});
+
+app.put('/api/profile', authenticateToken, async (req, res) => {
+    try {
+        const { name, avatar_style, theme_preference } = req.body;
+        
+        // Update user profile
+        const result = await db.query(
+            'UPDATE users SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+            [name, req.user.id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ message: 'Profile updated successfully', user: result.rows[0] });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
+// Data management endpoints
+app.get('/api/export-data', authenticateToken, async (req, res) => {
+    try {
+        // Get user data
+        const userResult = await db.query(
+            'SELECT id, email, name, created_at, subscription_status FROM users WHERE id = $1',
+            [req.user.id]
+        );
+
+        // Get conversations
+        const conversationsResult = await db.query(
+            'SELECT * FROM conversations WHERE user_id = $1 ORDER BY created_at DESC',
+            [req.user.id]
+        );
+
+        // Get custom characters
+        const charactersResult = await db.query(
+            'SELECT * FROM characters WHERE user_id = $1 ORDER BY created_at DESC',
+            [req.user.id]
+        );
+
+        const exportData = {
+            user: userResult.rows[0],
+            conversations: conversationsResult.rows,
+            characters: charactersResult.rows,
+            exported_at: new Date().toISOString()
+        };
+
+        res.setHeader('Content-Disposition', 'attachment; filename="justlayme-data.json"');
+        res.setHeader('Content-Type', 'application/json');
+        res.json(exportData);
+    } catch (error) {
+        console.error('Export data error:', error);
+        res.status(500).json({ error: 'Failed to export data' });
+    }
+});
+
+app.delete('/api/clear-data', authenticateToken, async (req, res) => {
+    try {
+        // Clear user's conversations
+        await db.query('DELETE FROM conversations WHERE user_id = $1', [req.user.id]);
+        
+        // Clear user's custom characters
+        await db.query('DELETE FROM characters WHERE user_id = $1', [req.user.id]);
+
+        res.json({ message: 'All data cleared successfully' });
+    } catch (error) {
+        console.error('Clear data error:', error);
+        res.status(500).json({ error: 'Failed to clear data' });
+    }
+});
+
 // Stripe payment endpoints
 app.post('/api/create-checkout-session', authenticateToken, async (req, res) => {
     if (!stripe) {

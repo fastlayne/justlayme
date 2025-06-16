@@ -400,6 +400,101 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(107, 70, 255, 0.1);
         }
+
+        /* Profile and Settings Modal Styles */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .form-button.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-button.primary:hover {
+            background: #5a3dd8;
+            transform: translateY(-1px);
+        }
+
+        .form-button.secondary {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-button.secondary:hover {
+            background: var(--hover-color);
+        }
+
+        .form-button.danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .form-button.danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-badge.premium {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #1a1a1a;
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-group label {
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
@@ -699,6 +794,147 @@
                         <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Profile Settings</h2>
+                <button class="close-btn" onclick="closeProfile()">&times;</button>
+            </div>
+            
+            <form id="profileForm" onsubmit="saveProfile(event)">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" class="form-input" id="profileName" placeholder="Your display name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="profileEmail" readonly>
+                    <small style="color: var(--text-secondary); font-size: 0.75rem;">Email cannot be changed</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Avatar Style</label>
+                    <select class="form-select" id="avatarStyle">
+                        <option value="initials">Initials</option>
+                        <option value="gradient">Gradient</option>
+                        <option value="emoji">Emoji</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Theme Preference</label>
+                    <select class="form-select" id="themePreference">
+                        <option value="auto">Auto (System)</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Account Status</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span id="accountStatus" class="status-badge">Free</span>
+                        <span id="subscriptionEnd" style="font-size: 0.75rem; color: var(--text-secondary);"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="form-button secondary" onclick="closeProfile()">Cancel</button>
+                    <button type="submit" class="form-button primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Settings</h2>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            
+            <div class="settings-section">
+                <h3 class="settings-section-title">Chat Preferences</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Default Character</label>
+                    <select class="form-select" id="defaultCharacter">
+                        <option value="uncensored_gpt">Uncensored GPT</option>
+                        <option value="roleplay">Roleplay AI</option>
+                        <option value="companion">Intimate Companion</option>
+                        <option value="dominant">Dominant AI</option>
+                        <option value="submissive">Submissive AI</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Response Length</label>
+                    <select class="form-select" id="responseLength">
+                        <option value="short">Short</option>
+                        <option value="medium">Medium</option>
+                        <option value="long">Long</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="autoScroll" checked>
+                        <label for="autoScroll">Auto-scroll to new messages</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="soundNotifications">
+                        <label for="soundNotifications">Sound notifications</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="settings-section-title">Privacy</h3>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="saveConversations" checked>
+                        <label for="saveConversations">Save conversation history</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="analyticsOptOut">
+                        <label for="analyticsOptOut">Opt out of usage analytics</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="settings-section-title">Data Management</h3>
+                
+                <div class="form-group">
+                    <button type="button" class="form-button secondary" onclick="exportData()">
+                        📁 Export My Data
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="form-button danger" onclick="clearAllData()">
+                        🗑️ Clear All Conversations
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="form-button secondary" onclick="closeSettings()">Cancel</button>
+                <button type="button" class="form-button primary" onclick="saveSettings()">Save Settings</button>
             </div>
         </div>
     </div>
@@ -1205,7 +1441,33 @@
         }
 
         function showProfile() {
-            alert('Profile page coming soon!');
+            // Load current user data into the form
+            document.getElementById('profileName').value = currentUser.name || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            
+            // Set account status
+            const statusBadge = document.getElementById('accountStatus');
+            const subscriptionEnd = document.getElementById('subscriptionEnd');
+            
+            if (currentUser.subscription_status === 'premium' || isPremium) {
+                statusBadge.textContent = 'Premium';
+                statusBadge.className = 'status-badge premium';
+                if (currentUser.subscription_end) {
+                    const endDate = new Date(currentUser.subscription_end);
+                    subscriptionEnd.textContent = `Until ${endDate.toLocaleDateString()}`;
+                }
+            } else {
+                statusBadge.textContent = 'Free';
+                statusBadge.className = 'status-badge';
+                subscriptionEnd.textContent = '';
+            }
+            
+            // Load saved preferences
+            document.getElementById('avatarStyle').value = localStorage.getItem('avatarStyle') || 'initials';
+            document.getElementById('themePreference').value = localStorage.getItem('themePreference') || 'auto';
+            
+            // Show modal
+            document.getElementById('profileModal').classList.add('show');
         }
 
         function showSubscription() {
@@ -1213,7 +1475,139 @@
         }
 
         function showSettings() {
-            alert('Settings page coming soon!');
+            // Load current settings
+            document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || currentCharacter;
+            document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
+            
+            // Load checkbox settings
+            document.getElementById('autoScroll').checked = localStorage.getItem('autoScroll') !== 'false';
+            document.getElementById('soundNotifications').checked = localStorage.getItem('soundNotifications') === 'true';
+            document.getElementById('saveConversations').checked = localStorage.getItem('saveConversations') !== 'false';
+            document.getElementById('analyticsOptOut').checked = localStorage.getItem('analyticsOptOut') === 'true';
+            
+            // Show modal
+            document.getElementById('settingsModal').classList.add('show');
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        async function saveProfile(event) {
+            event.preventDefault();
+            
+            const profileData = {
+                name: document.getElementById('profileName').value,
+                avatar_style: document.getElementById('avatarStyle').value,
+                theme_preference: document.getElementById('themePreference').value
+            };
+
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify(profileData)
+                });
+
+                if (response.ok) {
+                    // Update current user data
+                    currentUser.name = profileData.name;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    // Save preferences locally
+                    localStorage.setItem('avatarStyle', profileData.avatar_style);
+                    localStorage.setItem('themePreference', profileData.theme_preference);
+                    
+                    // Update UI
+                    updateUserAvatar();
+                    
+                    alert('Profile updated successfully!');
+                    closeProfile();
+                } else {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Failed to update profile');
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                alert('Failed to update profile. Please try again.');
+            }
+        }
+
+        function saveSettings() {
+            // Save all settings to localStorage
+            localStorage.setItem('defaultCharacter', document.getElementById('defaultCharacter').value);
+            localStorage.setItem('responseLength', document.getElementById('responseLength').value);
+            localStorage.setItem('autoScroll', document.getElementById('autoScroll').checked);
+            localStorage.setItem('soundNotifications', document.getElementById('soundNotifications').checked);
+            localStorage.setItem('saveConversations', document.getElementById('saveConversations').checked);
+            localStorage.setItem('analyticsOptOut', document.getElementById('analyticsOptOut').checked);
+            
+            // Apply settings immediately
+            currentCharacter = document.getElementById('defaultCharacter').value;
+            
+            alert('Settings saved successfully!');
+            closeSettings();
+        }
+
+        async function exportData() {
+            try {
+                const response = await fetch('/api/export-data', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `justlayme-data-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    throw new Error('Failed to export data');
+                }
+            } catch (error) {
+                alert('Failed to export data. Please try again.');
+            }
+        }
+
+        async function clearAllData() {
+            if (!confirm('This will permanently delete all your conversations. Are you sure?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/clear-data', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Clear local chat
+                    document.getElementById('chatMessages').innerHTML = '';
+                    messageCount = 0;
+                    
+                    alert('All conversations have been cleared.');
+                } else {
+                    throw new Error('Failed to clear data');
+                }
+            } catch (error) {
+                alert('Failed to clear data. Please try again.');
+            }
         }
 
         function showCharacterCreator() {
@@ -1305,6 +1699,20 @@
             const modalContent = modal.querySelector('.modal-content');
             if (modal.classList.contains('show') && !modalContent.contains(e.target)) {
                 closeCharacterCreator();
+            }
+
+            // Close profile modal when clicking outside
+            const profileModal = document.getElementById('profileModal');
+            const profileModalContent = profileModal.querySelector('.modal-content');
+            if (profileModal.classList.contains('show') && !profileModalContent.contains(e.target)) {
+                closeProfile();
+            }
+
+            // Close settings modal when clicking outside
+            const settingsModal = document.getElementById('settingsModal');
+            const settingsModalContent = settingsModal.querySelector('.modal-content');
+            if (settingsModal.classList.contains('show') && !settingsModalContent.contains(e.target)) {
+                closeSettings();
             }
         });
     </script>
