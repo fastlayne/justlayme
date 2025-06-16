@@ -1279,6 +1279,99 @@ app.get('/api/conversations/:id/export', authenticateToken, (req, res) => {
     chatHistoryEndpoints['/api/conversations/:id/export'](req, res, db, conversationManager);
 });
 
+// Stripe payment endpoints
+app.post('/api/create-checkout-session', authenticateToken, async (req, res) => {
+    if (!stripe) {
+        return res.status(500).json({ error: 'Stripe not configured' });
+    }
+
+    try {
+        const { plan } = req.body;
+        
+        const prices = {
+            monthly: { amount: 999, name: 'Monthly Premium' },
+            yearly: { amount: 7999, name: 'Yearly Premium' },
+            lifetime: { amount: 19900, name: 'Lifetime Premium' }
+        };
+
+        if (!prices[plan]) {
+            return res.status(400).json({ error: 'Invalid plan' });
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: prices[plan].name,
+                        description: `JustLayMe ${plan} subscription`
+                    },
+                    unit_amount: prices[plan].amount,
+                },
+                quantity: 1,
+            }],
+            mode: 'payment',
+            success_url: `${req.headers.origin || 'https://justlay.me'}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${req.headers.origin || 'https://justlay.me'}/`,
+            metadata: {
+                plan: plan,
+                user_id: req.user.id
+            }
+        });
+
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.error('Checkout session creation failed:', error);
+        res.status(500).json({ error: 'Failed to create checkout session' });
+    }
+});
+
+app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, res) => {
+    if (!stripe) {
+        return res.status(500).json({ error: 'Stripe not configured' });
+    }
+
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error('Webhook signature verification failed:', err);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const { plan, user_id } = session.metadata;
+
+        try {
+            // Update user subscription in database
+            let subscriptionEnd = new Date();
+            if (plan === 'monthly') {
+                subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
+            } else if (plan === 'yearly') {
+                subscriptionEnd.setFullYear(subscriptionEnd.getFullYear() + 1);
+            } else if (plan === 'lifetime') {
+                subscriptionEnd = new Date('2099-12-31'); // Far future date
+            }
+
+            await db.query(`
+                UPDATE users 
+                SET subscription_status = $1, subscription_end = $2
+                WHERE id = $3
+            `, ['premium', subscriptionEnd.toISOString(), user_id]);
+
+            console.log(`User ${user_id} upgraded to ${plan} plan`);
+        } catch (error) {
+            console.error('Failed to update user subscription:', error);
+        }
+    }
+
+    res.json({received: true});
+});
+
 // Serve static files
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
@@ -1287,6 +1380,10 @@ app.get('/', (req, res) => {
 
 // Serve index.html for email verification route
 app.get('/verify-email', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/success', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 

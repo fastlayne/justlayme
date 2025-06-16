@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="premium-style.css">
     <!-- Google OAuth -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Additional styles for new features */
         .auth-container {
@@ -994,17 +996,50 @@
             element.style.borderColor = 'var(--primary)';
         }
 
-        function proceedToPayment() {
-            // Here you would integrate with Stripe
-            alert(`Proceeding to payment for ${selectedPlan} plan. Stripe integration needed.`);
-            
-            // For demo
-            isPremium = true;
-            currentUser.subscription_status = 'premium';
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            document.getElementById('paywall').classList.remove('show');
-            document.querySelector('.premium-badge').classList.remove('hidden');
-            addMessage("🎉 Welcome to Premium! You now have unlimited messages and access to all characters.", 'ai');
+        async function proceedToPayment() {
+            if (!selectedPlan) {
+                alert('Please select a plan first');
+                return;
+            }
+
+            if (!currentUser || !localStorage.getItem('authToken')) {
+                alert('Please log in to continue with payment');
+                return;
+            }
+
+            try {
+                // Create checkout session
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    },
+                    body: JSON.stringify({ plan: selectedPlan })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const { sessionId } = await response.json();
+
+                // Initialize Stripe (Replace with your publishable key)
+                const stripe = Stripe('pk_test_YOUR_PUBLISHABLE_KEY_HERE');
+
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionId
+                });
+
+                if (error) {
+                    console.error('Stripe error:', error);
+                    alert('Payment failed. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Failed to process payment. Please try again.');
+            }
         }
 
         function skipPaywall() {
