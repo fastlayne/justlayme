@@ -961,8 +961,30 @@
             const token = localStorage.getItem('authToken');
             if (token) {
                 // Validate token and load user
-                currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-                showMainApp();
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    try {
+                        currentUser = JSON.parse(storedUser);
+                        // Validate that we have essential user properties
+                        if (currentUser && currentUser.id) {
+                            showMainApp();
+                        } else {
+                            // Invalid user data, clear and show auth
+                            localStorage.removeItem('authToken');
+                            localStorage.removeItem('currentUser');
+                            document.getElementById('authContainer').classList.remove('hidden');
+                        }
+                    } catch (error) {
+                        // Invalid JSON, clear and show auth
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('currentUser');
+                        document.getElementById('authContainer').classList.remove('hidden');
+                    }
+                } else {
+                    // No user data, clear token and show auth
+                    localStorage.removeItem('authToken');
+                    document.getElementById('authContainer').classList.remove('hidden');
+                }
             } else {
                 document.getElementById('authContainer').classList.remove('hidden');
             }
@@ -1174,11 +1196,14 @@
             document.getElementById('chatContainer').classList.remove('hidden');
             document.getElementById('characterSelector').classList.remove('hidden');
             
+            // Set premium status
+            isPremium = currentUser.subscription_status === 'premium';
+            
             // Update UI
             const userInitial = document.getElementById('userInitial');
             userInitial.textContent = currentUser.name ? currentUser.name[0].toUpperCase() : 'G';
             
-            if (isPremium || currentUser.subscription_status === 'premium') {
+            if (isPremium) {
                 document.querySelector('.premium-badge').classList.remove('hidden');
             }
             
@@ -1441,6 +1466,7 @@
         }
 
         function showProfile() {
+            console.log('showProfile() called, currentUser:', currentUser);
             // Check if user is logged in
             if (!currentUser) {
                 alert('Please log in to view your profile');
@@ -1481,6 +1507,7 @@
         }
 
         function showSettings() {
+            console.log('showSettings() called, currentUser:', currentUser);
             // Check if user is logged in
             if (!currentUser) {
                 alert('Please log in to access settings');
@@ -1623,6 +1650,13 @@
         }
 
         function showCharacterCreator() {
+            console.log('showCharacterCreator() called, currentUser:', currentUser, 'isPremium:', isPremium);
+            // Check if user is logged in
+            if (!currentUser) {
+                alert('Please log in to access the character creator');
+                return;
+            }
+            
             // Check if user is premium
             if (!isPremium && currentUser.subscription_status !== 'premium') {
                 document.getElementById('paywall').classList.add('show');
@@ -1680,11 +1714,6 @@
             } catch (error) {
                 alert('Failed to save customization. Please try again.');
             }
-        }
-
-        function showCharacterCreator() {
-            const modal = document.getElementById('characterCreatorModal');
-            modal.classList.add('show');
         }
 
         function closeCharacterCreator() {
