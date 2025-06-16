@@ -1508,14 +1508,9 @@
 
         function showSettings() {
             console.log('showSettings() called, currentUser:', currentUser);
-            // Check if user is logged in
-            if (!currentUser) {
-                alert('Please log in to access settings');
-                return;
-            }
             
-            // Load current settings
-            document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || currentCharacter;
+            // Load current settings (works for both logged in and guest users)
+            document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || (currentCharacter || 'uncensored_gpt');
             document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
             
             // Load checkbox settings
