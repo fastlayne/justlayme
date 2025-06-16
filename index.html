@@ -1241,6 +1241,16 @@
             }
         }
 
+        function showCharacterCreator() {
+            const modal = document.getElementById('characterCreatorModal');
+            modal.classList.add('show');
+        }
+
+        function closeCharacterCreator() {
+            const modal = document.getElementById('characterCreatorModal');
+            modal.classList.remove('show');
+        }
+
         function logout() {
             localStorage.removeItem('authToken');
             localStorage.removeItem('currentUser');
