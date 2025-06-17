@@ -943,6 +943,27 @@
     </div>
 
     <script>
+        // Add global error handler to catch all errors
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+        });
+        
+        // Make functions available globally immediately
+        window.showSettings = function() {
+            console.log('showSettings called!');
+            alert('Settings clicked - if you see this, the button works!');
+        };
+        
+        window.showProfile = function() {
+            console.log('showProfile called!');
+            alert('Profile clicked - if you see this, the button works!');
+        };
+        
+        window.proceedToPayment = function() {
+            console.log('proceedToPayment called!');
+            alert('Payment clicked - if you see this, the button works!');
+        };
+        
         // State management
         let currentUser = null;
         let selectedPlan = 'yearly';
