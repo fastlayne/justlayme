@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const WebSocket = require('ws');
+const http = require('http');
 const {OAuth2Client} = require('google-auth-library');
 const PromptLayer = require('./prompt-layer');
 const ModelManager = require('./model-manager');
@@ -939,6 +941,31 @@ app.post('/api/chat', async (req, res) => {
     try {
         const { message, character_id = 'sophia', user_id } = req.body;
         
+        // Create or get session ID
+        const sessionId = req.headers['x-session-id'] || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Track session
+        if (!global.activeSessions?.has(sessionId)) {
+            const session = {
+                id: sessionId,
+                userId: user_id || 'anonymous',
+                characterId: character_id,
+                messages: [],
+                startTime: new Date().toISOString(),
+                lastActivity: new Date().toISOString()
+            };
+            global.activeSessions?.set(sessionId, session);
+            
+            // Notify admins of new session
+            global.broadcastToAdmins?.({
+                type: 'NEW_SESSION',
+                sessionId: sessionId,
+                userId: user_id || 'anonymous',
+                characterId: character_id,
+                timestamp: session.startTime
+            });
+        }
+        
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
         }
@@ -997,6 +1024,38 @@ app.post('/api/chat', async (req, res) => {
 
         const data = await response.json();
         
+        // Broadcast user message to admin monitor
+        global.broadcastToAdmins?.({
+            type: 'NEW_MESSAGE',
+            sessionId: sessionId,
+            message: message,
+            isUser: true,
+            timestamp: new Date().toISOString(),
+            userId: user_id || 'anonymous',
+            characterId: character_id
+        });
+        
+        // Broadcast AI response to admin monitor
+        global.broadcastToAdmins?.({
+            type: 'NEW_MESSAGE',
+            sessionId: sessionId,
+            message: data.response.trim(),
+            isUser: false,
+            timestamp: new Date().toISOString(),
+            userId: user_id || 'anonymous',
+            characterId: character_id
+        });
+        
+        // Update session activity
+        const session = global.activeSessions?.get(sessionId);
+        if (session) {
+            session.lastActivity = new Date().toISOString();
+            session.messages.push(
+                { content: message, isUser: true, timestamp: new Date().toISOString() },
+                { content: data.response.trim(), isUser: false, timestamp: new Date().toISOString() }
+            );
+        }
+        
         // Store conversation in database if user is authenticated (skip for guest users)
         if (user_id && user_id !== 'guest') {
             try {
@@ -1024,12 +1083,14 @@ app.post('/api/chat', async (req, res) => {
             }
         }
         
+        res.setHeader('X-Session-ID', sessionId);
         res.json({
             response: data.response.trim(),
             character: characterName,
             model: selectedModel,
             customized: !!userCustomization,
-            model_info: modelManager.getModelInfo(selectedModel)
+            model_info: modelManager.getModelInfo(selectedModel),
+            sessionId: sessionId
         });
 
     } catch (error) {
@@ -1483,6 +1544,11 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
     res.json({received: true});
 });
 
+// Admin monitor route
+app.get('/admin-monitor', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin-monitor.html'));
+});
+
 // Serve static files
 app.use(express.static(__dirname));
 app.get('/', (req, res) => {
@@ -1512,13 +1578,74 @@ async function start() {
   console.log(`Default model: ${modelManager.defaultModel}`);
   
   const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
+  
+  // Create HTTP server
+  const server = http.createServer(app);
+  
+  // Create WebSocket server
+  const wss = new WebSocket.Server({ server });
+  
+  // Store active WebSocket connections
+  const adminConnections = new Set();
+  const activeSessions = new Map();
+  
+  // WebSocket connection handler
+  wss.on('connection', (ws) => {
+    console.log('New WebSocket connection');
+    
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message);
+        
+        if (data.type === 'ADMIN_AUTH') {
+          // Simple admin authentication - improve this in production
+          if (data.password === 'admin123') {
+            adminConnections.add(ws);
+            ws.send(JSON.stringify({
+              type: 'AUTH_SUCCESS',
+              sessions: Array.from(activeSessions.values())
+            }));
+          }
+        }
+        
+        if (data.type === 'GET_SESSIONS') {
+          ws.send(JSON.stringify({
+            type: 'SESSIONS_LIST',
+            sessions: Object.fromEntries(activeSessions)
+          }));
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    ws.on('close', () => {
+      adminConnections.delete(ws);
+    });
+  });
+  
+  // Function to broadcast to all admin connections
+  function broadcastToAdmins(data) {
+    const message = JSON.stringify(data);
+    adminConnections.forEach(ws => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+      }
+    });
+  }
+  
+  // Export broadcast function to use in chat endpoint
+  global.broadcastToAdmins = broadcastToAdmins;
+  global.activeSessions = activeSessions;
+  
+  server.listen(PORT, () => {
     console.log(`JustLayMe Character API running on port ${PORT}`);
     console.log(`Ollama URL: ${OLLAMA_URL}`);
     console.log(`Multi-model support: ${modelManager.models.length} models available`);
     if (USE_GPU_LOAD_BALANCER) {
       console.log(`Load balancer enabled: ${LOAD_BALANCER_URL}`);
     }
+    console.log(`WebSocket monitoring enabled`);
   });
 }
 

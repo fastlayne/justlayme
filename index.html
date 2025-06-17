@@ -948,6 +948,7 @@
         let isPremium = false;
         let currentCharacter = 'uncensored_gpt';
         let authMode = 'login';
+        let currentSessionId = null;
 
         // Initialize
         window.onload = function() {
@@ -1361,16 +1362,27 @@
             
             try {
                 // Call API
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                // Add auth header if logged in
+                if (localStorage.getItem('authToken')) {
+                    headers['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
+                }
+                
+                // Add session ID if we have one
+                if (currentSessionId) {
+                    headers['X-Session-ID'] = currentSessionId;
+                }
+                
                 const response = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                    },
+                    headers: headers,
                     body: JSON.stringify({
                         message: message,
                         character_id: currentCharacter,
-                        user_id: currentUser.id
+                        user_id: currentUser ? currentUser.id : 'anonymous'
                     })
                 });
                 
@@ -1378,6 +1390,10 @@
                 removeTypingIndicator(typingId);
                 
                 if (response.ok) {
+                    // Store session ID for future messages
+                    if (data.sessionId) {
+                        currentSessionId = data.sessionId;
+                    }
                     addMessage(data.response, 'ai');
                 } else {
                     throw new Error(data.error);
