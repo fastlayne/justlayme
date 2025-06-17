@@ -948,22 +948,6 @@
             console.error('Global error:', e.error);
         });
         
-        // Make functions available globally immediately
-        window.showSettings = function() {
-            console.log('showSettings called!');
-            alert('Settings clicked - if you see this, the button works!');
-        };
-        
-        window.showProfile = function() {
-            console.log('showProfile called!');
-            alert('Profile clicked - if you see this, the button works!');
-        };
-        
-        window.proceedToPayment = function() {
-            console.log('proceedToPayment called!');
-            alert('Payment clicked - if you see this, the button works!');
-        };
-        
         // State management
         let currentUser = null;
         let selectedPlan = 'yearly';
@@ -973,6 +957,128 @@
         let currentCharacter = 'layme_v1';
         let authMode = 'login';
         let currentSessionId = null;
+
+        // MAIN BUTTON FUNCTIONS - Define these first
+        function showProfile() {
+            if (!currentUser) {
+                alert('Please log in to view your profile');
+                return;
+            }
+            
+            document.getElementById('profileName').value = currentUser.name || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            
+            const statusBadge = document.getElementById('accountStatus');
+            const subscriptionEnd = document.getElementById('subscriptionEnd');
+            
+            if (currentUser.subscription_status === 'premium' || isPremium) {
+                statusBadge.textContent = 'Premium';
+                statusBadge.className = 'status-badge premium';
+                if (currentUser.subscription_end) {
+                    const endDate = new Date(currentUser.subscription_end);
+                    subscriptionEnd.textContent = `Until ${endDate.toLocaleDateString()}`;
+                }
+            } else {
+                statusBadge.textContent = 'Free';
+                statusBadge.className = 'status-badge';
+                subscriptionEnd.textContent = '';
+            }
+            
+            document.getElementById('avatarStyle').value = localStorage.getItem('avatarStyle') || 'initials';
+            document.getElementById('themePreference').value = localStorage.getItem('themePreference') || 'auto';
+            
+            document.getElementById('profileModal').classList.add('show');
+        }
+
+        function showSettings() {
+            document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || currentCharacter || 'layme_v1';
+            document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
+            
+            document.getElementById('autoScroll').checked = localStorage.getItem('autoScroll') !== 'false';
+            document.getElementById('soundNotifications').checked = localStorage.getItem('soundNotifications') === 'true';
+            document.getElementById('saveConversations').checked = localStorage.getItem('saveConversations') !== 'false';
+            document.getElementById('analyticsOptOut').checked = localStorage.getItem('analyticsOptOut') === 'true';
+            
+            document.getElementById('settingsModal').classList.add('show');
+        }
+
+        async function proceedToPayment() {
+            if (!selectedPlan) {
+                alert('Please select a plan first');
+                return;
+            }
+
+            if (!currentUser) {
+                currentUser = {
+                    id: 'guest_' + Date.now(),
+                    email: 'guest@payment.com',
+                    name: 'Guest User'
+                };
+            }
+
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (localStorage.getItem('authToken')) {
+                    headers['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
+                }
+                
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({ 
+                        plan: selectedPlan,
+                        user_id: currentUser.id,
+                        user_email: currentUser.email
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to create checkout session');
+                }
+
+                const { sessionId } = await response.json();
+                const stripe = Stripe('pk_test_51RaZdMBG18npwvfXQtexz8KmG0Mj59YHSaY4kp8i5hie2zztv1WHcWXKYGQzgzTAPkV9RpsgbsQKzDGPZvII6URY00J2wgzyRX');
+
+                const { error } = await stripe.redirectToCheckout({
+                    sessionId: sessionId
+                });
+
+                if (error) {
+                    console.error('Stripe error:', error);
+                    alert('Payment failed. Please try again.');
+                }
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Failed to process payment. Please try again.');
+            }
+        }
+
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('show');
+        }
+
+        function showCharacterCreator() {
+            if (!currentUser) {
+                alert('Please log in to access the character creator');
+                return;
+            }
+            
+            if (!isPremium && currentUser.subscription_status !== 'premium') {
+                document.getElementById('paywall').classList.add('show');
+                return;
+            }
+            
+            document.getElementById('characterCreatorModal').classList.add('show');
+        }
+
+        function closeCharacterCreator() {
+            document.getElementById('characterCreatorModal').classList.remove('show');
+        }
 
         // Initialize
         window.onload = function() {
