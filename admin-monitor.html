@@ -609,23 +609,6 @@
             return div.innerHTML;
         }
 
-        // Simulate real-time data for demo
-        function simulateData() {
-            // This is just for demo - remove when WebSocket is implemented
-            const demoSession = {
-                type: 'NEW_MESSAGE',
-                sessionId: 'demo-' + Date.now(),
-                message: 'This is a demo message',
-                isUser: Math.random() > 0.5,
-                timestamp: new Date().toISOString(),
-                userId: 'demo@user.com',
-                characterId: 'uncensored_gpt'
-            };
-            handleWebSocketMessage(demoSession);
-        }
-
-        // For demo purposes - remove when WebSocket is ready
-        setInterval(simulateData, 5000);
     </script>
 </body>
 </html>
