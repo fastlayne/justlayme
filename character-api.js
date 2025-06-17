@@ -939,7 +939,7 @@ async function getUserCharacterCustomization(userId, characterId) {
 // Chat API endpoint with dynamic prompt layer
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, character_id = 'sophia', user_id } = req.body;
+        const { message, character_id = 'layme_v1', user_id } = req.body;
         
         // Create or get session ID
         const sessionId = req.headers['x-session-id'] || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

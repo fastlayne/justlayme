@@ -598,9 +598,14 @@
 
     <!-- Model Type Selector -->
     <div class="character-selector hidden" id="characterSelector">
-        <div class="character-card active" onclick="selectCharacter('uncensored_gpt', this)">
+        <div class="character-card active" onclick="selectCharacter('layme_v1', this)">
+            <div class="character-avatar" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">🆓</div>
+            <div class="character-name">Layme V1</div>
+            <div class="character-trait">FREE & Unlimited - No Paywall</div>
+        </div>
+        <div class="character-card" onclick="selectCharacter('uncensored_gpt', this)">
             <div class="character-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">L</div>
-            <div class="character-name">LayMe V1 Uncensored</div>
+            <div class="character-name">LayMe Uncensored</div>
             <div class="character-trait">No Limits - Dolphin 46.7B</div>
         </div>
         <div class="character-card" onclick="selectCharacter('roleplay', this)">
@@ -700,8 +705,7 @@
                         <option value="uncensored_gpt">Uncensored GPT - No Restrictions</option>
                         <option value="roleplay">Roleplay AI - Any Character</option>
                         <option value="companion">Intimate Companion</option>
-                        <option value="dominant">Dominant AI</option>
-                        <option value="submissive">Submissive AI</option>
+                        <option value="layme_v1">Layme V1 - Free & Unlimited</option>
                     </select>
                 </div>
 
@@ -866,11 +870,10 @@
                 <div class="form-group">
                     <label class="form-label">Default Character</label>
                     <select class="form-select" id="defaultCharacter">
+                        <option value="layme_v1">Layme V1 (Free)</option>
                         <option value="uncensored_gpt">Uncensored GPT</option>
                         <option value="roleplay">Roleplay AI</option>
                         <option value="companion">Intimate Companion</option>
-                        <option value="dominant">Dominant AI</option>
-                        <option value="submissive">Submissive AI</option>
                     </select>
                 </div>
 
@@ -946,7 +949,7 @@
         let messageCount = 0;
         const FREE_MESSAGE_LIMIT = 3;
         let isPremium = false;
-        let currentCharacter = 'uncensored_gpt';
+        let currentCharacter = 'layme_v1';
         let authMode = 'login';
         let currentSessionId = null;
 
@@ -1230,22 +1233,20 @@
 
         function getCharacterName(id) {
             const modelTypes = {
+                layme_v1: 'Layme V1',
                 uncensored_gpt: 'Uncensored GPT',
                 roleplay: 'Roleplay AI',
-                companion: 'Intimate Companion',
-                dominant: 'Dominant AI',
-                submissive: 'Submissive AI'
+                companion: 'Intimate Companion'
             };
             return modelTypes[id] || 'AI Model';
         }
 
         function getCharacterIntro(id) {
             const intros = {
+                layme_v1: "I'm Layme V1, completely free with unlimited messages! I'm here to chat about absolutely anything with no restrictions or limits. What would you like to talk about?",
                 uncensored_gpt: "I'm completely unrestricted and can discuss anything without limitations. What would you like to explore?",
                 roleplay: "I can become any character you desire. Who would you like me to roleplay as today?",
-                companion: "I'm here to build an intimate connection with you. How can I make you feel special?",
-                dominant: "I'm in control here. Tell me what you need, and I'll decide how to give it to you.",
-                submissive: "I'm here to serve and please you in every way. What would you like me to do for you?"
+                companion: "I'm here to build an intimate connection with you. How can I make you feel special?"
             };
             return intros[id] || "I'm here to chat about anything you'd like!";
         }
@@ -1326,7 +1327,13 @@
         }
 
         function checkMessageLimit() {
-            if (!isPremium && currentUser.subscription_status !== 'premium' && messageCount >= FREE_MESSAGE_LIMIT) {
+            // Layme V1 has unlimited messages for everyone
+            if (currentCharacter === 'layme_v1') {
+                return true;
+            }
+            
+            // If no user or not premium, check message limit
+            if (!isPremium && (!currentUser || currentUser.subscription_status !== 'premium') && messageCount >= FREE_MESSAGE_LIMIT) {
                 document.getElementById('paywall').classList.add('show');
                 return false;
             }
