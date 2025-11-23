@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Bundle Information -->
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
@@ -20,46 +21,128 @@
     <string>$(MARKETING_VERSION)</string>
     <key>CFBundleVersion</key>
     <string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>com.justlayme.app</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>justlayme</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>Google Sign-In</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+            </array>
+        </dict>
+    </array>
+
+    <!-- Export Compliance -->
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+
+    <!-- App Category -->
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.social-networking</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>mailto</string>
+        <string>tel</string>
+        <string>https</string>
+    </array>
+
+    <!-- Privacy Usage Descriptions (REQUIRED) -->
     <key>NSCameraUsageDescription</key>
-    <string>Allow camera access for profile photos and character avatars</string>
-    <key>NSFaceIDUsageDescription</key>
-    <string>Use Face ID for secure and quick login</string>
+    <string>JustLayMe needs camera access to take photos for your profile picture and character avatars.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow photo library access for profile photos and character avatars</string>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-        <key>UISceneConfigurations</key>
-        <dict/>
-    </dict>
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
+    <string>JustLayMe needs photo library access to select images for your profile picture and character avatars.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>JustLayMe needs permission to save exported conversation files and images to your photo library.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>JustLayMe uses Face ID for quick and secure authentication to protect your account.</string>
+    <key>NSUserTrackingUsageDescription</key>
+    <string>JustLayMe may use this to provide personalized AI recommendations. You can change this anytime in Settings.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>JustLayMe needs microphone access for voice messages in future updates.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>JustLayMe uses speech recognition to convert your voice to text messages.</string>
+    <key>NSContactsUsageDescription</key>
+    <string>JustLayMe can access your contacts to help you invite friends to the app.</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>JustLayMe uses the local network to connect to development servers during testing.</string>
+
+    <!-- Push Notifications -->
     <key>UIBackgroundModes</key>
     <array>
         <string>fetch</string>
         <string>processing</string>
         <string>remote-notification</string>
     </array>
+
+    <!-- Scene Configuration -->
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+        <key>UISceneConfigurations</key>
+        <dict>
+            <key>UIWindowSceneSessionRoleApplication</key>
+            <array>
+                <dict>
+                    <key>UISceneConfigurationName</key>
+                    <string>Default Configuration</string>
+                    <key>UISceneDelegateClassName</key>
+                    <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+                </dict>
+            </array>
+        </dict>
+    </dict>
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+
+    <!-- Launch Screen -->
     <key>UILaunchScreen</key>
     <dict>
         <key>UIColorName</key>
         <string>LaunchScreenBackground</string>
         <key>UIImageName</key>
-        <string>LaunchIcon</string>
+        <string>LaunchLogo</string>
+        <key>UIImageRespectsSafeAreaInsets</key>
+        <true/>
     </dict>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <!-- Device Requirements -->
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>arm64</string>
+        <string>metal</string>
     </array>
+    <key>MinimumOSVersion</key>
+    <string>17.0</string>
+
+    <!-- UI Configuration -->
     <key>UIStatusBarStyle</key>
     <string>UIStatusBarStyleLightContent</string>
+    <key>UIStatusBarHidden</key>
+    <false/>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <true/>
+    <key>UIUserInterfaceStyle</key>
+    <string>Dark</string>
+
+    <!-- Orientation Support -->
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
@@ -73,7 +156,68 @@
         <string>UIInterfaceOrientationLandscapeLeft</string>
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-    <key>UIUserInterfaceStyle</key>
-    <string>Dark</string>
+
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>justlay.me</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <false/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+            <key>localhost</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
+
+    <!-- Fonts -->
+    <key>UIAppFonts</key>
+    <array>
+    </array>
+
+    <!-- Accessibility -->
+    <key>UIAccessibilitySupportsRightToLeftDesign</key>
+    <true/>
+
+    <!-- File Sharing -->
+    <key>UIFileSharingEnabled</key>
+    <false/>
+    <key>UISupportsDocumentBrowser</key>
+    <false/>
+
+    <!-- Siri -->
+    <key>NSSiriUsageDescription</key>
+    <string>JustLayMe uses Siri to let you start conversations with voice commands.</string>
+
+    <!-- Handoff -->
+    <key>NSUserActivityTypes</key>
+    <array>
+        <string>com.justlayme.chat</string>
+        <string>com.justlayme.character</string>
+    </array>
+
+    <!-- Firebase/Crashlytics -->
+    <key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+    <key>FirebaseMessagingAutoInitEnabled</key>
+    <false/>
+
+    <!-- StoreKit Configuration -->
+    <key>SKAdNetworkItems</key>
+    <array>
+    </array>
 </dict>
 </plist>
