@@ -14,6 +14,7 @@ const {OAuth2Client} = require('google-auth-library');
 const PromptLayer = require('./prompt-layer');
 const ModelManager = require('./model-manager');
 const { ConversationManager, chatHistoryEndpoints, requirePremiumForHistory } = require('./chat-history-implementation');
+const NotificationBackend = require('./notification-backend');
 // Initialize Stripe only if secret key is provided
 const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -21,6 +22,7 @@ const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STR
 const promptLayer = new PromptLayer();
 const modelManager = new ModelManager();
 let conversationManager;
+let notificationBackend;
 
 const app = express();
 
@@ -1544,6 +1546,222 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
     res.json({received: true});
 });
 
+// ============================================
+// PUSH NOTIFICATION API ENDPOINTS
+// ============================================
+
+// Get VAPID public key
+app.get('/api/notifications/vapid-key', (req, res) => {
+  if (!notificationBackend) {
+    return res.status(503).json({ error: 'Notification service not initialized' });
+  }
+  res.json({ publicKey: notificationBackend.getPublicKey() });
+});
+
+// Subscribe to push notifications
+app.post('/api/notifications/subscribe', authenticateToken, async (req, res) => {
+  try {
+    const { subscription, userAgent, platform } = req.body;
+
+    if (!subscription || !subscription.endpoint || !subscription.keys) {
+      return res.status(400).json({ error: 'Invalid subscription data' });
+    }
+
+    const result = await notificationBackend.saveSubscription(
+      req.user.id,
+      subscription,
+      { userAgent, platform }
+    );
+
+    res.json({
+      success: true,
+      message: result.updated ? 'Subscription updated' : 'Subscription created',
+      subscriptionId: result.id
+    });
+  } catch (error) {
+    console.error('Subscribe error:', error);
+    res.status(500).json({ error: 'Failed to save subscription' });
+  }
+});
+
+// Unsubscribe from push notifications
+app.post('/api/notifications/unsubscribe', authenticateToken, async (req, res) => {
+  try {
+    const { endpoint } = req.body;
+    await notificationBackend.removeSubscription(req.user.id, endpoint);
+    res.json({ success: true, message: 'Unsubscribed successfully' });
+  } catch (error) {
+    console.error('Unsubscribe error:', error);
+    res.status(500).json({ error: 'Failed to unsubscribe' });
+  }
+});
+
+// Get notification preferences
+app.get('/api/notifications/preferences', authenticateToken, async (req, res) => {
+  try {
+    const preferences = await notificationBackend.getPreferences(req.user.id);
+    res.json(preferences);
+  } catch (error) {
+    console.error('Get preferences error:', error);
+    res.status(500).json({ error: 'Failed to get preferences' });
+  }
+});
+
+// Update notification preferences
+app.put('/api/notifications/preferences', authenticateToken, async (req, res) => {
+  try {
+    await notificationBackend.savePreferences(req.user.id, req.body);
+    res.json({ success: true, message: 'Preferences updated' });
+  } catch (error) {
+    console.error('Update preferences error:', error);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  }
+});
+
+// Get unread notification count
+app.get('/api/notifications/unread', authenticateToken, async (req, res) => {
+  try {
+    const { since } = req.query;
+    const result = await notificationBackend.getUnreadCount(req.user.id, since);
+    res.json(result);
+  } catch (error) {
+    console.error('Unread count error:', error);
+    res.status(500).json({ error: 'Failed to get unread count' });
+  }
+});
+
+// Get notification stats
+app.get('/api/notifications/stats', authenticateToken, async (req, res) => {
+  try {
+    const { days } = req.query;
+    const stats = await notificationBackend.getNotificationStats(req.user.id, parseInt(days) || 30);
+    res.json(stats);
+  } catch (error) {
+    console.error('Stats error:', error);
+    res.status(500).json({ error: 'Failed to get stats' });
+  }
+});
+
+// Record notification analytics event
+app.post('/api/notifications/analytics', optionalAuth, async (req, res) => {
+  try {
+    const event = {
+      ...req.body,
+      userId: req.user?.id || req.body.userId || 'anonymous'
+    };
+    await notificationBackend.recordAnalyticsEvent(event);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Analytics error:', error);
+    res.status(500).json({ error: 'Failed to record analytics' });
+  }
+});
+
+// Record batch analytics events
+app.post('/api/notifications/analytics/batch', optionalAuth, async (req, res) => {
+  try {
+    const { events } = req.body;
+
+    if (!Array.isArray(events)) {
+      return res.status(400).json({ error: 'Events must be an array' });
+    }
+
+    const eventsWithUser = events.map(e => ({
+      ...e,
+      userId: req.user?.id || e.userId || 'anonymous'
+    }));
+
+    const result = await notificationBackend.recordAnalyticsBatch(eventsWithUser);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Batch analytics error:', error);
+    res.status(500).json({ error: 'Failed to record analytics batch' });
+  }
+});
+
+// Send test notification (for testing)
+app.post('/api/notifications/test', authenticateToken, async (req, res) => {
+  try {
+    const result = await notificationBackend.sendNotification(req.user.id, {
+      type: 'system',
+      title: 'Test Notification',
+      body: 'This is a test notification from JustLayMe!',
+      tag: 'test'
+    });
+    res.json(result);
+  } catch (error) {
+    console.error('Test notification error:', error);
+    res.status(500).json({ error: 'Failed to send test notification' });
+  }
+});
+
+// Schedule a reminder notification
+app.post('/api/notifications/schedule', authenticateToken, async (req, res) => {
+  try {
+    const { title, body, scheduledFor, type = 'reminder', data } = req.body;
+
+    if (!title || !scheduledFor) {
+      return res.status(400).json({ error: 'Title and scheduledFor are required' });
+    }
+
+    const result = await notificationBackend.scheduleNotification(
+      req.user.id,
+      { type, title, body, data },
+      new Date(scheduledFor)
+    );
+
+    res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Schedule notification error:', error);
+    res.status(500).json({ error: 'Failed to schedule notification' });
+  }
+});
+
+// Cancel scheduled notification
+app.delete('/api/notifications/schedule/:id', authenticateToken, async (req, res) => {
+  try {
+    await notificationBackend.cancelScheduledNotification(req.params.id);
+    res.json({ success: true, message: 'Scheduled notification cancelled' });
+  } catch (error) {
+    console.error('Cancel scheduled notification error:', error);
+    res.status(500).json({ error: 'Failed to cancel scheduled notification' });
+  }
+});
+
+// Admin: Send notification to specific user
+app.post('/api/admin/notifications/send', async (req, res) => {
+  const adminPassword = req.headers['x-admin-password'];
+  if (adminPassword !== 'admin123') {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const { userId, notification } = req.body;
+    const result = await notificationBackend.sendNotification(userId, notification);
+    res.json(result);
+  } catch (error) {
+    console.error('Admin send notification error:', error);
+    res.status(500).json({ error: 'Failed to send notification' });
+  }
+});
+
+// Admin: Send notification to all users
+app.post('/api/admin/notifications/broadcast', async (req, res) => {
+  const adminPassword = req.headers['x-admin-password'];
+  if (adminPassword !== 'admin123') {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const { notification, ignoreQuietHours } = req.body;
+    const result = await notificationBackend.sendToAll(notification, { ignoreQuietHours });
+    res.json(result);
+  } catch (error) {
+    console.error('Admin broadcast notification error:', error);
+    res.status(500).json({ error: 'Failed to broadcast notification' });
+  }
+});
+
 // Admin monitor route
 app.get('/admin-monitor', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-monitor.html'));
@@ -1567,10 +1785,22 @@ app.get('/success', (req, res) => {
 // Start server
 async function start() {
   await initDB();
-  
+
   // Initialize conversation manager
   conversationManager = new ConversationManager(db);
-  
+
+  // Initialize notification backend
+  console.log('Initializing notification service...');
+  notificationBackend = new NotificationBackend(db, { debug: process.env.DEBUG_NOTIFICATIONS === 'true' });
+  await notificationBackend.initDatabase();
+  console.log('Notification service initialized');
+  console.log(`VAPID Public Key: ${notificationBackend.getPublicKey().substring(0, 20)}...`);
+
+  // Start scheduled notification processor
+  setInterval(() => {
+    notificationBackend.processScheduledNotifications();
+  }, 60000); // Check every minute
+
   // Initialize model manager
   console.log('Discovering available models...');
   await modelManager.discoverModels();

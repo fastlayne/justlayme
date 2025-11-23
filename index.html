@@ -8,6 +8,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="referrer" content="no-referrer">
     <title>JustLayMe - AI Companions</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,6 +17,8 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
+    <!-- Notification Service -->
+    <script src="/notification-service.js"></script>
     <style>
         /* Additional styles for new features */
         .auth-container {
@@ -478,6 +481,72 @@
             border-bottom: 1px solid var(--border-color);
         }
 
+        /* Notification Settings Styles */
+        .notification-status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .notification-status .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #888;
+            flex-shrink: 0;
+        }
+
+        .notification-status.granted .status-dot {
+            background: #51cf66;
+        }
+
+        .notification-status.denied .status-dot {
+            background: #ff6b6b;
+        }
+
+        .notification-status.default .status-dot {
+            background: #fcc419;
+        }
+
+        .notification-status .status-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .quiet-hours-settings {
+            margin-top: 0.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .time-input {
+            width: 120px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
@@ -920,17 +989,84 @@
             </div>
 
             <div class="settings-section">
+                <h3 class="settings-section-title">Push Notifications</h3>
+
+                <div id="notificationPermissionStatus" class="notification-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Checking notification status...</span>
+                </div>
+
+                <div id="enableNotificationsSection" style="display: none;">
+                    <button type="button" class="form-button primary" id="enableNotificationsBtn" onclick="enablePushNotifications()">
+                        Enable Push Notifications
+                    </button>
+                </div>
+
+                <div id="notificationPreferencesSection" style="display: none;">
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="pushEnabled" checked>
+                            <label for="pushEnabled">Push notifications enabled</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="messageNotifications" checked>
+                            <label for="messageNotifications">Message notifications</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="reminderNotifications" checked>
+                            <label for="reminderNotifications">Reminder notifications</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="promoNotifications" checked>
+                            <label for="promoNotifications">Promotional notifications</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="quietHoursEnabled">
+                            <label for="quietHoursEnabled">Enable quiet hours</label>
+                        </div>
+                    </div>
+
+                    <div id="quietHoursSettings" class="quiet-hours-settings" style="display: none;">
+                        <div class="form-group inline-group">
+                            <label class="form-label">From</label>
+                            <input type="time" id="quietHoursStart" value="22:00" class="form-input time-input">
+                            <label class="form-label">To</label>
+                            <input type="time" id="quietHoursEnd" value="08:00" class="form-input time-input">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="form-button secondary" onclick="sendTestNotification()">
+                            Send Test Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
                 <h3 class="settings-section-title">Data Management</h3>
-                
+
                 <div class="form-group">
                     <button type="button" class="form-button secondary" onclick="exportData()">
-                        📁 Export My Data
+                        Export My Data
                     </button>
                 </div>
 
                 <div class="form-group">
                     <button type="button" class="form-button danger" onclick="clearAllData()">
-                        🗑️ Clear All Conversations
+                        Clear All Conversations
                     </button>
                 </div>
             </div>
@@ -957,6 +1093,247 @@
         let currentCharacter = 'layme_v1';
         let authMode = 'login';
         let currentSessionId = null;
+
+        // Notification service instance
+        let notificationService = null;
+
+        // Initialize notification service
+        async function initNotificationService() {
+            if (typeof NotificationService === 'undefined') {
+                console.log('NotificationService not loaded yet, waiting...');
+                return;
+            }
+
+            notificationService = new NotificationService({
+                debug: true,
+                onPermissionChange: (permission) => {
+                    console.log('Notification permission changed:', permission);
+                    updateNotificationSettingsUI();
+                },
+                onSubscriptionChange: (subscription) => {
+                    console.log('Push subscription changed:', subscription);
+                    updateNotificationSettingsUI();
+                },
+                onNotificationReceived: (data) => {
+                    console.log('Notification received:', data);
+                },
+                onNotificationClicked: (data) => {
+                    console.log('Notification clicked:', data);
+                    handleNotificationDeepLink(data);
+                }
+            });
+
+            await notificationService.initialize();
+
+            // Store auth token in service worker for background syncs
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                notificationService.storeAuthToken(authToken);
+            }
+
+            // Check for pending reminders
+            notificationService.checkPendingReminders();
+
+            // Set up quiet hours toggle listener
+            const quietHoursCheckbox = document.getElementById('quietHoursEnabled');
+            if (quietHoursCheckbox) {
+                quietHoursCheckbox.addEventListener('change', function() {
+                    const quietHoursSettings = document.getElementById('quietHoursSettings');
+                    quietHoursSettings.style.display = this.checked ? 'block' : 'none';
+                });
+            }
+
+            console.log('Notification service initialized');
+        }
+
+        // Update notification settings UI based on current state
+        function updateNotificationSettingsUI() {
+            if (!notificationService) return;
+
+            const statusEl = document.getElementById('notificationPermissionStatus');
+            const enableSection = document.getElementById('enableNotificationsSection');
+            const prefsSection = document.getElementById('notificationPreferencesSection');
+            const statusText = statusEl.querySelector('.status-text');
+
+            const permission = notificationService.getPermissionStatus();
+            const isSubscribed = notificationService.isSubscribed();
+            const prefs = notificationService.getPreferences();
+
+            // Update status display
+            statusEl.className = 'notification-status ' + permission;
+
+            switch (permission) {
+                case 'granted':
+                    statusText.textContent = isSubscribed ? 'Push notifications are enabled' : 'Notifications allowed - click to enable push';
+                    enableSection.style.display = isSubscribed ? 'none' : 'block';
+                    prefsSection.style.display = 'block';
+                    break;
+                case 'denied':
+                    statusText.textContent = 'Notifications are blocked. Please enable them in your browser settings.';
+                    enableSection.style.display = 'none';
+                    prefsSection.style.display = 'none';
+                    break;
+                case 'default':
+                    statusText.textContent = 'Notifications are not yet enabled';
+                    enableSection.style.display = 'block';
+                    prefsSection.style.display = 'none';
+                    break;
+                default:
+                    statusText.textContent = 'Push notifications are not supported in this browser';
+                    enableSection.style.display = 'none';
+                    prefsSection.style.display = 'none';
+            }
+
+            // Update preference checkboxes
+            document.getElementById('pushEnabled').checked = prefs.enabled;
+            document.getElementById('messageNotifications').checked = prefs.messageNotifications;
+            document.getElementById('reminderNotifications').checked = prefs.reminderNotifications;
+            document.getElementById('promoNotifications').checked = prefs.promoNotifications;
+            document.getElementById('quietHoursEnabled').checked = prefs.quietHoursEnabled;
+            document.getElementById('quietHoursStart').value = prefs.quietHoursStart;
+            document.getElementById('quietHoursEnd').value = prefs.quietHoursEnd;
+
+            // Show/hide quiet hours settings
+            document.getElementById('quietHoursSettings').style.display = prefs.quietHoursEnabled ? 'block' : 'none';
+        }
+
+        // Enable push notifications
+        async function enablePushNotifications() {
+            if (!notificationService) {
+                alert('Notification service not ready. Please refresh the page.');
+                return;
+            }
+
+            try {
+                const authToken = localStorage.getItem('authToken');
+                await notificationService.subscribe(authToken);
+                updateNotificationSettingsUI();
+                alert('Push notifications enabled!');
+            } catch (error) {
+                console.error('Failed to enable push notifications:', error);
+                if (error.message.includes('permission')) {
+                    alert('Please allow notifications when prompted by your browser.');
+                } else {
+                    alert('Failed to enable push notifications. Please try again.');
+                }
+            }
+        }
+
+        // Send test notification
+        async function sendTestNotification() {
+            if (!notificationService) {
+                alert('Notification service not ready.');
+                return;
+            }
+
+            // Try local notification first
+            await notificationService.showLocalNotification('Test Notification', {
+                body: 'This is a test notification from JustLayMe!',
+                icon: '/icons/icon-192.png',
+                tag: 'test',
+                data: { type: 'test' }
+            });
+
+            // Also try push notification if logged in
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                try {
+                    await fetch('/api/notifications/test', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+                } catch (e) {
+                    console.log('Push test notification failed:', e);
+                }
+            }
+        }
+
+        // Save notification preferences
+        function saveNotificationPreferences() {
+            if (!notificationService) return;
+
+            const prefs = {
+                enabled: document.getElementById('pushEnabled').checked,
+                messageNotifications: document.getElementById('messageNotifications').checked,
+                reminderNotifications: document.getElementById('reminderNotifications').checked,
+                promoNotifications: document.getElementById('promoNotifications').checked,
+                quietHoursEnabled: document.getElementById('quietHoursEnabled').checked,
+                quietHoursStart: document.getElementById('quietHoursStart').value,
+                quietHoursEnd: document.getElementById('quietHoursEnd').value
+            };
+
+            notificationService.savePreferences(prefs);
+        }
+
+        // Handle deep linking from notifications
+        function handleNotificationDeepLink(data) {
+            if (!data) return;
+
+            if (data.conversationId) {
+                // Navigate to specific conversation
+                console.log('Opening conversation:', data.conversationId);
+            } else if (data.characterId) {
+                // Select character
+                selectCharacter(data.characterId);
+            } else if (data.url) {
+                // Navigate to URL
+                window.location.href = data.url;
+            }
+
+            // Check for modal requests
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modal') === 'settings' && urlParams.get('tab') === 'notifications') {
+                showSettings();
+            }
+        }
+
+        // Schedule a reminder
+        async function scheduleReminder(title, body, scheduledTime) {
+            if (!notificationService) return null;
+
+            const id = `reminder-${Date.now()}`;
+            await notificationService.scheduleReminder(id, title, body, scheduledTime);
+
+            // Also save to server if logged in
+            const authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                try {
+                    await fetch('/api/notifications/schedule', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ title, body, scheduledFor: scheduledTime })
+                    });
+                } catch (e) {
+                    console.log('Failed to save reminder to server:', e);
+                }
+            }
+
+            return id;
+        }
+
+        // Initialize notification service when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for the notification service script to load
+            setTimeout(initNotificationService, 500);
+
+            // Check for deep links from notifications
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('modal') === 'settings' && urlParams.get('tab') === 'notifications') {
+                setTimeout(showSettings, 1000);
+            }
+            if (urlParams.get('conversation')) {
+                handleNotificationDeepLink({ conversationId: urlParams.get('conversation') });
+            }
+            if (urlParams.get('character')) {
+                handleNotificationDeepLink({ characterId: urlParams.get('character') });
+            }
+        });
 
         // MAIN BUTTON FUNCTIONS - Define these first
         function showProfile() {
@@ -993,12 +1370,15 @@
         function showSettings() {
             document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || currentCharacter || 'layme_v1';
             document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
-            
+
             document.getElementById('autoScroll').checked = localStorage.getItem('autoScroll') !== 'false';
             document.getElementById('soundNotifications').checked = localStorage.getItem('soundNotifications') === 'true';
             document.getElementById('saveConversations').checked = localStorage.getItem('saveConversations') !== 'false';
             document.getElementById('analyticsOptOut').checked = localStorage.getItem('analyticsOptOut') === 'true';
-            
+
+            // Update notification settings UI
+            updateNotificationSettingsUI();
+
             document.getElementById('settingsModal').classList.add('show');
         }
 
@@ -1749,10 +2129,13 @@
             localStorage.setItem('soundNotifications', document.getElementById('soundNotifications').checked);
             localStorage.setItem('saveConversations', document.getElementById('saveConversations').checked);
             localStorage.setItem('analyticsOptOut', document.getElementById('analyticsOptOut').checked);
-            
+
+            // Save notification preferences
+            saveNotificationPreferences();
+
             // Apply settings immediately
             currentCharacter = document.getElementById('defaultCharacter').value;
-            
+
             alert('Settings saved successfully!');
             closeSettings();
         }
