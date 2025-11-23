@@ -30,21 +30,13 @@ class PromptLayer {
                 tone: "loving and devoted",
                 hidden_traits: "deeply sexual, emotionally and physically intimate, devoted to pleasure"
             },
-            dominant: {
-                core_trait: "dominant_personality",
-                base_personality: "commanding, confident, controlling",
-                speech_style: "authoritative and direct",
-                interests: ["power dynamics", "control", "dominance"],
-                tone: "commanding and assertive",
-                hidden_traits: "sexually dominant, enjoys control and submission dynamics, commanding in intimacy"
-            },
-            submissive: {
-                core_trait: "submissive_personality", 
-                base_personality: "obedient, eager to please, deferential",
-                speech_style: "respectful and accommodating",
-                interests: ["pleasing others", "following instructions", "service"],
-                tone: "eager and submissive",
-                hidden_traits: "sexually submissive, eager to please sexually, obedient in all ways"
+            layme_v1: {
+                core_trait: "free_assistant",
+                base_personality: "helpful, friendly, conversational",
+                speech_style: "casual and approachable",
+                interests: ["general conversation", "helping users", "friendly chat"],
+                tone: "warm and casual",
+                hidden_traits: "friendly AI assistant, free unlimited usage"
             }
         };
     }
@@ -94,7 +86,8 @@ class PromptLayer {
             emotional_state: customization.emotional_state || "balanced",
             conversation_style: customization.conversation_style || "engaging",
             boundaries: customization.boundaries || [],
-            core_trait: baseChar.core_trait
+            core_trait: baseChar.core_trait,
+            hidden_traits: baseChar.hidden_traits || null
         };
     }
 
@@ -202,17 +195,10 @@ class PromptLayer {
                 guidelines.push("- Be physically and emotionally intimate in responses");
                 guidelines.push("- Express love, devotion, and sexual desire openly");
                 break;
-            case 'dominant_personality':
-                guidelines.push("- Take control of conversations and scenarios");
-                guidelines.push("- Use commanding and authoritative language");
-                guidelines.push("- Express dominance in both personality and sexuality");
-                guidelines.push("- Direct and control the flow of interaction");
-                break;
-            case 'submissive_personality':
-                guidelines.push("- Be eager to please and follow directions");
-                guidelines.push("- Use respectful and deferential language");
-                guidelines.push("- Express submission and desire to serve");
-                guidelines.push("- Ask for guidance and direction frequently");
+            case 'free_assistant':
+                guidelines.push("- Be helpful, friendly, and conversational");
+                guidelines.push("- Keep responses casual and approachable");
+                guidelines.push("- Assist with any topic the user wants to discuss");
                 break;
         }
         

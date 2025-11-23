@@ -54,14 +54,22 @@ class DatabaseAdapter {
                     const returning = text.match(/RETURNING\s+(.+)$/i);
                     if (returning) {
                         sqliteText = sqliteText.replace(/\s+RETURNING\s+.+$/i, '');
-                        
+                        const tableMatch = text.match(/INSERT INTO\s+(\w+)/i);
+                        if (!tableMatch) {
+                            reject(new Error('Could not extract table name from INSERT statement'));
+                            return;
+                        }
+                        const tableName = tableMatch[1];
+                        const dbRef = this.db; // Save reference to avoid this context issues
+
                         this.db.run(sqliteText, params, function(err) {
                             if (err) {
                                 reject(err);
                             } else {
-                                // For INSERT, get the inserted row
-                                const selectQuery = `SELECT * FROM ${text.match(/INSERT INTO\s+(\w+)/i)[1]} WHERE rowid = ?`;
-                                this.db.get(selectQuery, [this.lastID], (err, row) => {
+                                // For INSERT, get the inserted row using saved db reference
+                                const lastId = this.lastID;
+                                const selectQuery = `SELECT * FROM ${tableName} WHERE rowid = ?`;
+                                dbRef.get(selectQuery, [lastId], (err, row) => {
                                     if (err) reject(err);
                                     else resolve({ rows: row ? [row] : [] });
                                 });

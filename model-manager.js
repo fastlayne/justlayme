@@ -49,7 +49,17 @@ class ModelManager {
 
     async discoverModels() {
         try {
-            const response = await fetch('http://localhost:11434/api/tags');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const response = await fetch('http://localhost:11434/api/tags', {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
             const data = await response.json();
             
             this.models = data.models.map(model => ({
@@ -97,11 +107,10 @@ class ModelManager {
 
         // Model type-based model selection
         const modelTypeMap = {
+            layme_v1: ['zephyr:7b-alpha-q4_0', 'mistral:7b-instruct'], // Free Layme V1
             uncensored_gpt: ['dolphin-mixtral:latest'], // LayMe V1 Uncensored
             roleplay: ['mythomax-13b:latest'], // Mythomax Roleplay
-            companion: ['zephyr:7b-alpha-q4_0'], // FastLayMe
-            dominant: ['mythomax-13b:latest', 'zephyr:7b-alpha-q4_0'],
-            submissive: ['zephyr:7b-alpha-q4_0', 'dolphin-mixtral:latest']
+            companion: ['zephyr:7b-alpha-q4_0'] // FastLayMe
         };
 
         // User preference-based selection
@@ -171,7 +180,9 @@ class ModelManager {
     async testModel(modelName, testPrompt = "Hello, how are you?") {
         try {
             const startTime = Date.now();
-            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout for model generation
+
             const response = await fetch('http://localhost:11434/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -179,10 +190,15 @@ class ModelManager {
                     model: modelName,
                     prompt: testPrompt,
                     stream: false
-                })
+                }),
+                signal: controller.signal
             });
+            clearTimeout(timeoutId);
 
             const endTime = Date.now();
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
             const data = await response.json();
 
             return {

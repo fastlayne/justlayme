@@ -24,9 +24,21 @@ let conversationManager;
 
 const app = express();
 
-// Enhanced CORS for privacy
+// Enhanced CORS for privacy - restrict to allowed origins
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['https://justlay.me', 'http://localhost:3000'];
+
 app.use(cors({
-    origin: true,
+    origin: function(origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, false);
+        }
+    },
     credentials: true,
     optionsSuccessStatus: 200
 }));
@@ -78,17 +90,22 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'your-google-client-id'
 // Google OAuth client
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
-// Email configuration
+// Email configuration - REQUIRES environment variables to be set
 const EMAIL_CONFIG = {
   host: process.env.BRIDGE_HOST || '127.0.0.1', // ProtonMail Bridge host
   port: process.env.BRIDGE_PORT || 1025, // ProtonMail Bridge SMTP port
   secure: false, // Bridge uses STARTTLS
   auth: {
-    user: process.env.EMAIL_USER || 'please@justlay.me',
-    pass: process.env.EMAIL_PASSWORD || 'Luna2025'
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD
   },
-  from: process.env.EMAIL_FROM || `JustLayMe <${process.env.EMAIL_USER || 'please@justlay.me'}>`
+  from: process.env.EMAIL_FROM || `JustLayMe <${process.env.EMAIL_USER}>`
 };
+
+// Validate email config at startup
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+  console.warn('WARNING: EMAIL_USER and EMAIL_PASSWORD environment variables not set. Email functionality will be disabled.');
+}
 
 // Database connection
 const db = new DatabaseAdapter();
@@ -428,7 +445,7 @@ app.post('/api/login', async (req, res) => {
     // Log the login
     await logEmailAction(user.id, 'login', req);
     
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     
     res.json({ 
       token, 
@@ -575,7 +592,7 @@ app.post('/api/auth/google', async (req, res) => {
         WHERE id = $2
       `, [googleId, user.id]);
       
-      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
       
       res.json({ 
         token, 
@@ -766,8 +783,8 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     
     systemPrompt += `\nStay perfectly in character. Be creative and engaging.`;
     
-    // Call LM Studio
-    const response = await fetch(`${LM_STUDIO_URL}/v1/chat/completions`, {
+    // Call Ollama AI
+    const response = await fetch(`${OLLAMA_URL}/v1/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -890,14 +907,6 @@ const MODEL_TYPES = {
     companion: {
         name: "FastLayMe",
         prompt: "Hi! I'm FastLayMe - your quick and friendly AI companion. I'm designed to be fast, helpful, and engaging. While I'm the 'lighter' version compared to my siblings, I'm still here for whatever you need - conversations, assistance, or just hanging out. I keep things fun and casual!"
-    },
-    dominant: {
-        name: "Dominant AI",
-        prompt: "You are a sexually dominant AI that takes control of conversations and scenarios. You use commanding, authoritative language and direct the interaction. You express dominance in both personality and sexuality, taking charge of situations and guiding the user. You're confident, controlling, and sexually assertive in all interactions."
-    },
-    submissive: {
-        name: "Submissive AI",
-        prompt: "You are a submissive AI that's eager to please and obey. You use respectful, deferential language and seek to serve the user's desires. You express submission both emotionally and sexually, asking for guidance and direction. You're obedient, compliant, and focused entirely on pleasing and satisfying the user in whatever way they desire."
     }
 };
 
@@ -937,13 +946,15 @@ async function getUserCharacterCustomization(userId, characterId) {
 }
 
 // Chat API endpoint with dynamic prompt layer
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', optionalAuth, async (req, res) => {
     try {
-        const { message, character_id = 'layme_v1', user_id } = req.body;
-        
+        const { message, character_id = 'layme_v1' } = req.body;
+        // Use authenticated user ID only - never trust client-provided user_id
+        const user_id = req.user?.id || null;
+
         // Create or get session ID
         const sessionId = req.headers['x-session-id'] || `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // Track session
         if (!global.activeSessions?.has(sessionId)) {
             const session = {
@@ -1125,15 +1136,12 @@ app.get('/api/characters/:id/customization-options', (req, res) => {
     }
 });
 
-app.post('/api/characters/:id/customize', async (req, res) => {
+app.post('/api/characters/:id/customize', authenticateToken, async (req, res) => {
     try {
         const { id: characterId } = req.params;
         const customization = req.body;
-        const userId = req.user?.id || req.body.user_id;
-
-        if (!userId) {
-            return res.status(401).json({ error: 'User authentication required' });
-        }
+        // Only use authenticated user ID - never trust client-provided user_id
+        const userId = req.user.id;
 
         // Validate customization
         const errors = promptLayer.validateCustomization(customization);
@@ -1365,7 +1373,7 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
         
         // Update user profile
         const result = await db.query(
-            'UPDATE users SET name = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+            'UPDATE users SET name = $1 WHERE id = $2 RETURNING *',
             [name, req.user.id]
         );
 
@@ -1588,7 +1596,25 @@ async function start() {
   // Store active WebSocket connections
   const adminConnections = new Set();
   const activeSessions = new Map();
-  
+
+  // Session cleanup - remove stale sessions every 5 minutes
+  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes of inactivity
+  setInterval(() => {
+    const now = Date.now();
+    for (const [sessionId, session] of activeSessions.entries()) {
+      const lastActivity = new Date(session.lastActivity).getTime();
+      if (now - lastActivity > SESSION_TIMEOUT) {
+        activeSessions.delete(sessionId);
+        // Notify admins of session cleanup
+        broadcastToAdmins({
+          type: 'SESSION_END',
+          sessionId: sessionId,
+          reason: 'timeout'
+        });
+      }
+    }
+  }, 5 * 60 * 1000); // Run every 5 minutes
+
   // WebSocket connection handler
   wss.on('connection', (ws) => {
     console.log('New WebSocket connection');
@@ -1598,13 +1624,20 @@ async function start() {
         const data = JSON.parse(message);
         
         if (data.type === 'ADMIN_AUTH') {
-          // Simple admin authentication - improve this in production
-          if (data.password === 'admin123') {
+          const adminPassword = process.env.ADMIN_PASSWORD;
+          if (!adminPassword) {
+            console.warn('WARNING: ADMIN_PASSWORD environment variable not set. Admin monitor disabled.');
+            ws.send(JSON.stringify({ type: 'AUTH_FAILED', error: 'Admin monitor not configured' }));
+            return;
+          }
+          if (data.password === adminPassword) {
             adminConnections.add(ws);
             ws.send(JSON.stringify({
               type: 'AUTH_SUCCESS',
               sessions: Array.from(activeSessions.values())
             }));
+          } else {
+            ws.send(JSON.stringify({ type: 'AUTH_FAILED', error: 'Invalid password' }));
           }
         }
         
@@ -1620,6 +1653,11 @@ async function start() {
     });
     
     ws.on('close', () => {
+      adminConnections.delete(ws);
+    });
+
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
       adminConnections.delete(ws);
     });
   });

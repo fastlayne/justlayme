@@ -382,18 +382,21 @@
         let messageCount = 0;
 
         // Admin authentication
-        function login(event) {
+        let adminPassword = '';
+
+        async function login(event) {
             event.preventDefault();
-            const password = document.getElementById('adminPassword').value;
-            
-            // Simple password check - you should use proper authentication
-            if (password === 'admin123') {
-                document.getElementById('loginContainer').style.display = 'none';
-                document.getElementById('monitorContainer').style.display = 'flex';
-                connectWebSocket();
-            } else {
-                alert('Invalid password');
+            adminPassword = document.getElementById('adminPassword').value;
+
+            if (!adminPassword) {
+                alert('Please enter the admin password');
+                return;
             }
+
+            // Connect to WebSocket and authenticate there
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('monitorContainer').style.display = 'flex';
+            connectWebSocket();
         }
 
         // Connect to WebSocket for real-time updates
@@ -404,8 +407,11 @@
 
             ws.onopen = () => {
                 console.log('Connected to chat monitor');
-                // Request all active sessions
-                ws.send(JSON.stringify({ type: 'GET_SESSIONS' }));
+                // Authenticate with server using the password
+                ws.send(JSON.stringify({
+                    type: 'ADMIN_AUTH',
+                    password: adminPassword
+                }));
             };
 
             ws.onmessage = (event) => {
@@ -426,6 +432,16 @@
 
         function handleWebSocketMessage(data) {
             switch (data.type) {
+                case 'AUTH_SUCCESS':
+                    // Authentication successful, request sessions
+                    ws.send(JSON.stringify({ type: 'GET_SESSIONS' }));
+                    break;
+                case 'AUTH_FAILED':
+                    alert('Invalid admin password');
+                    document.getElementById('loginContainer').style.display = 'flex';
+                    document.getElementById('monitorContainer').style.display = 'none';
+                    ws.close();
+                    break;
                 case 'NEW_MESSAGE':
                     handleNewMessage(data);
                     break;

@@ -537,8 +537,8 @@
     <div id="authContainer" class="auth-container">
         <div class="auth-card">
             <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
-                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+                <button class="auth-tab active" onclick="switchAuthTab('login', this)">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup', this)">Sign Up</button>
             </div>
             
             <form class="auth-form" onsubmit="handleAuth(event)">
@@ -1121,14 +1121,19 @@
             }
         }
 
-        function switchAuthTab(mode) {
+        function switchAuthTab(mode, clickedElement) {
             authMode = mode;
             document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            } else {
+                // Fallback: find the tab by mode
+                document.querySelector(`.auth-tab[onclick*="${mode}"]`)?.classList.add('active');
+            }
+
             const confirmPassword = document.getElementById('authConfirmPassword');
             const submitBtn = document.getElementById('authSubmitBtn');
-            
+
             if (mode === 'signup') {
                 confirmPassword.classList.remove('hidden');
                 submitBtn.textContent = 'Sign Up';
@@ -1140,10 +1145,23 @@
 
         async function handleAuth(event) {
             event.preventDefault();
-            
+
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
-            
+
+            // Validate password confirmation for signup
+            if (authMode === 'signup') {
+                const confirmPassword = document.getElementById('confirmPassword')?.value;
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+                if (password.length < 8) {
+                    alert('Password must be at least 8 characters long');
+                    return;
+                }
+            }
+
             try {
                 const endpoint = authMode === 'login' ? '/api/login' : '/api/register';
                 const response = await fetch(endpoint, {
@@ -1173,16 +1191,8 @@
                     alert(data.error || 'Authentication failed');
                 }
             } catch (error) {
-                // For demo, just simulate login
-                currentUser = { 
-                    id: '123', 
-                    email: email,
-                    name: email.split('@')[0],
-                    subscription_status: 'free'
-                };
-                localStorage.setItem('authToken', 'demo-token');
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showMainApp();
+                console.error('Authentication error:', error);
+                alert('Unable to connect to server. Please check your connection and try again.');
             }
         }
 
@@ -1566,16 +1576,6 @@
                     "I want to build something intimate between us. How can I connect with you more deeply?",
                     "You mean so much to me. Let me show you how much I care about you.",
                     "I'm devoted to you completely. What can I do to make you feel loved?"
-                ],
-                dominant: [
-                    "You'll do as I say. I'm in control here and I know what's best for you.",
-                    "That's enough talking. I'll decide what happens next.",
-                    "Good. You're learning to submit to my authority. Continue."
-                ],
-                submissive: [
-                    "Yes, I'll do whatever you want. Please tell me how to serve you.",
-                    "I exist to please you. What would make you happy?",
-                    "Thank you for guiding me. I'm grateful for your attention."
                 ]
             };
             return responses[characterId] || ["That's interesting! Tell me more."];
@@ -1623,79 +1623,16 @@
 
         function getCharacterEmoji(id) {
             const avatars = {
+                layme_v1: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #00c853 0%, #69f0ae 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">L</div>',
                 uncensored_gpt: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">U</div>',
                 roleplay: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">R</div>',
-                companion: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">C</div>',
-                dominant: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">D</div>',
-                submissive: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">S</div>'
+                companion: '<div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">C</div>'
             };
             return avatars[id] || '<div style="width: 30px; height: 30px; border-radius: 50%; background: #6b46ff; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">?</div>';
         }
 
-        function showProfile() {
-            console.log('showProfile() called, currentUser:', currentUser);
-            // Check if user is logged in
-            if (!currentUser) {
-                alert('Please log in to view your profile');
-                return;
-            }
-            
-            // Load current user data into the form
-            document.getElementById('profileName').value = currentUser.name || '';
-            document.getElementById('profileEmail').value = currentUser.email || '';
-            
-            // Set account status
-            const statusBadge = document.getElementById('accountStatus');
-            const subscriptionEnd = document.getElementById('subscriptionEnd');
-            
-            if (currentUser.subscription_status === 'premium' || isPremium) {
-                statusBadge.textContent = 'Premium';
-                statusBadge.className = 'status-badge premium';
-                if (currentUser.subscription_end) {
-                    const endDate = new Date(currentUser.subscription_end);
-                    subscriptionEnd.textContent = `Until ${endDate.toLocaleDateString()}`;
-                }
-            } else {
-                statusBadge.textContent = 'Free';
-                statusBadge.className = 'status-badge';
-                subscriptionEnd.textContent = '';
-            }
-            
-            // Load saved preferences
-            document.getElementById('avatarStyle').value = localStorage.getItem('avatarStyle') || 'initials';
-            document.getElementById('themePreference').value = localStorage.getItem('themePreference') || 'auto';
-            
-            // Show modal
-            document.getElementById('profileModal').classList.add('show');
-        }
-
         function showSubscription() {
             document.getElementById('paywall').classList.add('show');
-        }
-
-        function showSettings() {
-            console.log('showSettings() called, currentUser:', currentUser);
-            
-            // Load current settings (works for both logged in and guest users)
-            document.getElementById('defaultCharacter').value = localStorage.getItem('defaultCharacter') || (currentCharacter || 'uncensored_gpt');
-            document.getElementById('responseLength').value = localStorage.getItem('responseLength') || 'medium';
-            
-            // Load checkbox settings
-            document.getElementById('autoScroll').checked = localStorage.getItem('autoScroll') !== 'false';
-            document.getElementById('soundNotifications').checked = localStorage.getItem('soundNotifications') === 'true';
-            document.getElementById('saveConversations').checked = localStorage.getItem('saveConversations') !== 'false';
-            document.getElementById('analyticsOptOut').checked = localStorage.getItem('analyticsOptOut') === 'true';
-            
-            // Show modal
-            document.getElementById('settingsModal').classList.add('show');
-        }
-
-        function closeProfile() {
-            document.getElementById('profileModal').classList.remove('show');
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.remove('show');
         }
 
         async function saveProfile(event) {
@@ -1726,9 +1663,15 @@
                     localStorage.setItem('avatarStyle', profileData.avatar_style);
                     localStorage.setItem('themePreference', profileData.theme_preference);
                     
-                    // Update UI
-                    updateUserAvatar();
-                    
+                    // Update UI - update displayed name and avatar
+                    if (currentUser) {
+                        currentUser.name = document.getElementById('profileName').value;
+                        const avatarEl = document.getElementById('userAvatar');
+                        if (avatarEl && currentUser.name) {
+                            avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
+                        }
+                    }
+
                     alert('Profile updated successfully!');
                     closeProfile();
                 } else {
@@ -1799,9 +1742,9 @@
 
                 if (response.ok) {
                     // Clear local chat
-                    document.getElementById('chatMessages').innerHTML = '';
+                    document.getElementById('messages').innerHTML = '';
                     messageCount = 0;
-                    
+
                     alert('All conversations have been cleared.');
                 } else {
                     throw new Error('Failed to clear data');
@@ -1809,27 +1752,6 @@
             } catch (error) {
                 alert('Failed to clear data. Please try again.');
             }
-        }
-
-        function showCharacterCreator() {
-            console.log('showCharacterCreator() called, currentUser:', currentUser, 'isPremium:', isPremium);
-            // Check if user is logged in
-            if (!currentUser) {
-                alert('Please log in to access the character creator');
-                return;
-            }
-            
-            // Check if user is premium
-            if (!isPremium && currentUser.subscription_status !== 'premium') {
-                document.getElementById('paywall').classList.add('show');
-                return;
-            }
-            
-            document.getElementById('characterCreatorModal').classList.add('show');
-        }
-
-        function closeCharacterCreator() {
-            document.getElementById('characterCreatorModal').classList.remove('show');
         }
 
         async function saveCharacterCustomization(event) {
@@ -1876,11 +1798,6 @@
             } catch (error) {
                 alert('Failed to save customization. Please try again.');
             }
-        }
-
-        function closeCharacterCreator() {
-            const modal = document.getElementById('characterCreatorModal');
-            modal.classList.remove('show');
         }
 
         function logout() {
