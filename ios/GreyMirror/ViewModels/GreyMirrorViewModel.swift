@@ -6,6 +6,7 @@ import Foundation
 import Combine
 import SwiftUI
 import UniformTypeIdentifiers
+import UIKit
 
 @MainActor
 final class GreyMirrorViewModel: ObservableObject {
@@ -22,6 +23,7 @@ final class GreyMirrorViewModel: ObservableObject {
     @Published var fileContent: String = ""
     @Published var fileName: String = ""
     @Published var fileSize: String = ""
+    @Published var fileType: FileType = .text
 
     // Personalization
     @Published var userName: String = ""
@@ -43,18 +45,49 @@ final class GreyMirrorViewModel: ObservableObject {
     // MARK: - Private
 
     private let orchestrator = MLOrchestrator()
+    private let imageExtractor = ImageTextExtractor()
+    private let pdfExtractor = PDFTextExtractor()
     private var cancellables = Set<AnyCancellable>()
 
     // Maximum file size (50MB)
     private let maxFileSize: Int = 50 * 1024 * 1024
 
+    // MARK: - File Types
+
+    enum FileType {
+        case text       // .txt, .csv, .json, .chat
+        case pdf        // .pdf
+        case image      // .png, .jpg, .heic, etc.
+
+        static func from(extension ext: String) -> FileType {
+            let lowerExt = ext.lowercased()
+            if ImageTextExtractor.supportedExtensions.contains(lowerExt) {
+                return .image
+            } else if PDFTextExtractor.supportedExtensions.contains(lowerExt) {
+                return .pdf
+            }
+            return .text
+        }
+    }
+
     // MARK: - Supported File Types
 
     static let supportedTypes: [UTType] = [
+        // Text formats
         .plainText,
         .commaSeparatedText,
         .json,
-        UTType(filenameExtension: "chat") ?? .plainText
+        UTType(filenameExtension: "chat") ?? .plainText,
+        // PDF
+        .pdf,
+        // Image formats
+        .png,
+        .jpeg,
+        .heic,
+        .heif,
+        .tiff,
+        .bmp,
+        .gif
     ]
 
     // MARK: - Initialization
@@ -114,21 +147,62 @@ final class GreyMirrorViewModel: ObservableObject {
                 return
             }
 
-            // Read content
-            let content = try String(contentsOf: url, encoding: .utf8)
+            // Determine file type
+            let detectedType = FileType.from(extension: url.pathExtension)
+            self.fileType = detectedType
 
             selectedFileURL = url
-            fileContent = content
             fileName = url.lastPathComponent
             fileSize = formatFileSize(size)
             errorMessage = nil
 
-            // Preview message count
-            let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
-            print("Loaded file with \(lines.count) lines")
+            // Handle based on file type
+            switch detectedType {
+            case .text:
+                // Read text content directly
+                let content = try String(contentsOf: url, encoding: .utf8)
+                fileContent = content
+                let lines = content.components(separatedBy: .newlines).filter { !$0.isEmpty }
+                print("Loaded text file with \(lines.count) lines")
+
+            case .pdf:
+                // Queue PDF extraction for analysis time - set placeholder
+                fileContent = "[PDF - will be extracted during analysis]"
+                print("Loaded PDF file: \(url.lastPathComponent)")
+
+            case .image:
+                // Queue image OCR for analysis time - set placeholder
+                fileContent = "[Image - will be extracted during analysis]"
+                print("Loaded image file: \(url.lastPathComponent)")
+            }
 
         } catch {
             errorMessage = "Failed to read file: \(error.localizedDescription)"
+        }
+    }
+
+    /// Extracts text from PDF or image files asynchronously
+    func extractTextFromFile() async throws -> String {
+        guard let url = selectedFileURL else {
+            return fileContent
+        }
+
+        // Access security-scoped resource
+        guard url.startAccessingSecurityScopedResource() else {
+            throw NSError(domain: "GreyMirror", code: 1, userInfo: [NSLocalizedDescriptionKey: "Cannot access file"])
+        }
+        defer { url.stopAccessingSecurityScopedResource() }
+
+        switch fileType {
+        case .text:
+            return fileContent
+
+        case .pdf:
+            return try await pdfExtractor.extractText(from: url)
+
+        case .image:
+            let imageData = try Data(contentsOf: url)
+            return try await imageExtractor.extractText(from: imageData)
         }
     }
 
@@ -164,16 +238,42 @@ final class GreyMirrorViewModel: ObservableObject {
         analysisState = .parsing
         errorMessage = nil
 
+        // Extract text from PDF/Image if needed
+        var contentToAnalyze = fileContent
+        if fileType == .pdf || fileType == .image {
+            do {
+                analysisState = .uploading(progress: 0.3)
+                currentClassifier = fileType == .pdf ? "Extracting PDF text..." : "Running OCR on image..."
+                contentToAnalyze = try await extractTextFromFile()
+
+                guard !contentToAnalyze.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    analysisState = .failed(error: "No text could be extracted from the file")
+                    errorMessage = "No text found in file. Please try a different file."
+                    return
+                }
+            } catch {
+                analysisState = .failed(error: "Failed to extract text: \(error.localizedDescription)")
+                errorMessage = error.localizedDescription
+                return
+            }
+        }
+
         let personalization = GreyMirrorReport.Personalization(
             userName: userName.isEmpty ? "You" : userName,
             contactName: contactName.isEmpty ? "Them" : contactName,
             insightsGoal: insightsGoal
         )
 
-        let format: MessageParser.ImportFormat = selectedFileURL != nil ? .file : .paste
+        let format: MessageParser.ImportFormat
+        switch fileType {
+        case .text:
+            format = selectedFileURL != nil ? .file : .paste
+        case .pdf, .image:
+            format = .screenshot  // Treat extracted text as OCR output
+        }
 
         let report = await orchestrator.runCompleteAnalysis(
-            data: fileContent,
+            data: contentToAnalyze,
             format: format,
             personalization: personalization
         )

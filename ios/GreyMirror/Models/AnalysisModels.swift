@@ -360,7 +360,7 @@ struct GreyMirrorReport: Codable, Identifiable {
     let healthScore: Int
     let messageCount: Int
 
-    // All classifier outputs
+    // All classifier outputs (12 original)
     let sentiment: SentimentAnalysis?
     let sentimentComparison: SentimentComparison?
     let toxicity: ToxicityAnalysis?
@@ -370,6 +370,9 @@ struct GreyMirrorReport: Codable, Identifiable {
     let apologyPatterns: ApologyAnalysis?
     let positivity: PositivityIndex?
     let communicationPatterns: CommunicationPatterns?
+
+    // Advanced classifier outputs (28 new)
+    let advancedAnalysis: AdvancedAnalysis?
 
     // Summary data
     let summary: String
@@ -396,6 +399,46 @@ struct GreyMirrorReport: Codable, Identifiable {
         let contactName: String
         let insightsGoal: String
     }
+}
+
+// MARK: - Advanced Analysis Container (28 new classifiers)
+
+struct AdvancedAnalysis: Codable {
+    // Attachment & Connection (1-8)
+    let attachmentStyle: AttachmentStyleDetector.AttachmentAnalysis?
+    let loveLanguages: LoveLanguageAnalyzer.LoveLanguageAnalysis?
+    let powerDynamics: PowerDynamicsDetector.PowerAnalysis?
+    let emotionalLabor: EmotionalLaborTracker.LaborAnalysis?
+    let breadcrumbing: BreadcrumbingDetector.BreadcrumbAnalysis?
+    let interestLevel: InterestLevelScorer.InterestAnalysis?
+    let redFlags: RedFlagDetector.RedFlagAnalysis?
+    let greenFlags: GreenFlagDetector.GreenFlagAnalysis?
+
+    // Emotional Depth (9-14)
+    let vulnerability: VulnerabilityDetector.VulnerabilityAnalysis?
+    let trust: TrustIndicatorAnalyzer.TrustAnalysis?
+    let jealousy: JealousyDetector.JealousyAnalysis?
+    let futurePlanning: FuturePlanningAnalyzer.FutureAnalysis?
+    let humorCompatibility: HumorCompatibilityAnalyzer.HumorAnalysis?
+    let topicDiversity: TopicDiversityAnalyzer.TopicAnalysis?
+
+    // Behavioral Patterns (15-22)
+    let consistency: ConsistencyAnalyzer.ConsistencyAnalysis?
+    let ghostingRisk: GhostingRiskPredictor.GhostingAnalysis?
+    let emotionalAvailability: EmotionalAvailabilityAnalyzer.AvailabilityAnalysis?
+    let conflictStyle: ConflictStyleAnalyzer.ConflictAnalysis?
+    let affectionExpression: AffectionExpressionAnalyzer.AffectionAnalysis?
+    let resentment: ResentmentAccumulator.ResentmentAnalysis?
+    let boundaryRespect: BoundaryRespectAnalyzer.BoundaryAnalysis?
+    let emotionalIntelligence: EmotionalIntelligenceScorer.EQAnalysis?
+
+    // Quality & Growth (23-28)
+    let listeningQuality: ListeningQualityScorer.ListeningAnalysis?
+    let memoryRecall: MemoryRecallAnalyzer.MemoryAnalysis?
+    let initiationBalance: InitiationBalanceAnalyzer.InitiationAnalysis?
+    let supportQuality: SupportQualityAnalyzer.SupportAnalysis?
+    let validationPatterns: ValidationPatternDetector.ValidationAnalysis?
+    let growthMindset: GrowthMindsetDetector.GrowthAnalysis?
 }
 
 // MARK: - Analysis State
@@ -429,20 +472,52 @@ struct ClassifierInfo: Identifiable {
     let description: String
     let icon: String
 
-    static let allClassifiers: [ClassifierInfo] = [
-        ClassifierInfo(id: "sentiment", name: "Sentiment Analysis", description: "Analyzes emotional tone", icon: "face.smiling"),
-        ClassifierInfo(id: "sentimentComparison", name: "Sentiment Comparison", description: "Compares sentiment between parties", icon: "arrow.left.arrow.right"),
-        ClassifierInfo(id: "toxicity", name: "Toxicity Detection", description: "Detects toxic language", icon: "exclamationmark.triangle"),
-        ClassifierInfo(id: "engagement", name: "Engagement Scoring", description: "Measures emotional investment", icon: "heart"),
+    // Original 12 classifiers
+    static let originalClassifiers: [ClassifierInfo] = [
+        ClassifierInfo(id: "sentiment", name: "Sentiment", description: "Analyzes emotional tone", icon: "face.smiling"),
+        ClassifierInfo(id: "toxicity", name: "Toxicity", description: "Detects toxic language", icon: "exclamationmark.triangle"),
+        ClassifierInfo(id: "engagement", name: "Engagement", description: "Measures emotional investment", icon: "heart"),
         ClassifierInfo(id: "doubleTexting", name: "Double Texting", description: "Analyzes message streaks", icon: "bubble.left.and.bubble.right"),
-        ClassifierInfo(id: "streakTiming", name: "Streak Timing", description: "Analyzes timing within streaks", icon: "clock"),
         ClassifierInfo(id: "responseTimes", name: "Response Times", description: "Measures response speed", icon: "timer"),
-        ClassifierInfo(id: "callbacks", name: "Callback Consistency", description: "Analyzes follow-up patterns", icon: "arrow.turn.up.left"),
-        ClassifierInfo(id: "weekdayWeekend", name: "Weekday/Weekend", description: "Compares patterns by day type", icon: "calendar"),
-        ClassifierInfo(id: "apologies", name: "Apology Patterns", description: "Detects apologies and reconciliation", icon: "hand.raised"),
-        ClassifierInfo(id: "positivity", name: "Positivity Index", description: "Calculates overall health score", icon: "chart.line.uptrend.xyaxis"),
-        ClassifierInfo(id: "patterns", name: "Communication Patterns", description: "Analyzes messaging style", icon: "message")
+        ClassifierInfo(id: "apologies", name: "Apologies", description: "Detects apology patterns", icon: "hand.raised"),
+        ClassifierInfo(id: "patterns", name: "Communication", description: "Analyzes messaging style", icon: "message"),
+        ClassifierInfo(id: "positivity", name: "Positivity", description: "Overall health score", icon: "chart.line.uptrend.xyaxis")
     ]
+
+    // 28 Advanced classifiers
+    static let advancedClassifiers: [ClassifierInfo] = [
+        ClassifierInfo(id: "attachment", name: "Attachment Style", description: "Analyzes attachment patterns", icon: "link"),
+        ClassifierInfo(id: "loveLanguages", name: "Love Languages", description: "Detects love language preferences", icon: "heart.text.square"),
+        ClassifierInfo(id: "powerDynamics", name: "Power Dynamics", description: "Analyzes control patterns", icon: "scale.3d"),
+        ClassifierInfo(id: "emotionalLabor", name: "Emotional Labor", description: "Tracks emotional work", icon: "figure.mind.and.body"),
+        ClassifierInfo(id: "breadcrumbing", name: "Breadcrumbing", description: "Detects minimal effort patterns", icon: "ellipsis"),
+        ClassifierInfo(id: "interestLevel", name: "Interest Level", description: "Measures interest disparity", icon: "gauge.medium"),
+        ClassifierInfo(id: "redFlags", name: "Red Flags", description: "Identifies warning signs", icon: "flag.fill"),
+        ClassifierInfo(id: "greenFlags", name: "Green Flags", description: "Identifies positive signs", icon: "checkmark.seal"),
+        ClassifierInfo(id: "vulnerability", name: "Vulnerability", description: "Measures emotional openness", icon: "heart.slash"),
+        ClassifierInfo(id: "trust", name: "Trust", description: "Analyzes trust indicators", icon: "lock.shield"),
+        ClassifierInfo(id: "jealousy", name: "Jealousy", description: "Detects jealousy patterns", icon: "eye.trianglebadge.exclamationmark"),
+        ClassifierInfo(id: "futurePlanning", name: "Future Planning", description: "Analyzes commitment level", icon: "calendar.badge.clock"),
+        ClassifierInfo(id: "humor", name: "Humor", description: "Measures humor compatibility", icon: "theatermasks"),
+        ClassifierInfo(id: "topics", name: "Topic Diversity", description: "Analyzes conversation range", icon: "text.bubble"),
+        ClassifierInfo(id: "consistency", name: "Consistency", description: "Measures behavior consistency", icon: "arrow.triangle.2.circlepath"),
+        ClassifierInfo(id: "ghosting", name: "Ghosting Risk", description: "Predicts ghosting risk", icon: "person.crop.circle.badge.questionmark"),
+        ClassifierInfo(id: "availability", name: "Availability", description: "Measures emotional presence", icon: "figure.wave"),
+        ClassifierInfo(id: "conflict", name: "Conflict Style", description: "Analyzes conflict resolution", icon: "bolt.trianglebadge.exclamationmark"),
+        ClassifierInfo(id: "affection", name: "Affection", description: "Measures affection expression", icon: "heart.circle"),
+        ClassifierInfo(id: "resentment", name: "Resentment", description: "Detects building resentment", icon: "exclamationmark.bubble"),
+        ClassifierInfo(id: "boundaries", name: "Boundaries", description: "Analyzes boundary respect", icon: "hand.raised.slash"),
+        ClassifierInfo(id: "eq", name: "Emotional IQ", description: "Measures emotional intelligence", icon: "brain.head.profile"),
+        ClassifierInfo(id: "listening", name: "Listening", description: "Analyzes listening quality", icon: "ear"),
+        ClassifierInfo(id: "memory", name: "Memory", description: "Tracks memory and recall", icon: "memorychip"),
+        ClassifierInfo(id: "initiation", name: "Initiation", description: "Measures who starts more", icon: "arrow.up.message"),
+        ClassifierInfo(id: "support", name: "Support", description: "Analyzes support quality", icon: "hands.sparkles"),
+        ClassifierInfo(id: "validation", name: "Validation", description: "Detects validation patterns", icon: "checkmark.bubble"),
+        ClassifierInfo(id: "growth", name: "Growth Mindset", description: "Measures growth potential", icon: "leaf.arrow.triangle.circlepath")
+    ]
+
+    // All 40 classifiers combined
+    static let allClassifiers: [ClassifierInfo] = originalClassifiers + advancedClassifiers
 }
 
 // MARK: - UI Display Models

@@ -34,6 +34,42 @@ final class MessageParser {
         return normalizeMessages(messages)
     }
 
+    /// Parse with custom user names for direction detection
+    func parse(text: String, userName: String, contactName: String) -> [ParsedMessage] {
+        let messages = parseConversationData(text, format: .paste)
+        return assignDirections(messages, userName: userName, contactName: contactName)
+    }
+
+    /// Assign directions based on user names
+    private func assignDirections(_ messages: [ParsedMessage], userName: String, contactName: String) -> [ParsedMessage] {
+        return messages.enumerated().map { index, msg in
+            let direction: ParsedMessage.MessageDirection
+            let senderLower = msg.sender.lowercased()
+            let userLower = userName.lowercased()
+            let contactLower = contactName.lowercased()
+
+            if senderLower == userLower || senderLower == "you" || senderLower == "me" {
+                direction = .sent
+            } else if senderLower == contactLower || senderLower == "them" {
+                direction = .received
+            } else if msg.direction == .sent {
+                direction = .sent
+            } else {
+                direction = .received
+            }
+
+            return ParsedMessage(
+                id: index,
+                timestamp: msg.timestamp,
+                sender: direction == .sent ? userName : contactName,
+                content: msg.content,
+                direction: direction,
+                length: msg.length,
+                timeSinceLast: msg.timeSinceLast
+            )
+        }
+    }
+
     // MARK: - Text Format Parsing
 
     private func parseTextFormat(_ text: String) -> [ParsedMessage] {
