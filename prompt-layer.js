@@ -1,10 +1,16 @@
 /**
  * Dynamic Prompt Layer for JustLayMe
  * Generates personalized system prompts based on user character customization
+ * Enhanced with Grey Mirror learning integration
  */
 
 class PromptLayer {
     constructor() {
+        // Grey Mirror learning cache
+        this.learningPatterns = new Map();
+        this.patternRefreshInterval = 300000; // 5 minutes
+        this.lastPatternRefresh = 0;
+
         this.basePersonalities = {
             uncensored_gpt: {
                 core_trait: "uncensored_general",
@@ -311,6 +317,182 @@ class PromptLayer {
      */
     capitalizeFirst(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // ============================================
+    // GREY MIRROR LEARNING INTEGRATION
+    // ============================================
+
+    /**
+     * Load learning patterns from database or cache
+     */
+    async loadLearningPatterns(db, characterId) {
+        const cacheKey = `patterns_${characterId}`;
+        const now = Date.now();
+
+        // Check cache
+        if (this.learningPatterns.has(cacheKey) &&
+            now - this.lastPatternRefresh < this.patternRefreshInterval) {
+            return this.learningPatterns.get(cacheKey);
+        }
+
+        try {
+            const result = await db.query(`
+                SELECT pattern_type, user_input, expected_output, confidence
+                FROM character_learning
+                WHERE character_id = $1 AND confidence > 0.6
+                ORDER BY confidence DESC, created_at DESC
+                LIMIT 20
+            `, [characterId]);
+
+            const patterns = result.rows || [];
+            this.learningPatterns.set(cacheKey, patterns);
+            this.lastPatternRefresh = now;
+
+            return patterns;
+        } catch (error) {
+            console.error('Failed to load learning patterns:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Generate prompt with Grey Mirror learning enhancements
+     */
+    async generateEnhancedPrompt(characterId, userCustomization = {}, db = null) {
+        // Get base prompt
+        let prompt = this.generatePrompt(characterId, userCustomization);
+
+        // If database available, enhance with learning patterns
+        if (db) {
+            try {
+                const patterns = await this.loadLearningPatterns(db, characterId);
+                const learningSection = this.buildLearningSection(patterns);
+                if (learningSection) {
+                    prompt += '\n\n' + learningSection;
+                }
+            } catch (error) {
+                console.log('Grey Mirror learning enhancement skipped');
+            }
+        }
+
+        return prompt;
+    }
+
+    /**
+     * Build learning section from patterns
+     */
+    buildLearningSection(patterns) {
+        if (!patterns || patterns.length === 0) {
+            return null;
+        }
+
+        let section = 'LEARNED RESPONSE PATTERNS:\n';
+        section += 'Based on user feedback, incorporate these communication styles:\n\n';
+
+        // Group patterns by type
+        const groupedPatterns = {};
+        patterns.forEach(p => {
+            const type = p.pattern_type || 'general';
+            if (!groupedPatterns[type]) {
+                groupedPatterns[type] = [];
+            }
+            groupedPatterns[type].push(p);
+        });
+
+        // Build pattern descriptions
+        Object.entries(groupedPatterns).forEach(([type, typePatterns]) => {
+            section += `${this.capitalizeFirst(type)} patterns:\n`;
+            typePatterns.slice(0, 3).forEach(p => {
+                if (p.expected_output) {
+                    section += `- When similar to "${p.user_input?.substring(0, 50) || 'context'}..." → respond like: "${p.expected_output.substring(0, 100)}..."\n`;
+                }
+            });
+            section += '\n';
+        });
+
+        section += 'Apply these learned patterns to improve response quality and user satisfaction.';
+
+        return section;
+    }
+
+    /**
+     * Extract pattern suggestions from response analysis
+     */
+    extractPatternSuggestions(responseAnalysis, feedbackScore) {
+        const suggestions = [];
+
+        if (feedbackScore >= 4) {
+            // Positive feedback - extract what worked
+            suggestions.push({
+                type: 'success',
+                pattern: 'tone_match',
+                description: 'Response tone matched user expectations',
+                weight: 0.8
+            });
+        } else if (feedbackScore <= 2) {
+            // Negative feedback - identify what to improve
+            if (responseAnalysis?.quality?.relevance < 0.5) {
+                suggestions.push({
+                    type: 'improvement',
+                    pattern: 'relevance',
+                    description: 'Improve topical relevance',
+                    weight: 0.9
+                });
+            }
+            if (responseAnalysis?.quality?.empathy < 0.5) {
+                suggestions.push({
+                    type: 'improvement',
+                    pattern: 'empathy',
+                    description: 'Show more emotional understanding',
+                    weight: 0.85
+                });
+            }
+        }
+
+        return suggestions;
+    }
+
+    /**
+     * Get learning statistics for a character
+     */
+    async getLearningStats(db, characterId) {
+        try {
+            const result = await db.query(`
+                SELECT
+                    pattern_type,
+                    COUNT(*) as count,
+                    AVG(confidence) as avg_confidence
+                FROM character_learning
+                WHERE character_id = $1
+                GROUP BY pattern_type
+                ORDER BY count DESC
+            `, [characterId]);
+
+            return {
+                patterns: result.rows || [],
+                totalPatterns: result.rows?.reduce((sum, r) => sum + parseInt(r.count), 0) || 0,
+                avgConfidence: result.rows?.reduce((sum, r) => sum + parseFloat(r.avg_confidence), 0) / (result.rows?.length || 1) || 0
+            };
+        } catch (error) {
+            return { patterns: [], totalPatterns: 0, avgConfidence: 0 };
+        }
+    }
+
+    /**
+     * Invalidate learning cache for a character
+     */
+    invalidateLearningCache(characterId) {
+        const cacheKey = `patterns_${characterId}`;
+        this.learningPatterns.delete(cacheKey);
+    }
+
+    /**
+     * Clear all learning caches
+     */
+    clearAllLearningCaches() {
+        this.learningPatterns.clear();
+        this.lastPatternRefresh = 0;
     }
 }
 

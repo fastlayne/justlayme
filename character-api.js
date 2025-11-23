@@ -13,14 +13,20 @@ const http = require('http');
 const {OAuth2Client} = require('google-auth-library');
 const PromptLayer = require('./prompt-layer');
 const ModelManager = require('./model-manager');
+const GreyMirrorClassifier = require('./grey-mirror-classifier');
 const { ConversationManager, chatHistoryEndpoints, requirePremiumForHistory } = require('./chat-history-implementation');
 // Initialize Stripe only if secret key is provided
 const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 
-// Initialize prompt layer and model manager
+// Initialize prompt layer, model manager, and Grey Mirror classifier
 const promptLayer = new PromptLayer();
 const modelManager = new ModelManager();
+const greyMirrorClassifier = new GreyMirrorClassifier();
 let conversationManager;
+
+// Grey Mirror session analytics storage
+const greyMirrorSessions = new Map();
+const greyMirrorFeedback = [];
 
 const app = express();
 
@@ -765,9 +771,9 @@ app.post('/api/chat/:character_id', authenticateToken, async (req, res) => {
     }
     
     systemPrompt += `\nStay perfectly in character. Be creative and engaging.`;
-    
-    // Call LM Studio
-    const response = await fetch(`${LM_STUDIO_URL}/v1/chat/completions`, {
+
+    // Call AI service (Ollama)
+    const response = await fetch(`${OLLAMA_URL}/v1/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -874,6 +880,271 @@ app.post('/api/feedback/:memory_id', authenticateToken, async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to process feedback' });
+  }
+});
+
+// ============================================
+// GREY MIRROR API ENDPOINTS
+// ============================================
+
+// Submit Grey Mirror feedback with full classifier analysis
+app.post('/api/grey-mirror/feedback', async (req, res) => {
+  try {
+    const {
+      message_id,
+      score,
+      pattern_type,
+      corrected_response,
+      additional_feedback,
+      session_id,
+      character_id,
+      user_id
+    } = req.body;
+
+    // Get session data for context
+    const sessionData = greyMirrorSessions.get(session_id) || { messages: [] };
+
+    // Process feedback through classifier
+    const feedbackResult = greyMirrorClassifier.processFeedback(
+      { score, correctedResponse: corrected_response, patternType: pattern_type },
+      { sessionId: session_id, characterId: character_id, userId: user_id }
+    );
+
+    // Store feedback for learning
+    const feedbackEntry = {
+      id: message_id,
+      timestamp: Date.now(),
+      score,
+      patternType: pattern_type,
+      correctedResponse: corrected_response,
+      additionalFeedback: additional_feedback,
+      sessionId: session_id,
+      characterId: character_id,
+      userId: user_id,
+      classifierAnalysis: feedbackResult
+    };
+
+    greyMirrorFeedback.push(feedbackEntry);
+
+    // If user is authenticated and there's a corrected response, save to learning table
+    if (user_id && user_id !== 'anonymous' && corrected_response) {
+      try {
+        await db.query(`
+          INSERT INTO character_learning (character_id, pattern_type, user_input, expected_output, confidence)
+          VALUES ($1, $2, $3, $4, $5)
+        `, [
+          character_id || 'general',
+          pattern_type || 'speech',
+          message_id,
+          corrected_response,
+          score >= 4 ? 0.9 : 0.7
+        ]);
+      } catch (dbError) {
+        console.log('Learning data saved to memory (DB unavailable)');
+      }
+    }
+
+    // Broadcast to admin monitors
+    global.broadcastToAdmins?.({
+      type: 'GREY_MIRROR_FEEDBACK',
+      feedback: feedbackEntry,
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({
+      success: true,
+      feedbackId: message_id,
+      analysis: feedbackResult,
+      learningImpact: feedbackResult.learningImpact || 0
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror feedback error:', error);
+    res.status(500).json({ error: 'Failed to process Grey Mirror feedback' });
+  }
+});
+
+// Analyze a message with all 28 classifiers
+app.post('/api/grey-mirror/analyze', async (req, res) => {
+  try {
+    const { message, context, session_id } = req.body;
+
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+
+    const sessionData = greyMirrorSessions.get(session_id) || { messages: [] };
+
+    const analysis = await greyMirrorClassifier.analyzeMessage(
+      message,
+      context || {},
+      sessionData,
+      {}
+    );
+
+    res.json({
+      success: true,
+      analysis: analysis,
+      classifierCount: 28,
+      timestamp: Date.now()
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze message' });
+  }
+});
+
+// Analyze AI response quality
+app.post('/api/grey-mirror/analyze-response', async (req, res) => {
+  try {
+    const { ai_response, user_message, context } = req.body;
+
+    if (!ai_response || !user_message) {
+      return res.status(400).json({ error: 'Both ai_response and user_message are required' });
+    }
+
+    const analysis = greyMirrorClassifier.analyzeResponse(
+      ai_response,
+      user_message,
+      context || {}
+    );
+
+    res.json({
+      success: true,
+      analysis: analysis,
+      timestamp: Date.now()
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror response analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze response' });
+  }
+});
+
+// Get aggregated Grey Mirror metrics
+app.get('/api/grey-mirror/metrics', async (req, res) => {
+  try {
+    const timeWindow = req.query.window || 'medium';
+
+    const metrics = greyMirrorClassifier.getAggregatedMetrics(timeWindow);
+
+    // Add session-level metrics
+    metrics.activeSessions = greyMirrorSessions.size;
+    metrics.totalFeedbackCount = greyMirrorFeedback.length;
+    metrics.recentFeedback = greyMirrorFeedback.slice(-20).map(f => ({
+      id: f.id,
+      score: f.score,
+      patternType: f.patternType,
+      characterId: f.characterId,
+      timestamp: f.timestamp
+    }));
+
+    // Calculate classifier distribution
+    const classifierInfo = greyMirrorClassifier.getClassifierInfo();
+    metrics.classifiers = classifierInfo;
+    metrics.classifierCount = classifierInfo.length;
+
+    res.json({
+      success: true,
+      metrics: metrics,
+      timestamp: Date.now()
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror metrics error:', error);
+    res.status(500).json({ error: 'Failed to get metrics' });
+  }
+});
+
+// Get classifier information
+app.get('/api/grey-mirror/classifiers', (req, res) => {
+  try {
+    const classifierInfo = greyMirrorClassifier.getClassifierInfo();
+
+    res.json({
+      success: true,
+      classifiers: classifierInfo,
+      count: classifierInfo.length,
+      categories: [...new Set(classifierInfo.map(c => c.category))]
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror classifiers error:', error);
+    res.status(500).json({ error: 'Failed to get classifier info' });
+  }
+});
+
+// Get learning patterns extracted from feedback
+app.get('/api/grey-mirror/patterns', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 50;
+
+    // Get recent patterns from feedback
+    const patterns = greyMirrorFeedback
+      .filter(f => f.correctedResponse)
+      .slice(-limit)
+      .map(f => ({
+        id: f.id,
+        patternType: f.patternType,
+        score: f.score,
+        characterId: f.characterId,
+        hasCorrection: !!f.correctedResponse,
+        timestamp: f.timestamp,
+        learningImpact: f.classifierAnalysis?.learningImpact || 0
+      }));
+
+    res.json({
+      success: true,
+      patterns: patterns,
+      totalCount: greyMirrorFeedback.filter(f => f.correctedResponse).length
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror patterns error:', error);
+    res.status(500).json({ error: 'Failed to get patterns' });
+  }
+});
+
+// Real-time session analytics update
+app.post('/api/grey-mirror/session-update', (req, res) => {
+  try {
+    const { session_id, message, is_user, character_id } = req.body;
+
+    if (!session_id) {
+      return res.status(400).json({ error: 'Session ID is required' });
+    }
+
+    let session = greyMirrorSessions.get(session_id);
+    if (!session) {
+      session = {
+        id: session_id,
+        startTime: Date.now(),
+        characterId: character_id,
+        messages: [],
+        analytics: {}
+      };
+      greyMirrorSessions.set(session_id, session);
+    }
+
+    if (message) {
+      session.messages.push({
+        content: message,
+        isUser: is_user,
+        timestamp: Date.now()
+      });
+      session.lastActivity = Date.now();
+    }
+
+    res.json({
+      success: true,
+      sessionId: session_id,
+      messageCount: session.messages.length
+    });
+
+  } catch (error) {
+    console.error('Grey Mirror session update error:', error);
+    res.status(500).json({ error: 'Failed to update session' });
   }
 });
 
@@ -1547,6 +1818,11 @@ app.post('/api/webhook', express.raw({type: 'application/json'}), async (req, re
 // Admin monitor route
 app.get('/admin-monitor', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-monitor.html'));
+});
+
+// Grey Mirror Dashboard route
+app.get('/grey-mirror-dashboard.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'grey-mirror-dashboard.html'));
 });
 
 // Serve static files
