@@ -1,0 +1,45 @@
+.star-border-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+
+  .star-border-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+
+    .star {
+      position: absolute;
+      font-size: 12px;
+      font-weight: bold;
+      text-shadow: 0 0 8px currentColor;
+      filter: drop-shadow(0 0 4px currentColor);
+      will-change: transform, opacity;
+    }
+  }
+
+  // SVG border - draws animated lines around the container
+  .star-border-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+
+    line {
+      vector-effect: non-scaling-stroke;
+      shape-rendering: crispEdges;
+    }
+  }
+
+  // Ensure content is above borders
+  > *:not(.star-border-wrapper):not(.star-border-svg) {
+    position: relative;
+    z-index: 2;
+  }
+}

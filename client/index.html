@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="dns-prefetch" href="//js.stripe.com">
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+    <title>JustLayMe - Unfiltered AI Conversations</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H2MSZKQFJV"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-H2MSZKQFJV');
+    </script>
+
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="l5vpum-UgKyT2Pz-LiG_DcISHl4OaMzEDiBvATnpQM8" />
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

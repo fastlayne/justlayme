@@ -8,6 +8,7 @@ This document maps web features to their iOS implementations.
 |---------------|------------|----------------|
 | Login/Signup Modal | `AuthView` | Full auth flow with Google |
 | Main Chat Interface | `ChatView` | TabView > Chat tab |
+| **Black Mirror Page** | `BlackMirrorView` | TabView > Analyze tab |
 | Character Selector | `CharacterPickerSheet` | Sheet presentation |
 | Character Creator | `CreateCharacterView` | Sheet from Characters tab |
 | Settings Modal | `SettingsView` | TabView > Settings tab |

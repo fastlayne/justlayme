@@ -1,0 +1,436 @@
+// ============================================================================
+// GLOBAL STYLES - SOPHISTICATED, PREMIUM, ELEGANT AESTHETIC
+// ============================================================================
+
+@import './variables.scss';
+@import './glassmorphism.scss';
+@import './animations.scss';
+
+// ===== RESET & BASE STYLES =====
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: $font-family-body;
+  font-size: $font-size-base;
+  line-height: 1.6;
+  color: $text-primary;
+  background: $dark-bg;
+  overflow-x: hidden;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+// ===== TYPOGRAPHY - PROFESSIONAL HIERARCHY =====
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: $font-weight-semibold;
+  line-height: 1.2;
+  margin-bottom: $spacing-md;
+  color: $text-primary;
+  letter-spacing: -0.5px;
+}
+
+h1 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+  margin-bottom: $spacing-lg;
+  line-height: 1.1;
+
+  @media (max-width: $breakpoint-md) {
+    font-size: 2.5rem;
+  }
+}
+
+h2 {
+  font-size: 2.25rem;
+  font-weight: 600;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: $breakpoint-md) {
+    font-size: 1.875rem;
+  }
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: $spacing-md;
+}
+
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: $spacing-md;
+  color: $text-secondary;
+  line-height: $line-height-relaxed;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+a {
+  color: $primary;
+  text-decoration: none;
+  transition: color $transition-base;
+
+  &:hover {
+    color: $primary-glow;
+  }
+}
+
+// ===== LISTS =====
+
+ul, ol {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
+
+// ===== CODE =====
+
+code {
+  font-family: $font-family-mono;
+  background: rgba(6, 182, 212, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: $radius-sm;
+  color: $primary-glow;
+  font-size: 0.9em;
+}
+
+pre {
+  background: rgba(0, 0, 0, 0.5);
+  padding: $spacing-lg;
+  border-radius: $radius-lg;
+  overflow-x: auto;
+  margin-bottom: $spacing-lg;
+
+  code {
+    background: transparent;
+    padding: 0;
+    color: $text-primary;
+  }
+}
+
+// ===== FORM ELEMENTS =====
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: rgba(6, 18, 45, 0.4);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  padding: $spacing-md;
+  border-radius: $radius-lg;
+  transition: all $transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    background: rgba(6, 18, 45, 0.6);
+  }
+
+  &::placeholder {
+    color: $text-tertiary;
+  }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+// ===== BUTTONS =====
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 200ms ease-out;
+  text-decoration: none;
+  display: inline-block;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ===== SCROLLBAR STYLING =====
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 5px;
+  transition: background $transition-base;
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.6);
+  }
+}
+
+// Firefox
+* {
+  scrollbar-color: rgba(6, 182, 212, 0.3) transparent;
+  scrollbar-width: thin;
+}
+
+// ===== SELECTION =====
+
+::selection {
+  background: rgba(6, 182, 212, 0.3);
+  color: $text-primary;
+}
+
+::-moz-selection {
+  background: rgba(6, 182, 212, 0.3);
+  color: $text-primary;
+}
+
+// ===== UTILITY CLASSES =====
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+
+  @media (max-width: $breakpoint-lg) {
+    max-width: 1024px;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    max-width: 768px;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    padding: 0 $spacing-md;
+  }
+}
+
+.glass-bg {
+  @include glass-default();
+}
+
+.text-primary {
+  color: $text-primary;
+}
+
+.text-secondary {
+  color: $text-secondary;
+}
+
+.text-accent {
+  color: $primary;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt {
+  margin-top: $spacing-md;
+
+  &-xs {
+    margin-top: $spacing-xs;
+  }
+  &-sm {
+    margin-top: $spacing-sm;
+  }
+  &-lg {
+    margin-top: $spacing-lg;
+  }
+  &-xl {
+    margin-top: $spacing-xl;
+  }
+}
+
+.mb {
+  margin-bottom: $spacing-md;
+
+  &-xs {
+    margin-bottom: $spacing-xs;
+  }
+  &-sm {
+    margin-bottom: $spacing-sm;
+  }
+  &-lg {
+    margin-bottom: $spacing-lg;
+  }
+  &-xl {
+    margin-bottom: $spacing-xl;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+}
+
+.gap {
+  gap: $spacing-md;
+
+  &-sm {
+    gap: $spacing-sm;
+  }
+  &-lg {
+    gap: $spacing-lg;
+  }
+}
+
+// ===== ANIMATIONS =====
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 0.4);
+  }
+}
+
+.fade-in {
+  animation: fadeIn $transition-base;
+}
+
+.slide-in-up {
+  animation: slideInUp $transition-slow;
+}
+
+.slide-in-down {
+  animation: slideInDown $transition-slow;
+}
+
+// ===== RESPONSIVE UTILITIES =====
+
+@media (max-width: $breakpoint-md) {
+  body {
+    font-size: $font-size-sm;
+  }
+
+  h1 {
+    font-size: $font-size-4xl;
+  }
+
+  h2 {
+    font-size: $font-size-3xl;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  h1 {
+    font-size: $font-size-3xl;
+  }
+
+  h2 {
+    font-size: $font-size-2xl;
+  }
+
+  h3 {
+    font-size: $font-size-xl;
+  }
+}
+
+// ===== ROTATING BRAND HIGHLIGHT =====
+
+.rotating-brand-highlight {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  margin-left: 0.25rem;
+  background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%);
+  color: #000000;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+}

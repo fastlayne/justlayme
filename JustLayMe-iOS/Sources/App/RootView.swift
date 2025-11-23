@@ -55,25 +55,31 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
+            BlackMirrorView()
+                .tabItem {
+                    Label("Analyze", systemImage: "waveform.path.ecg")
+                }
+                .tag(1)
+
             CharacterListView()
                 .tabItem {
                     Label("Characters", systemImage: "person.2.fill")
                 }
-                .tag(1)
+                .tag(2)
 
             if authViewModel.authState == .authenticated {
                 ProfileView()
                     .tabItem {
                         Label("Profile", systemImage: "person.circle.fill")
                     }
-                    .tag(2)
+                    .tag(3)
             }
 
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
-                .tag(3)
+                .tag(4)
         }
         .tint(.purple)
     }
