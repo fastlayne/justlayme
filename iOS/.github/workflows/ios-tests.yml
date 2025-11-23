@@ -1,0 +1,284 @@
+name: iOS Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'iOS/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'iOS/**'
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  SCHEME: JustLayMe
+  DESTINATION: 'platform=iOS Simulator,name=iPhone 15,OS=17.2'
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Cache Swift Packages
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Build for Testing
+      run: |
+        cd iOS
+        xcodebuild build-for-testing \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -skipPackagePluginValidation \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Run Unit Tests
+      run: |
+        cd iOS
+        xcodebuild test-without-building \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -only-testing:JustLayMeTests/Unit \
+          -resultBundlePath TestResults/UnitTests.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color --report junit
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: unit-test-results
+        path: iOS/TestResults/
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/macos@v2
+      if: always()
+      with:
+        files: |
+          iOS/build/reports/**/*.xml
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: macos-14
+    timeout-minutes: 30
+    needs: unit-tests
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Run Integration Tests
+      run: |
+        cd iOS
+        xcodebuild test \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -only-testing:JustLayMeTests/Integration \
+          -resultBundlePath TestResults/IntegrationTests.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: iOS/TestResults/
+
+  ui-tests:
+    name: UI Tests
+    runs-on: macos-14
+    timeout-minutes: 45
+    needs: unit-tests
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Boot Simulator
+      run: |
+        xcrun simctl boot "iPhone 15" || true
+        xcrun simctl bootstatus "iPhone 15"
+
+    - name: Run UI Tests
+      run: |
+        cd iOS
+        xcodebuild test \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -only-testing:JustLayMeUITests \
+          -resultBundlePath TestResults/UITests.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Upload Screenshots
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: ui-test-screenshots
+        path: iOS/TestResults/UITests.xcresult
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: macos-14
+    timeout-minutes: 30
+    needs: unit-tests
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Run Performance Tests
+      run: |
+        cd iOS
+        xcodebuild test \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -only-testing:JustLayMeTests/Performance \
+          -resultBundlePath TestResults/PerformanceTests.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Upload Performance Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: iOS/TestResults/
+
+  code-coverage:
+    name: Code Coverage
+    runs-on: macos-14
+    timeout-minutes: 30
+    needs: [unit-tests, integration-tests]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Run Tests with Coverage
+      run: |
+        cd iOS
+        xcodebuild test \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults/Coverage.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Generate Coverage Report
+      run: |
+        cd iOS
+        xcrun xccov view --report --json TestResults/Coverage.xcresult > coverage.json
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-report
+        path: iOS/coverage.json
+
+    - name: Check Coverage Threshold
+      run: |
+        cd iOS
+        COVERAGE=$(cat coverage.json | jq '.lineCoverage')
+        echo "Code Coverage: $COVERAGE"
+        if (( $(echo "$COVERAGE < 0.70" | bc -l) )); then
+          echo "Coverage is below 70% threshold!"
+          exit 1
+        fi
+
+  snapshot-tests:
+    name: Snapshot Tests
+    runs-on: macos-14
+    timeout-minutes: 30
+    needs: unit-tests
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+    - name: Run Snapshot Tests
+      run: |
+        cd iOS
+        xcodebuild test \
+          -scheme ${{ env.SCHEME }} \
+          -destination "${{ env.DESTINATION }}" \
+          -only-testing:JustLayMeSnapshotTests \
+          -resultBundlePath TestResults/SnapshotTests.xcresult \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+
+    - name: Upload Snapshot Failures
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: snapshot-failures
+        path: iOS/TestResults/
+
+  lint:
+    name: SwiftLint
+    runs-on: macos-14
+    timeout-minutes: 10
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install SwiftLint
+      run: brew install swiftlint
+
+    - name: Run SwiftLint
+      run: |
+        cd iOS
+        swiftlint lint --reporter github-actions-logging
+
+  all-tests-passed:
+    name: All Tests Passed
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, ui-tests, performance-tests, code-coverage, snapshot-tests, lint]
+    if: always()
+
+    steps:
+    - name: Check Results
+      run: |
+        if [ "${{ needs.unit-tests.result }}" != "success" ] || \
+           [ "${{ needs.integration-tests.result }}" != "success" ] || \
+           [ "${{ needs.ui-tests.result }}" != "success" ] || \
+           [ "${{ needs.code-coverage.result }}" != "success" ]; then
+          echo "One or more test jobs failed!"
+          exit 1
+        fi
+        echo "All tests passed!"

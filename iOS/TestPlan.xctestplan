@@ -1,0 +1,65 @@
+{
+  "configurations" : [
+    {
+      "id" : "default",
+      "name" : "Default Configuration",
+      "options" : {
+        "testTimeoutsEnabled" : true,
+        "defaultTestExecutionTimeAllowance" : 60,
+        "maximumTestExecutionTimeAllowance" : 300
+      }
+    },
+    {
+      "id" : "ci",
+      "name" : "CI Configuration",
+      "options" : {
+        "testTimeoutsEnabled" : true,
+        "defaultTestExecutionTimeAllowance" : 120,
+        "maximumTestExecutionTimeAllowance" : 600,
+        "codeCoverageEnabled" : true,
+        "targetForVariableExpansion" : {
+          "containerPath" : "container:JustLayMe.xcodeproj",
+          "identifier" : "JustLayMe"
+        }
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverageEnabled" : true,
+    "environmentVariableEntries" : [
+      {
+        "key" : "IS_TESTING",
+        "value" : "YES"
+      }
+    ],
+    "testRepetitionMode" : "retryOnFailure",
+    "maximumTestRepetitions" : 3,
+    "testTimeoutsEnabled" : true,
+    "defaultTestExecutionTimeAllowance" : 60,
+    "maximumTestExecutionTimeAllowance" : 300
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:JustLayMe.xcodeproj",
+        "identifier" : "JustLayMeTests"
+      }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:JustLayMe.xcodeproj",
+        "identifier" : "JustLayMeUITests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:JustLayMe.xcodeproj",
+        "identifier" : "JustLayMeSnapshotTests"
+      }
+    }
+  ],
+  "version" : 1
+}

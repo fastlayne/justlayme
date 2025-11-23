@@ -1,0 +1,108 @@
+# SwiftLint Configuration for JustLayMe iOS
+
+disabled_rules:
+  - trailing_whitespace
+  - line_length
+  - type_body_length
+  - file_length
+  - function_body_length
+
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - missing_docs
+  - multiline_arguments
+  - multiline_parameters
+  - operator_usage_whitespace
+  - overridden_super_call
+  - private_action
+  - private_outlet
+  - prohibited_super_call
+  - redundant_nil_coalescing
+  - sorted_first_last
+  - toggle_bool
+  - unneeded_parentheses_in_closure_argument
+  - vertical_parameter_alignment_on_call
+
+excluded:
+  - Pods
+  - Carthage
+  - .build
+  - DerivedData
+  - Tests/Snapshots
+  - JustLayMeTests/__Snapshots__
+
+# Rule configurations
+identifier_name:
+  min_length:
+    warning: 2
+    error: 1
+  max_length:
+    warning: 50
+    error: 60
+  excluded:
+    - id
+    - x
+    - y
+    - i
+    - ok
+    - to
+    - db
+    - ai
+
+nesting:
+  type_level:
+    warning: 3
+    error: 5
+  function_level:
+    warning: 3
+    error: 5
+
+cyclomatic_complexity:
+  warning: 15
+  error: 25
+
+function_parameter_count:
+  warning: 6
+  error: 8
+
+type_name:
+  min_length: 3
+  max_length:
+    warning: 50
+    error: 60
+
+large_tuple:
+  warning: 4
+  error: 5
+
+# Custom rules
+custom_rules:
+  no_print:
+    name: "No Print Statements"
+    regex: "print\\("
+    message: "Use proper logging instead of print statements"
+    severity: warning
+    excluded: ".*Tests.*"
+
+  no_force_cast:
+    name: "No Force Cast"
+    regex: " as! "
+    message: "Avoid force casting, use safe unwrapping"
+    severity: warning
+
+  mark_comment_format:
+    name: "MARK Comment Format"
+    regex: "// MARK: [^-]"
+    message: "Use '// MARK: -' format for section markers"
+    severity: warning
+
+  todo_format:
+    name: "TODO Format"
+    regex: "// TODO[^:]"
+    message: "Use '// TODO:' format for todo comments"
+    severity: warning
+
+reporter: "xcode"
