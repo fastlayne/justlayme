@@ -1,0 +1,241 @@
+.verify-email-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+
+.verify-container {
+  width: 100%;
+  max-width: 450px;
+}
+
+.verify-box {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(6, 182, 212, 0.01) 50%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  border: 0.5px solid rgba(6, 182, 212, 0.12);
+  border-radius: 28px;
+  padding: 3rem 2.5rem;
+  backdrop-filter: blur(50px) saturate(200%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%);
+  box-shadow:
+    0 0 60px rgba(0, 0, 0, 0.3),
+    0 16px 48px rgba(6, 182, 212, 0.08),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(6, 182, 212, 0.06),
+    inset 0 0 40px rgba(6, 182, 212, 0.02);
+  text-align: center;
+}
+
+.verify-title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  margin: 0 0 2rem 0;
+  font-weight: 400;
+  letter-spacing: 0px;
+  opacity: 0.98;
+}
+
+.status-display {
+  &.verifying {
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(6, 182, 212, 0.2);
+      border-top-color: #06b6d4;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      animation: spin 1s linear infinite;
+    }
+
+    h2 {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  &.success {
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+      animation: successBounce 0.5s ease-out;
+    }
+
+    h2 {
+      color: #10b981;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.8);
+    }
+  }
+
+  &.expired {
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    h2 {
+      color: #f59e0b;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  &.error {
+    .icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem;
+      color: white;
+    }
+
+    h2 {
+      color: #ef4444;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0 0 0.5rem 0;
+  }
+}
+
+.redirect-notice {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.875rem !important;
+  margin-top: 1.5rem !important;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.action-buttons {
+  margin-top: 2rem;
+
+  .btn-primary {
+    padding: 0.875rem 2rem;
+    background: linear-gradient(135deg, #06b6d4 0%, #00d4ff 100%);
+    color: #000000;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 300ms ease;
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(6, 182, 212, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes successBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 768px) {
+  .verify-email-page {
+    padding: 10px;
+  }
+
+  .verify-box {
+    padding: 2rem 1.5rem;
+  }
+
+  .verify-title {
+    font-size: 1.25rem;
+  }
+
+  .status-display {
+    h2 {
+      font-size: 1.25rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
+
+    .icon,
+    .spinner {
+      width: 60px;
+      height: 60px;
+      font-size: 1.75rem;
+    }
+  }
+}

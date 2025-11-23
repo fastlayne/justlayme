@@ -1,0 +1,79 @@
+/* ARCHITECTURAL FIX: Enhanced cursor with satisfying snap and envelop effect */
+.target-cursor-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  transform: translate(-50%, -50%);
+  /* Add GPU acceleration for smoother animations */
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.target-cursor-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform, scale;
+  /* ARCHITECTURAL FIX: Add glow effect for better visibility */
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.8),
+    0 0 8px rgba(255, 255, 255, 0.4);
+  /* Smooth transitions */
+  transition: box-shadow 0.2s ease-out;
+}
+
+/* ARCHITECTURAL FIX: Enhanced glow on active/hover state */
+.target-cursor-wrapper.active .target-cursor-dot {
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 1),
+    0 0 16px rgba(255, 255, 255, 0.6),
+    0 0 24px rgba(255, 255, 255, 0.3);
+}
+
+.target-cursor-corner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border: 3px solid #fff;
+  will-change: transform;
+  /* ARCHITECTURAL FIX: Smooth corner transitions for satisfying snap effect */
+  transition: border-color 0.2s ease-out;
+  /* Add subtle glow to corners */
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+.corner-tl {
+  transform: translate(-150%, -150%);
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-tr {
+  transform: translate(50%, -150%);
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-br {
+  transform: translate(50%, 50%);
+  border-left: none;
+  border-top: none;
+}
+
+.corner-bl {
+  transform: translate(-150%, 50%);
+  border-right: none;
+  border-top: none;
+}

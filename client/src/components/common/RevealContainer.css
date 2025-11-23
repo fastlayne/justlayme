@@ -1,0 +1,98 @@
+/* Reveal Container - Scroll-triggered materialization effects */
+
+.reveal-container {
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-container.revealed {
+  opacity: 1;
+}
+
+/* Fade Up - Classic entrance from below */
+.reveal-container.fade-up {
+  transform: translateY(60px);
+}
+
+.reveal-container.fade-up.revealed {
+  transform: translateY(0);
+}
+
+/* Materialize - Appears from center with scale */
+.reveal-container.materialize {
+  transform: scale(0.85);
+  filter: blur(8px);
+}
+
+.reveal-container.materialize.revealed {
+  transform: scale(1);
+  filter: blur(0);
+}
+
+/* Expand - Horizontal expansion */
+.reveal-container.expand {
+  transform: scaleX(0.3);
+  filter: blur(4px);
+}
+
+.reveal-container.expand.revealed {
+  transform: scaleX(1);
+  filter: blur(0);
+}
+
+/* Glitch - Digital materialization */
+.reveal-container.glitch {
+  transform: translateX(-30px) skewX(-5deg);
+  filter: blur(6px);
+}
+
+.reveal-container.glitch.revealed {
+  transform: translateX(0) skewX(0);
+  filter: blur(0);
+}
+
+/* Quantum - Particle assembly effect */
+.reveal-container.quantum {
+  transform: scale(0.5) rotate(-5deg);
+  filter: blur(12px) brightness(1.5);
+}
+
+.reveal-container.quantum.revealed {
+  transform: scale(1) rotate(0);
+  filter: blur(0) brightness(1);
+}
+
+/* Slide In - Side entrance */
+.reveal-container.slide-left {
+  transform: translateX(-100px);
+  filter: blur(3px);
+}
+
+.reveal-container.slide-left.revealed {
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+.reveal-container.slide-right {
+  transform: translateX(100px);
+  filter: blur(3px);
+}
+
+.reveal-container.slide-right.revealed {
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+/* Emerge - 3D depth emergence */
+.reveal-container.emerge {
+  transform: translateZ(-200px) rotateX(15deg);
+  filter: blur(8px);
+  opacity: 0;
+}
+
+.reveal-container.emerge.revealed {
+  transform: translateZ(0) rotateX(0);
+  filter: blur(0);
+  opacity: 1;
+}

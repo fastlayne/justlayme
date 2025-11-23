@@ -1,0 +1,149 @@
+/* Beams - Animated light rays background */
+
+.beams-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Vertical Beams (from top) */
+.beams-vertical .beam {
+  position: absolute;
+  top: -50%;
+  width: 2px;
+  height: 200%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--beam-color, rgba(6, 182, 212, 0.15)) 20%,
+    var(--beam-color, rgba(6, 182, 212, 0.15)) 50%,
+    transparent 100%
+  );
+  left: calc(10% + (var(--beam-index) * 11%));
+  animation: beamPulseVertical var(--beam-duration, 4s) ease-in-out infinite;
+  animation-delay: var(--beam-delay, 0s);
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
+.beams-vertical .beam:nth-child(odd) {
+  width: 1px;
+  opacity: 0.4;
+  filter: blur(3px);
+}
+
+.beams-vertical .beam:nth-child(3n) {
+  width: 3px;
+  opacity: 0.8;
+  filter: blur(1px);
+}
+
+/* Horizontal Beams (from left) */
+.beams-horizontal .beam {
+  position: absolute;
+  left: -50%;
+  height: 2px;
+  width: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--beam-color, rgba(6, 182, 212, 0.15)) 20%,
+    var(--beam-color, rgba(6, 182, 212, 0.15)) 50%,
+    transparent 100%
+  );
+  top: calc(10% + (var(--beam-index) * 11%));
+  animation: beamPulseHorizontal var(--beam-duration, 4s) ease-in-out infinite;
+  animation-delay: var(--beam-delay, 0s);
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
+.beams-horizontal .beam:nth-child(odd) {
+  height: 1px;
+  opacity: 0.4;
+  filter: blur(3px);
+}
+
+.beams-horizontal .beam:nth-child(3n) {
+  height: 3px;
+  opacity: 0.8;
+  filter: blur(1px);
+}
+
+/* Glow effect at origin */
+.beams-vertical .beams-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(
+    ellipse 600px 300px,
+    rgba(6, 182, 212, 0.08) 0%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  opacity: 0.7;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.beams-horizontal .beams-glow {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 600px;
+  background: radial-gradient(
+    ellipse 300px 600px,
+    rgba(6, 182, 212, 0.08) 0%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  opacity: 0.7;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes beamPulseVertical {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-20px) scaleY(1.05);
+  }
+}
+
+@keyframes beamPulseHorizontal {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(0) scaleX(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateX(-20px) scaleX(1.05);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .beam,
+  .beams-glow {
+    animation: none !important;
+    opacity: 0.5;
+  }
+}

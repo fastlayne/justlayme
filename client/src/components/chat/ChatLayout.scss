@@ -1,0 +1,34 @@
+@import '@/styles/variables.scss';
+
+.chat-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  background: #000000;
+  overflow: hidden;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 200px 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  // ARCHITECTURAL FIX: Set z-index below hamburger button (1002) but above content
+  // Hierarchy: hamburger (1002) > sidebar (1000) > overlay (999)
+  z-index: 999;
+  backdrop-filter: blur(4px);
+  // ARCHITECTURAL FIX: Ensure overlay doesn't block hamburger button
+  // The hamburger is positioned at top-left, so we add pointer-events control
+  pointer-events: auto;
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}

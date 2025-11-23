@@ -1,0 +1,238 @@
+// ============================================================================
+// GLASSMORPHISM MIXINS - PREMIUM SHINY GLASS EFFECTS
+// ============================================================================
+
+@import './variables.scss';
+
+// ===== GLASS EFFECT MIXINS =====
+
+// Default Glass Effect - Most common, clean and premium
+@mixin glass-default() {
+  background: rgba(6, 18, 45, 0.35);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: $radius-xl;
+
+  // Subtle Fresnel reflection (shiny)
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 100%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// Glass Effect - Subtle (lighter, more transparent)
+@mixin glass-subtle() {
+  background: rgba(6, 18, 45, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: $radius-lg;
+}
+
+// Glass Effect - Strong (darker, more opaque)
+@mixin glass-strong() {
+  background: rgba(6, 18, 45, 0.55);
+  backdrop-filter: blur(30px) saturate(1.2);
+  -webkit-backdrop-filter: blur(30px) saturate(1.2);
+  border: 1px solid rgba(6, 182, 212, 0.5);
+  border-radius: $radius-xl;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 100%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// Glass Effect - Minimal (very subtle, almost transparent)
+@mixin glass-minimal() {
+  background: rgba(6, 18, 45, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(6, 182, 212, 0.1);
+  border-radius: $radius-md;
+}
+
+// ===== GLASS HOVER STATE =====
+@mixin glass-hover() {
+  transition: all $transition-base ease-out;
+
+  &:hover {
+    background: rgba(6, 18, 45, 0.45);
+    backdrop-filter: blur(32px) saturate(1.1);
+    -webkit-backdrop-filter: blur(32px) saturate(1.1);
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow: $shadow-neon;
+    transform: translateY(-2px);
+  }
+}
+
+// ===== GLASS INTERACTIVE STATES =====
+@mixin glass-active() {
+  background: rgba(8, 20, 50, 0.6);
+  border-color: rgba(6, 182, 212, 0.7);
+  box-shadow: $shadow-neon;
+}
+
+@mixin glass-focus() {
+  outline: none;
+  border-color: $primary-glow;
+  box-shadow:
+    $shadow-neon,
+    0 0 20px rgba(6, 182, 212, 0.3);
+}
+
+// ===== GLASS WITH GRADIENT BORDER =====
+@mixin glass-gradient-border($gradient: $gradient-primary) {
+  @include glass-default();
+  border: 2px solid transparent;
+  background-image:
+    linear-gradient(rgba(6, 18, 45, 0.35), rgba(6, 18, 45, 0.35)),
+    $gradient;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+// ===== GLASS WITH GLOW =====
+@mixin glass-glow($color: $primary, $intensity: 0.2) {
+  @include glass-default();
+  box-shadow:
+    $shadow-glass,
+    0 0 40px rgba($color, $intensity);
+
+  &:hover {
+    box-shadow:
+      $shadow-neon,
+      0 0 60px rgba($color, $intensity * 1.5);
+  }
+}
+
+// ===== GLASS CONTAINER (parent with position relative for ::before) =====
+@mixin glass-container() {
+  position: relative;
+  @include glass-default();
+
+  // Ensure children are above the Fresnel effect
+  & > * {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+// ===== BACKDROP ONLY (no glass, just blur) =====
+@mixin backdrop-blur($blur: 20px) {
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+}
+
+// ===== FROSTED GLASS (more opaque, less transparent) =====
+@mixin glass-frosted() {
+  background: rgba(6, 18, 45, 0.7);
+  backdrop-filter: blur(25px) saturate(1.5) contrast(1.1);
+  -webkit-backdrop-filter: blur(25px) saturate(1.5) contrast(1.1);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  border-radius: $radius-xl;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 100%
+    );
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// ===== GLASS SHADOW VARIANTS =====
+@mixin glass-shadow-sharp() {
+  box-shadow: $shadow-sharp;
+}
+
+@mixin glass-shadow-glow() {
+  box-shadow: $shadow-glow;
+}
+
+@mixin glass-shadow-neon() {
+  box-shadow: $shadow-neon;
+}
+
+@mixin glass-shadow-crisp() {
+  box-shadow: $shadow-crisp;
+}
+
+// ===== RESPONSIVE GLASS ADJUSTMENTS =====
+@mixin glass-responsive() {
+  @media (max-width: $breakpoint-md) {
+    background: rgba(6, 18, 45, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    background: rgba(6, 18, 45, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+// ===== UTILITY CLASSES (for quick access without mixins) =====
+.glass {
+  @include glass-default();
+}
+
+.glass-subtle {
+  @include glass-subtle();
+}
+
+.glass-strong {
+  @include glass-strong();
+}
+
+.glass-minimal {
+  @include glass-minimal();
+}
+
+.glass-frosted {
+  @include glass-frosted();
+}
+
+.glass-glow {
+  @include glass-glow();
+}
+
+.glass-interactive {
+  @include glass-default();
+  @include glass-hover();
+}
