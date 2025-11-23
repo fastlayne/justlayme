@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="1.0">
+    <entity name="CDUser" representedClassName="CDUser" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="email" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="passwordHash" optional="YES" attributeType="String"/>
+        <attribute name="googleId" optional="YES" attributeType="String"/>
+        <attribute name="subscriptionStatus" attributeType="String" defaultValueString="free"/>
+        <attribute name="subscriptionEnd" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="messageCount" attributeType="Integer32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="emailVerified" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="verificationToken" optional="YES" attributeType="String"/>
+        <attribute name="verificationExpires" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastLogin" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="avatarStyle" optional="YES" attributeType="String"/>
+        <attribute name="themePreference" optional="YES" attributeType="String"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastSyncedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="characters" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCharacter" inverseName="user" inverseEntity="CDCharacter"/>
+        <relationship name="conversations" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDConversation" inverseName="user" inverseEntity="CDConversation"/>
+        <relationship name="verificationLogs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDEmailVerificationLog" inverseName="user" inverseEntity="CDEmailVerificationLog"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+            <uniquenessConstraint>
+                <constraint value="email"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDCharacter" representedClassName="CDCharacter" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="backstory" optional="YES" attributeType="String"/>
+        <attribute name="personalityTraits" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String: Any]"/>
+        <attribute name="speechPatterns" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String]"/>
+        <attribute name="avatarUrl" optional="YES" attributeType="String"/>
+        <attribute name="isPublic" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastSyncedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="characters" inverseEntity="CDUser"/>
+        <relationship name="memories" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCharacterMemory" inverseName="character" inverseEntity="CDCharacterMemory"/>
+        <relationship name="learningPatterns" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDCharacterLearning" inverseName="character" inverseEntity="CDCharacterLearning"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDCharacterMemory" representedClassName="CDCharacterMemory" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="characterId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userMessage" attributeType="String"/>
+        <attribute name="aiResponse" attributeType="String"/>
+        <attribute name="feedbackScore" optional="YES" attributeType="Integer16" usesScalarValueType="YES"/>
+        <attribute name="correctedResponse" optional="YES" attributeType="String"/>
+        <attribute name="importanceScore" attributeType="Double" defaultValueString="0.5" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="character" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDCharacter" inverseName="memories" inverseEntity="CDCharacter"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDCharacterLearning" representedClassName="CDCharacterLearning" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="characterId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="patternType" attributeType="String"/>
+        <attribute name="userInput" attributeType="String"/>
+        <attribute name="expectedOutput" attributeType="String"/>
+        <attribute name="confidence" attributeType="Double" defaultValueString="1.0" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="character" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDCharacter" inverseName="learningPatterns" inverseEntity="CDCharacter"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDConversation" representedClassName="CDConversation" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="modelType" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="messageCount" attributeType="Integer32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="isArchived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="tags" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String]"/>
+        <attribute name="metadata" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String: Any]"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastMessageAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="lastSyncedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="conversations" inverseEntity="CDUser"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDMessage" inverseName="conversation" inverseEntity="CDMessage"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDMessage" representedClassName="CDMessage" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="conversationId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="legacyConversationId" optional="YES" attributeType="String"/>
+        <attribute name="senderType" attributeType="String"/>
+        <attribute name="content" attributeType="String"/>
+        <attribute name="metadata" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String: Any]"/>
+        <attribute name="isDeleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="deletedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isEdited" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="editedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="tokensUsed" optional="YES" attributeType="Integer32" usesScalarValueType="YES"/>
+        <attribute name="modelUsed" optional="YES" attributeType="String"/>
+        <attribute name="responseTimeMs" optional="YES" attributeType="Integer32" usesScalarValueType="YES"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="conversation" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDConversation" inverseName="messages" inverseEntity="CDConversation"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDEmailVerificationLog" representedClassName="CDEmailVerificationLog" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="action" attributeType="String"/>
+        <attribute name="ipAddress" optional="YES" attributeType="String"/>
+        <attribute name="userAgent" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="syncStatus" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDUser" inverseName="verificationLogs" inverseEntity="CDUser"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDSyncQueueItem" representedClassName="CDSyncQueueItem" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="entityType" attributeType="String"/>
+        <attribute name="entityId" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="operation" attributeType="String"/>
+        <attribute name="payload" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName" customClassName="[String: Any]"/>
+        <attribute name="retryCount" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="maxRetries" attributeType="Integer16" defaultValueString="3" usesScalarValueType="YES"/>
+        <attribute name="priority" attributeType="Integer16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="status" attributeType="String" defaultValueString="pending"/>
+        <attribute name="errorMessage" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="scheduledAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="processedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="CDCacheEntry" representedClassName="CDCacheEntry" syncable="YES">
+        <attribute name="key" attributeType="String"/>
+        <attribute name="data" attributeType="Binary"/>
+        <attribute name="entityType" attributeType="String"/>
+        <attribute name="createdAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="expiresAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastAccessedAt" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="accessCount" attributeType="Integer32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="sizeBytes" attributeType="Integer64" defaultValueString="0" usesScalarValueType="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="key"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+</model>
