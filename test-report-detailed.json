@@ -1,0 +1,119 @@
+{
+  "passed": [
+    {
+      "test": "Login page loads",
+      "details": "3260ms"
+    },
+    {
+      "test": "Premium gate detected",
+      "details": ""
+    },
+    {
+      "test": "Premium modal opened",
+      "details": ""
+    },
+    {
+      "test": "Desktop - No horizontal scroll",
+      "details": ""
+    },
+    {
+      "test": "Laptop - No horizontal scroll",
+      "details": ""
+    },
+    {
+      "test": "Tablet - No horizontal scroll",
+      "details": ""
+    },
+    {
+      "test": "Mobile - No horizontal scroll",
+      "details": ""
+    },
+    {
+      "test": "No slow requests (>3s)",
+      "details": ""
+    },
+    {
+      "test": "Fast DOM load (<3s)",
+      "details": ""
+    },
+    {
+      "test": "Fast page load (<5s)",
+      "details": ""
+    }
+  ],
+  "failed": [
+    {
+      "test": "Email input exists",
+      "details": ""
+    },
+    {
+      "test": "Password input exists",
+      "details": ""
+    },
+    {
+      "test": "Submit button exists",
+      "details": ""
+    },
+    {
+      "test": "Login Flow",
+      "details": "Form elements not found"
+    },
+    {
+      "test": "Sidebar visible",
+      "details": ""
+    },
+    {
+      "test": "New Character button exists",
+      "details": ""
+    },
+    {
+      "test": "Chat link exists",
+      "details": ""
+    },
+    {
+      "test": "Black Mirror link exists",
+      "details": ""
+    },
+    {
+      "test": "Character Creation",
+      "details": "New Character button not found"
+    },
+    {
+      "test": "Monthly price shown",
+      "details": ""
+    },
+    {
+      "test": "Yearly price shown",
+      "details": ""
+    },
+    {
+      "test": "Lifetime price shown",
+      "details": ""
+    },
+    {
+      "test": "Desktop - Content visible",
+      "details": ""
+    },
+    {
+      "test": "Laptop - Content visible",
+      "details": ""
+    },
+    {
+      "test": "Tablet - Content visible",
+      "details": ""
+    },
+    {
+      "test": "Mobile - Content visible",
+      "details": ""
+    }
+  ],
+  "warnings": [],
+  "consoleErrors": [],
+  "networkErrors": [],
+  "performanceMetrics": [
+    {
+      "page": "login",
+      "loadTime": 3260
+    }
+  ]
+}

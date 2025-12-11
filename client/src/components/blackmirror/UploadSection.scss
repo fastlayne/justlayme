@@ -405,6 +405,95 @@
   }
 }
 
+// Upload Instructions Styles
+.upload-instructions {
+  padding: 1.5rem;
+  background: rgba(139, 92, 246, 0.03);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 12px;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #8b5cf6;
+  }
+
+  h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .export-guides {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .guide-section {
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 8px;
+
+    ol {
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+
+      li {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .tip {
+      margin: 0.75rem 0 0 0;
+      padding: 0.75rem;
+      background: rgba(6, 182, 212, 0.08);
+      border-left: 3px solid #06b6d4;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.5;
+
+      strong {
+        color: #06b6d4;
+      }
+    }
+  }
+
+  .format-requirements,
+  .best-practices {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: rgba(6, 182, 212, 0.05);
+    border: 1px solid rgba(6, 182, 212, 0.12);
+    border-radius: 8px;
+
+    ul {
+      margin: 0.75rem 0 0 0;
+      padding-left: 1.5rem;
+      list-style: disc;
+
+      li {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 0.5rem;
+
+        strong {
+          color: rgba(255, 255, 255, 0.9);
+        }
+      }
+    }
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

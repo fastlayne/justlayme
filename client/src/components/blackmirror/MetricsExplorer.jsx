@@ -13,151 +13,151 @@ const ANALYZER_METADATA = {
   // Original 17 deterministic analyzers
   deflection: {
     title: 'Deflection Detection',
-    description: 'Identifies patterns of avoiding topics or changing subjects to evade difficult conversations',
+    description: 'Shows when someone avoids difficult topics by changing the subject or making jokes. High deflection means someone regularly sidesteps serious conversations. This can indicate discomfort with vulnerability or conflict.',
     category: 'communication'
   },
   repair_attempts: {
     title: 'Repair Attempts',
-    description: 'Tracks efforts to fix miscommunications and resolve conflicts in conversation',
+    description: 'Counts how often each person tries to fix misunderstandings or smooth over conflicts. Phrases like "I meant...", "let me clarify", or "I\'m sorry" indicate repair attempts. Healthy relationships show balanced repair efforts from both people.',
     category: 'conflict'
   },
   vulnerability: {
     title: 'Vulnerability Sharing',
-    description: 'Measures emotional openness and willingness to share personal feelings',
+    description: 'Measures emotional openness and willingness to share feelings, fears, or personal struggles. Higher vulnerability creates deeper intimacy. Imbalanced vulnerability (one person always sharing, the other guarded) can indicate trust issues.',
     category: 'emotional'
   },
   turn_taking: {
     title: 'Turn Taking Balance',
-    description: 'Analyzes conversational balance - who dominates and who listens',
+    description: 'Who talks more? This shows the conversational balance - whether both people contribute equally or one dominates. Healthy conversations have 50/50 turn-taking. Imbalance may show one person feels unheard or the other is self-focused.',
     category: 'communication'
   },
   question_ratio: {
     title: 'Question Engagement',
-    description: 'Tracks curiosity and interest through questions asked by each person',
+    description: 'Tracks how many questions each person asks. Questions show curiosity and interest in the other person. If one person asks most questions, they may be carrying the emotional labor of the conversation while the other person is disengaged.',
     category: 'engagement'
   },
   emotional_momentum: {
     title: 'Emotional Momentum',
-    description: 'Measures how emotions escalate or de-escalate during conversations',
+    description: 'Shows how emotions build or fade during conversations. Do positive moments lead to more warmth? Do conflicts escalate or de-escalate? This reveals emotional patterns - whether you fuel each other\'s feelings or calm things down.',
     category: 'emotional'
   },
   shared_vocabulary: {
     title: 'Shared Vocabulary',
-    description: 'Identifies common words and phrases that create connection',
+    description: 'Identifies words and phrases you both use repeatedly. Couples develop their own "language" with inside jokes, nicknames, and common expressions. Strong shared vocabulary indicates deep connection and time spent together.',
     category: 'communication'
   },
   conversation_dynamics: {
     title: 'Conversation Dynamics',
-    description: 'Overall flow, rhythm, and patterns in message exchanges',
+    description: 'The overall rhythm and flow of your messages. Do you have smooth back-and-forth exchanges? Long monologues? Quick bursts? This shows communication patterns - whether conversations feel natural or forced.',
     category: 'patterns'
   },
   topic_stability: {
     title: 'Topic Stability',
-    description: 'How well conversations stay on track versus jumping between topics',
+    description: 'How well you stay on one topic versus jumping around. Low stability might mean scattered, surface-level chats. High stability shows you can have deeper, focused conversations about important subjects without constant topic switching.',
     category: 'communication'
   },
   conversation_spiral: {
     title: 'Conversation Spirals',
-    description: 'Detects circular arguments or repetitive discussion patterns',
+    description: 'Detects when you argue about the same things repeatedly without resolution. Circular patterns like "we keep fighting about X" indicate unresolved core issues. Breaking these spirals requires addressing the root problem, not just the symptoms.',
     category: 'conflict'
   },
   stress_adaptation: {
     title: 'Stress Adaptation',
-    description: 'How communication style changes under pressure or conflict',
+    description: 'How does your communication change under stress or during conflicts? Do you become cold, aggressive, withdrawn? Or do you stay warm and engaged? This reveals coping mechanisms and emotional regulation skills.',
     category: 'emotional'
   },
   entropy: {
     title: 'Conversation Entropy',
-    description: 'Measures unpredictability and randomness in conversation flow',
+    description: 'Measures how predictable or chaotic your conversations are. Very high entropy means unpredictable, scattered exchanges. Very low means rigid, formulaic chats. Moderate entropy suggests natural, varied but coherent communication.',
     category: 'patterns'
   },
   linguistic_matching: {
     title: 'Linguistic Matching',
-    description: 'How closely communication styles mirror each other',
+    description: 'Do you mirror each other\'s communication style? Matching means using similar words, sentence structures, and tone. High matching shows rapport and connection. One-sided matching might mean one person is adjusting while the other isn\'t.',
     category: 'communication'
   },
   power_dynamics: {
     title: 'Power Dynamics',
-    description: 'Identifies dominance, submission, and control patterns',
+    description: 'Who controls the conversation? This tracks dominance patterns - who decides topics, who apologizes more, who asks for permission. Healthy relationships have balanced power. Imbalance can indicate control issues or inequality.',
     category: 'patterns'
   },
   positivity_reciprocity: {
     title: 'Positivity Reciprocity',
-    description: 'Whether positive emotions are matched and returned',
+    description: 'When one person is positive, does the other match that energy? Or do they stay neutral/negative? Reciprocity means both people contribute to good vibes. One-sided positivity can feel exhausting for the person trying to keep things upbeat.',
     category: 'emotional'
   },
   responsibility_avoidance: {
     title: 'Responsibility Avoidance',
-    description: 'Patterns of deflecting blame or avoiding accountability',
+    description: 'Tracks patterns of deflecting blame with phrases like "you made me...", "it\'s not my fault", or "you always...". High avoidance means someone struggles to own their actions. Healthy accountability requires both people taking responsibility.',
     category: 'conflict'
   },
   emotional_deflection: {
     title: 'Emotional Deflection',
-    description: 'Avoiding emotional topics through jokes, sarcasm, or topic changes',
+    description: 'When serious emotional topics come up, does someone make jokes, change subjects, or use sarcasm? Deflection protects against vulnerability but prevents deeper connection. Repeated deflection might indicate fear of intimacy or past trauma.',
     category: 'emotional'
   },
 
   // New 5 ML-powered analyzers
   love_language: {
     title: 'Love Language Detection',
-    description: 'Identifies primary love languages: Words of Affirmation, Quality Time, Acts of Service, Gifts, Physical Touch',
+    description: 'Discovers how you each express and receive love. The 5 love languages are: Words of Affirmation (compliments, "I love you"), Quality Time (wanting to hang out), Acts of Service (doing things for each other), Receiving Gifts (thoughtful presents), and Physical Touch (hugs, kisses). Knowing your love languages helps you feel appreciated.',
     category: 'advanced'
   },
   gottman_ratio: {
     title: 'Gottman 5:1 Ratio',
-    description: 'Measures positive-to-negative interaction ratio (healthy relationships maintain 5:1 or higher)',
+    description: 'Research by Dr. John Gottman found that healthy relationships maintain at least 5 positive interactions for every 1 negative one. This metric measures your positive-to-negative ratio. Below 5:1 means negativity is overwhelming the good moments. Above 5:1 indicates a strong, resilient relationship.',
     category: 'advanced'
   },
   response_time: {
     title: 'Response Time Patterns',
-    description: 'Analyzes message timing to reveal urgency, interest, and communication priorities',
+    description: 'How quickly do you reply to each other? Fast responses often signal high interest and priority. Slow responses might indicate busy schedules or lower emotional investment. Consistent response times show reliability. Wildly varying times could mean inconsistent interest or avoidant attachment style.',
     category: 'advanced'
   },
   future_planning: {
     title: 'Future Planning Analysis',
-    description: 'Detects commitment signals through mentions of future plans and long-term thinking',
+    description: 'Do you talk about the future together? Mentions of "next week", "next year", making plans, or long-term thinking show commitment and investment. If one person plans the future while the other stays in the present, it might indicate different levels of commitment or uncertainty about the relationship.',
     category: 'advanced'
   },
   emoji: {
     title: 'Emoji Communication',
-    description: 'Analyzes emoji usage patterns, emotional expression, and digital body language',
+    description: 'Emojis are digital body language. Hearts and positive emojis show affection. Lots of emojis indicate expressive, warm communication. Rare emoji use might mean someone is more serious or reserved. Mismatched emoji styles (one person uses tons, the other uses none) can create communication gaps.',
     category: 'advanced'
   },
 
   // Legacy metrics for backward compatibility
   sentiment: {
     title: 'Sentiment Analysis',
-    description: 'Overall emotional tone of conversations - who is more positive or negative?',
+    description: 'Overall emotional tone of your conversations. Are messages mostly positive, negative, or neutral? This shows the general mood of the relationship. Consistently negative sentiment can predict relationship problems. Balanced or positive sentiment indicates emotional health.',
     category: 'emotional'
   },
   patterns: {
     title: 'Communication Patterns',
-    description: 'Frequency and style of interactions - who texts more?',
+    description: 'Who texts more often? What times of day? What length messages? This reveals communication habits and preferences. Imbalanced patterns (one person initiating all conversations) might mean unequal interest or different communication needs.',
     category: 'patterns'
   },
   engagement: {
     title: 'Emotional Engagement',
-    description: 'Depth of emotional investment - who is more invested?',
+    description: 'Depth of emotional investment in conversations. Are messages thoughtful and engaged, or short and surface-level? High engagement means both people care about meaningful connection. Low engagement might indicate emotional distance or disinterest.',
     category: 'engagement'
   },
   conflict: {
     title: 'Double/Triple Texting',
-    description: 'Message streaks and investment levels - who double texts more?',
+    description: 'Sending multiple messages before getting a reply. This shows investment but can also indicate anxiety or need for validation. Who double-texts more reveals who worries more about the relationship or has higher communication needs.',
     category: 'conflict'
   },
   apologyPatterns: {
     title: 'Apologies & Reconciliation',
-    description: 'Who apologizes more and how sincere are they?',
+    description: 'Who says sorry more often? Are apologies sincere ("I apologize for...") or defensive ("sorry but...")? Healthy relationships have balanced apologies. One person always apologizing might indicate power imbalance or a people-pleaser dynamic.',
     category: 'conflict'
   },
   toxicity: {
     title: 'Toxicity Analysis',
-    description: 'Negative language and tone detection - who is more toxic?',
+    description: 'Detects harmful language patterns: insults, blame, contempt, name-calling, threats. Even occasional toxicity damages trust. Consistent toxicity is a major red flag. Healthy relationships keep toxicity near zero through respectful communication even during conflicts.',
     category: 'conflict'
   },
   positivity: {
     title: 'Positivity Index',
-    description: 'Overall relationship health score - who is more positive?',
+    description: 'Overall relationship health based on kindness, appreciation, humor, support, and warmth in messages. High positivity means you lift each other up. Low positivity suggests the relationship has become cold or critical. This is one of the strongest predictors of relationship satisfaction.',
     category: 'emotional'
   }
 }

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f0f23" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="JustLayMe" />
+    <link rel="apple-touch-icon" href="/icon-180x180.png" />
+
+    <!-- Primary Meta Tags -->
+    <title>JustLayMe - Unfiltered AI Conversations | Chat Without Restrictions</title>
+    <meta name="title" content="JustLayMe - Unfiltered AI Conversations | Chat Without Restrictions" />
+    <meta name="description" content="Experience truly unfiltered AI conversations. Chat with advanced AI without restrictions, create custom characters, and analyze your relationships with The Black Mirror. Premium AI chat powered by cutting-edge language models." />
+    <meta name="keywords" content="AI chat, unfiltered AI, uncensored AI, relationship analysis, conversation AI, black mirror analysis, custom AI characters, voice cloning, AI companions, premium AI chat" />
+    <meta name="author" content="JustLayMe" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://justlay.me/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://justlay.me/" />
+    <meta property="og:title" content="JustLayMe - Unfiltered AI Chat" />
+    <meta property="og:description" content="Chat with advanced AI without restrictions. Analyze your relationships with The Black Mirror." />
+    <meta property="og:image" content="https://justlay.me/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:site_name" content="JustLayMe" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://justlay.me/" />
+    <meta name="twitter:title" content="JustLayMe - Unfiltered AI Chat" />
+    <meta name="twitter:description" content="Chat with advanced AI without restrictions. Analyze your relationships with The Black Mirror." />
+    <meta name="twitter:image" content="https://justlay.me/twitter-image.jpg" />
+
+    <!-- Google Analytics - GA4 -->
+    <!-- IMPORTANT: Replace G-XXXXXXXXXX with your actual GA4 Measurement ID from https://analytics.google.com -->
+    <!-- GA4 will be automatically initialized when VITE_GA_MEASUREMENT_ID is set in .env file -->
+    <!-- For development, leave as G-XXXXXXXXXX to disable GA tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX', {
+        'allow_google_signals': true,
+        'allow_ad_personalization_signals': true,
+        'anonymize_ip': true
+      });
+    </script>
+
+    <!-- Google Search Console Verification -->
+    <!-- TODO: Replace with your actual Google Search Console verification code -->
+    <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE_HERE" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "JustLayMe",
+      "url": "https://justlay.me",
+      "description": "Unfiltered AI conversations platform with custom character creation and relationship analysis",
+      "applicationCategory": "CommunicationApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "10000"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

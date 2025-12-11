@@ -127,6 +127,81 @@ export default function UploadSection({ onAnalysisStart = () => {} }) {
         <p><ShinyText speed={5}>Choose how you want to upload your conversation data for analysis</ShinyText></p>
       </div>
 
+      {/* Helpful Instructions */}
+      <div className="upload-instructions">
+        <h3>How to Export Your Conversations</h3>
+
+        <div className="export-guides">
+          <div className="guide-section">
+            <h4>iPhone/iMessage</h4>
+            <ol>
+              <li>Open the conversation in Messages</li>
+              <li>Tap the contact's name at the top</li>
+              <li>Scroll down and tap "Export Chat"</li>
+              <li>Select "Without Media" for faster processing</li>
+              <li>Save as .txt file and upload here</li>
+            </ol>
+            <p className="tip"><strong>Tip:</strong> iMessage exports are in the format "Sender: Message" which works perfectly!</p>
+          </div>
+
+          <div className="guide-section">
+            <h4>WhatsApp</h4>
+            <ol>
+              <li>Open the chat you want to analyze</li>
+              <li>Tap the three dots menu (Android) or contact name (iPhone)</li>
+              <li>Select "More" then "Export Chat"</li>
+              <li>Choose "Without Media"</li>
+              <li>Save and upload the .txt file</li>
+            </ol>
+            <p className="tip"><strong>Format:</strong> "[Date, Time] Name: Message" works great!</p>
+          </div>
+
+          <div className="guide-section">
+            <h4>Instagram/Facebook Messenger</h4>
+            <ol>
+              <li>Go to Settings then Privacy then Download Your Information</li>
+              <li>Select "Messages" only</li>
+              <li>Choose JSON format</li>
+              <li>Wait for download link (can take up to 24 hours)</li>
+              <li>Upload the messages.json file</li>
+            </ol>
+            <p className="tip"><strong>Note:</strong> JSON files are automatically parsed correctly!</p>
+          </div>
+
+          <div className="guide-section">
+            <h4>Android SMS</h4>
+            <ol>
+              <li>Install "SMS Backup & Restore" app</li>
+              <li>Open app and tap "Backup"</li>
+              <li>Select the conversation</li>
+              <li>Choose .txt or .xml format</li>
+              <li>Share/upload the file here</li>
+            </ol>
+          </div>
+        </div>
+
+        <div className="format-requirements">
+          <h4>Supported Formats</h4>
+          <ul>
+            <li><strong>Text Files (.txt):</strong> Any format with "Name: Message" or "From/To" structure</li>
+            <li><strong>JSON Files (.json):</strong> Messenger exports, custom formats with sender/message fields</li>
+            <li><strong>CSV Files (.csv):</strong> Spreadsheet exports with timestamp, sender, message columns</li>
+            <li><strong>Paste Text:</strong> Copy-paste directly from any chat app</li>
+          </ul>
+        </div>
+
+        <div className="best-practices">
+          <h4>Tips for Best Results</h4>
+          <ul>
+            <li><strong>Include at least 100 messages</strong> for meaningful analysis</li>
+            <li><strong>Export full conversations</strong> - more data = better insights</li>
+            <li><strong>Enter both names accurately</strong> above - this ensures metrics are attributed correctly</li>
+            <li><strong>Keep timestamps if possible</strong> - they enable time-based analysis</li>
+            <li><strong>One conversation at a time</strong> - don't mix multiple people in one upload</li>
+          </ul>
+        </div>
+      </div>
+
       {/* Personalization Fields */}
       <div className="personalization-fields">
         <div className="name-fields">

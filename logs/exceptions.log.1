@@ -1,0 +1,1752 @@
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1237331968,
+      heapTotal: 1192738816,
+      heapUsed: 1153396792,
+      external: 3309895,
+      arrayBuffers: 65844
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.57 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1237725184,
+      heapTotal: 1192738816,
+      heapUsed: 1153568440,
+      external: 3314572,
+      arrayBuffers: 70481
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.58 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1237725184,
+      heapTotal: 1192738816,
+      heapUsed: 1153707888,
+      external: 3319259,
+      arrayBuffers: 75168
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.58 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1237725184,
+      heapTotal: 1192738816,
+      heapUsed: 1153835448,
+      external: 3323872,
+      arrayBuffers: 79781
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.58 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238118400,
+      heapTotal: 1192738816,
+      heapUsed: 1153973568,
+      external: 3328559,
+      arrayBuffers: 84468
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238118400,
+      heapTotal: 1192738816,
+      heapUsed: 1154105456,
+      external: 3333172,
+      arrayBuffers: 89081
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238118400,
+      heapTotal: 1192738816,
+      heapUsed: 1154242648,
+      external: 3337859,
+      arrayBuffers: 93768
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238118400,
+      heapTotal: 1192738816,
+      heapUsed: 1154366776,
+      external: 3342472,
+      arrayBuffers: 98381
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238511616,
+      heapTotal: 1192738816,
+      heapUsed: 1154503184,
+      external: 3347159,
+      arrayBuffers: 103068
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238511616,
+      heapTotal: 1192738816,
+      heapUsed: 1154646056,
+      external: 3347159,
+      arrayBuffers: 103068
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.warn (node:internal/console/constructor:383:26)
+      at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.warn (node:internal/console/constructor:383:26)\n' +
+    '    at process.<anonymous> (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:321:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1238511616,
+      heapTotal: 1192738816,
+      heapUsed: 1155002344,
+      external: 3347159,
+      arrayBuffers: 103068
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.59 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.warn',
+      line: 383,
+      method: 'warn',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: null,
+      line: 321,
+      method: null,
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}
+{
+  error: Error: write EPIPE
+      at afterWriteDispatched (node:internal/stream_base_commons:161:15)
+      at writeGeneric (node:internal/stream_base_commons:152:3)
+      at Socket._writeGeneric (node:net:958:11)
+      at Socket._write (node:net:970:8)
+      at writeOrBuffer (node:internal/streams/writable:572:12)
+      at _write (node:internal/streams/writable:501:10)
+      at Writable.write (node:internal/streams/writable:510:10)
+      at console.value (node:internal/console/constructor:303:16)
+      at console.log (node:internal/console/constructor:378:26)
+      at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21) {
+    errno: -32,
+    code: 'EPIPE',
+    syscall: 'write'
+  },
+  level: 'error',
+  message: 'uncaughtException: write EPIPE\n' +
+    'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  stack: 'Error: write EPIPE\n' +
+    '    at afterWriteDispatched (node:internal/stream_base_commons:161:15)\n' +
+    '    at writeGeneric (node:internal/stream_base_commons:152:3)\n' +
+    '    at Socket._writeGeneric (node:net:958:11)\n' +
+    '    at Socket._write (node:net:970:8)\n' +
+    '    at writeOrBuffer (node:internal/streams/writable:572:12)\n' +
+    '    at _write (node:internal/streams/writable:501:10)\n' +
+    '    at Writable.write (node:internal/streams/writable:510:10)\n' +
+    '    at console.value (node:internal/console/constructor:303:16)\n' +
+    '    at console.log (node:internal/console/constructor:378:26)\n' +
+    '    at ResourceLifecycleManager.shutdown (/home/fastl/JustLayMe/src/resource-lifecycle-manager.js:272:21)',
+  exception: true,
+  date: 'Tue Nov 18 2025 15:14:22 GMT-0500 (Eastern Standard Time)',
+  process: {
+    pid: 3664455,
+    uid: 1000,
+    gid: 1000,
+    cwd: '/home/fastl/JustLayMe',
+    execPath: '/usr/bin/node',
+    version: 'v20.19.5',
+    argv: [ '/usr/bin/node', '/home/fastl/JustLayMe/src/ai-server.js' ],
+    memoryUsage: {
+      rss: 1240870912,
+      heapTotal: 1195360256,
+      heapUsed: 1143523168,
+      external: 3347159,
+      arrayBuffers: 103068
+    }
+  },
+  os: { loadavg: [ 5.29, 4.58, 4.22 ], uptime: 1176496.6 },
+  trace: [
+    {
+      column: 15,
+      file: 'node:internal/stream_base_commons',
+      function: 'afterWriteDispatched',
+      line: 161,
+      method: null,
+      native: false
+    },
+    {
+      column: 3,
+      file: 'node:internal/stream_base_commons',
+      function: 'writeGeneric',
+      line: 152,
+      method: null,
+      native: false
+    },
+    {
+      column: 11,
+      file: 'node:net',
+      function: 'Socket._writeGeneric',
+      line: 958,
+      method: '_writeGeneric',
+      native: false
+    },
+    {
+      column: 8,
+      file: 'node:net',
+      function: 'Socket._write',
+      line: 970,
+      method: '_write',
+      native: false
+    },
+    {
+      column: 12,
+      file: 'node:internal/streams/writable',
+      function: 'writeOrBuffer',
+      line: 572,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: '_write',
+      line: 501,
+      method: null,
+      native: false
+    },
+    {
+      column: 10,
+      file: 'node:internal/streams/writable',
+      function: 'Writable.write',
+      line: 510,
+      method: 'write',
+      native: false
+    },
+    {
+      column: 16,
+      file: 'node:internal/console/constructor',
+      function: 'console.value',
+      line: 303,
+      method: 'value',
+      native: false
+    },
+    {
+      column: 26,
+      file: 'node:internal/console/constructor',
+      function: 'console.log',
+      line: 378,
+      method: 'log',
+      native: false
+    },
+    {
+      column: 21,
+      file: '/home/fastl/JustLayMe/src/resource-lifecycle-manager.js',
+      function: 'ResourceLifecycleManager.shutdown',
+      line: 272,
+      method: 'shutdown',
+      native: false
+    }
+  ],
+  service: 'justlayme',
+  version: '2.0.0',
+  environment: 'production',
+  timestamp: '2025-11-18 15:14:22'
+}

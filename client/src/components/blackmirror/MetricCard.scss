@@ -53,8 +53,16 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
+.metric-description-preview {
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  font-style: italic;
+}
+
 .metric-value {
-  margin: 0;
+  margin: 0.5rem 0 0 0;
   font-size: 1.35rem;
   font-weight: 700;
   color: #06b6d4;

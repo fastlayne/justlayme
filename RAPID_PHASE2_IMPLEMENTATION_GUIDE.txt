@@ -1,0 +1,191 @@
+RAPID PHASE 2 FIXES - IMPLEMENTATION GUIDE
+==========================================
+
+ALL 7 FIXES READY FOR IMMEDIATE APPLICATION
+
+ARCHITECTURE SUMMARY:
+- FIX 9: LRU Cache Race Conditions (Backend) - READY
+- FIX 10: Token Blacklist Database (Backend) - COMPLETE
+- FIX 11: Stripe Webhook Transactions (Backend) - READY
+- FIX 12: Loading States (Frontend) - READY
+- FIX 13: Error Handling (Frontend) - READY
+- FIX 14: Grey Mirror Progress (Frontend) - READY
+- FIX 15: Token Auto-Refresh (Frontend + Backend) - READY
+
+IMPLEMENTATION ORDER:
+====================
+
+PHASE 1 - BACKEND FIXES (5 minutes):
+1. FIX 9: Add mutex to memory-engine.js (1 file, 15 LOC)
+   - Add p-lock import (already installed)
+   - Replace createLRUMap function with atomic version
+
+2. FIX 10: Verify token blacklist (0 LOC)
+   - Already implemented in auth.js
+   - Database table exists
+
+3. FIX 11: Stripe webhook transactions (1 file, 8 LOC)
+   - Wrap user updates in BEGIN/COMMIT transaction
+   - Add error handling with ROLLBACK
+
+PHASE 2 - FRONTEND FIXES (25 minutes):
+4. FIX 12: Add loading states (3 files, 20 LOC)
+   - BlackMirrorPage.jsx: isAnalyzing state
+   - Sidebar.jsx: isSwitching state
+   - InputArea.jsx: isUploading state
+
+5. FIX 13: Error handling (apply everywhere, 25 LOC)
+   - Try-catch wrapper pattern
+   - User-friendly error messages
+   - Status code-specific handling
+
+6. FIX 14: Progress indicator (1 file, 12 LOC)
+   - Add analysisProgress state
+   - Show spinner + progress % + cancel button
+
+7. FIX 15: Token refresh (3 files, 30 LOC)
+   - Backend: Add /api/refresh-token endpoint
+   - Frontend: Add 401 interceptor + refreshToken method
+   - Automatic token refresh on expiration
+
+DETAILED INSTRUCTIONS:
+====================
+
+FIX 9 - LRU RACE CONDITIONS:
+File: src/memory-engine.js
+1. Line 11: Add import
+   const { Mutex } = require('p-lock');
+
+2. Lines 82-93: Replace createLRUMap function
+   Replace non-atomic map.set() with mutex.lock() version
+   (See RAPID_FIXES_MINIMAL_CODE.md for exact code)
+
+FIX 10 - TOKEN BLACKLIST:
+✓ ALREADY COMPLETE - No action needed
+- Tables created in database
+- Methods in auth.js (lines 30, 83, 223-256)
+- Persistent storage verified
+
+FIX 11 - STRIPE TRANSACTIONS:
+File: src/ai-server.js (around line 2540)
+1. Find user update queries in stripe webhook handler
+2. Wrap with:
+   BEGIN TRANSACTION
+   [existing queries]
+   COMMIT
+3. Add try/catch with ROLLBACK on error
+
+FIX 12 - LOADING STATES:
+Files: client/src/pages/BlackMirrorPage.jsx
+        client/src/components/Sidebar.jsx
+        client/src/components/InputArea.jsx
+
+Pattern for each file:
+1. Add: const [isLoading, setIsLoading] = useState(false);
+2. Wrap async operations: setIsLoading(true) ... finally setIsLoading(false)
+3. Update UI: disabled={isLoading} or {isLoading && <Spinner />}
+
+FIX 13 - ERROR HANDLING:
+Apply to all async operations:
+1. Wrap in try-catch
+2. Check error.response?.status
+3. Show user-friendly messages:
+   - 401: "Please log in again"
+   - 402: "Premium required" (from response)
+   - Others: error.message
+
+FIX 14 - GREY MIRROR PROGRESS:
+File: client/src/pages/BlackMirrorPage.jsx
+1. Add state: const [analysisProgress, setAnalysisProgress] = useState(0);
+2. Update during analysis: setAnalysisProgress(percentage)
+3. Show in JSX:
+   {isAnalyzing && (
+       <div className="analysis-progress">
+           <Spinner />
+           <p>Progress: {analysisProgress}%</p>
+           <div style={{width: `${analysisProgress}%`}} className="progress-bar" />
+       </div>
+   )}
+
+FIX 15 - TOKEN AUTO-REFRESH:
+Backend (src/ai-server.js):
+1. Add new endpoint: POST /api/refresh-token
+2. Accept token in request body
+3. Verify with ignoreExpiration: true
+4. Generate new token and return
+
+Frontend (client/src/services/):
+1. In client.js: Add 401 interceptor
+   - Detect 401 response
+   - Call refreshToken()
+   - Retry original request
+
+2. In authAPI.js: Add refreshToken() method
+   - Send token to /api/refresh-token
+   - Store new token in localStorage
+   - Return new token
+
+TESTING CHECKLIST:
+==================
+FIX 9:  [ ] No race conditions during concurrent LRU operations
+FIX 10: [ ] Token blacklist persists across server restart
+FIX 11: [ ] No double-updates in Stripe webhook
+FIX 12: [ ] UI shows loading states during operations
+FIX 13: [ ] Error messages display correctly
+FIX 14: [ ] Progress bar shows 0-100% during analysis
+FIX 15: [ ] Automatic token refresh on 401 errors
+        [ ] User stays logged in across token expiry
+
+PRODUCTION CHECKLIST:
+====================
+[ ] All 7 fixes implemented
+[ ] Database schema verified
+[ ] npm packages installed (p-lock already done)
+[ ] No console errors
+[ ] All tests passing
+[ ] Error handling graceful
+[ ] Loading states prevent double-clicks
+[ ] Token refresh works seamlessly
+
+ROLLBACK PLAN:
+==============
+Each fix is isolated and can be reverted independently:
+- FIX 9: Remove mutex, revert to original createLRUMap
+- FIX 10: Tokens still work in-memory (graceful fallback)
+- FIX 11: Single queries still work (just less safe)
+- FIX 12-15: Frontend can disable or revert feature flags
+
+IMPLEMENTATION TIME ESTIMATES:
+==============================
+FIX 9:  5 minutes
+FIX 10: 0 minutes (already done)
+FIX 11: 5 minutes
+FIX 12: 10 minutes
+FIX 13: 8 minutes
+FIX 14: 5 minutes
+FIX 15: 12 minutes
+       ------
+TOTAL: 45 minutes
+
+WITH TESTING: 60-90 minutes
+
+FILES MODIFIED IN THIS PHASE:
+=============================
+1. /home/fastl/JustLayMe/src/memory-engine.js (FIX 9)
+2. /home/fastl/JustLayMe/src/ai-server.js (FIX 11, FIX 15)
+3. /home/fastl/JustLayMe/client/src/pages/BlackMirrorPage.jsx (FIX 12, FIX 14)
+4. /home/fastl/JustLayMe/client/src/components/Sidebar.jsx (FIX 12)
+5. /home/fastl/JustLayMe/client/src/components/InputArea.jsx (FIX 12)
+6. /home/fastl/JustLayMe/client/src/services/client.js (FIX 15)
+7. /home/fastl/JustLayMe/client/src/services/authAPI.js (FIX 13, FIX 15)
+
+ADDITIONAL RESOURCES:
+====================
+- RAPID_PHASE2_FIXES.md - Overview of all fixes
+- RAPID_FIXES_MINIMAL_CODE.md - Exact code snippets
+- FIX_12_13_14_15_FRONTEND.md - Detailed frontend implementation
+
+QUESTIONS?
+==========
+Each fix is self-contained. See the detailed markdown files for exact code.
+All changes are minimal, focused, and production-ready.

@@ -1,0 +1,115 @@
+{
+  "passed": [
+    {
+      "test": "Login page loaded",
+      "details": "1971ms"
+    },
+    {
+      "test": "React app rendered",
+      "details": "No content"
+    },
+    {
+      "test": "Email input found",
+      "details": false
+    },
+    {
+      "test": "Password input found",
+      "details": false
+    },
+    {
+      "test": "Submit button found",
+      "details": false
+    },
+    {
+      "test": "Black Mirror page loaded",
+      "details": true
+    },
+    {
+      "test": "Premium gate detected",
+      "details": true
+    },
+    {
+      "test": "Upload section visible",
+      "details": true
+    },
+    {
+      "test": "Upgrade button clicked",
+      "details": true
+    },
+    {
+      "test": "Premium modal opened",
+      "details": true
+    },
+    {
+      "test": "Monthly pricing shown",
+      "details": false
+    },
+    {
+      "test": "Yearly pricing shown",
+      "details": false
+    },
+    {
+      "test": "Lifetime pricing shown",
+      "details": false
+    },
+    {
+      "test": "Fast DOM load (<3s)",
+      "details": true
+    },
+    {
+      "test": "Fast page load (<5s)",
+      "details": true
+    }
+  ],
+  "failed": [
+    {
+      "test": "Login form complete",
+      "details": "Missing form elements"
+    },
+    {
+      "test": "Chat Page Test",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    },
+    {
+      "test": "Desktop Responsive Test",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    },
+    {
+      "test": "Laptop Responsive Test",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    },
+    {
+      "test": "Tablet Responsive Test",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    },
+    {
+      "test": "Mobile Responsive Test",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    }
+  ],
+  "warnings": [
+    "React app did not render DOM content"
+  ],
+  "consoleErrors": [],
+  "networkErrors": [],
+  "screenshots": [
+    {
+      "filename": "./test-screenshots-final/1763304708812-login-page.png",
+      "name": "login-page",
+      "description": "Initial login page load",
+      "timestamp": 1763304708812
+    },
+    {
+      "filename": "./test-screenshots-final/1763304743817-black-mirror.png",
+      "name": "black-mirror",
+      "description": "Black Mirror page with premium gate",
+      "timestamp": 1763304743817
+    },
+    {
+      "filename": "./test-screenshots-final/1763304748028-premium-modal.png",
+      "name": "premium-modal",
+      "description": "Premium paywall modal",
+      "timestamp": 1763304748028
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "passed": [
+    {
+      "test": "Login page loads",
+      "details": "Load time: 1873ms"
+    },
+    {
+      "test": "Premium access granted (premium user)",
+      "details": "No paywall detected"
+    },
+    {
+      "test": "Desktop layout doesn't break",
+      "details": "1920x1080"
+    },
+    {
+      "test": "Tablet layout doesn't break",
+      "details": "768x1024"
+    },
+    {
+      "test": "Mobile layout doesn't break",
+      "details": "375x667"
+    },
+    {
+      "test": "No console errors",
+      "details": "Found 0 console errors"
+    },
+    {
+      "test": "No network errors",
+      "details": "Found 0 network errors"
+    }
+  ],
+  "failed": [
+    {
+      "test": "Email input field exists",
+      "details": ""
+    },
+    {
+      "test": "Password input field exists",
+      "details": ""
+    },
+    {
+      "test": "Submit button exists",
+      "details": ""
+    },
+    {
+      "test": "Login Flow Complete",
+      "details": "Login form elements not found"
+    },
+    {
+      "test": "Sidebar is visible",
+      "details": ""
+    },
+    {
+      "test": "\"New Character\" button exists",
+      "details": ""
+    },
+    {
+      "test": "Characters list populated",
+      "details": "Found 0 character elements"
+    },
+    {
+      "test": "Chat navigation link exists",
+      "details": ""
+    },
+    {
+      "test": "Black Mirror navigation link exists",
+      "details": ""
+    },
+    {
+      "test": "Character Creation Modal Test Complete",
+      "details": "Navigation timeout of 30000 ms exceeded"
+    },
+    {
+      "test": "Stripe Checkout Button Test",
+      "details": "Subscribe button not found"
+    }
+  ],
+  "warnings": [],
+  "consoleErrors": [],
+  "networkErrors": []
+}

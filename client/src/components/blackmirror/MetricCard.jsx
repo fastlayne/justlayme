@@ -46,6 +46,10 @@ export default function MetricCard({
           {icon && <span className="metric-icon">{icon}</span>}
           <div className="header-text">
             <h3 className="metric-title">{title}</h3>
+            {/* Always show description for context */}
+            {description && (
+              <p className="metric-description-preview">{description}</p>
+            )}
             <p className="metric-value">{value}</p>
             {!isExpanded && previewData.length > 0 && (
               <p className="metric-preview">{previewData.join(', ')}</p>
