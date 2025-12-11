@@ -1,0 +1,126 @@
+# robots.txt for JustLayMe - AI Conversation Platform
+# Updated: December 2025
+
+# ============================================================================
+# AI Content Signals (Modern Standard)
+# ============================================================================
+# search:   Allowed - building search indexes and providing search results
+# ai-input: Allowed - using content for RAG/grounding in real-time AI answers
+# ai-train: Restricted - training AI models requires explicit permission
+
+# ============================================================================
+# Default Rule for All Crawlers
+# ============================================================================
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Allow access to important static assets
+Allow: /assets/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /og-image.jpg
+Allow: /twitter-image.jpg
+Allow: /manifest.json
+
+# ============================================================================
+# Disallow Sensitive & Private Paths
+# ============================================================================
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/settings
+Disallow: /payment-success
+Disallow: /payment-cancel
+Disallow: /*.json$
+
+# ============================================================================
+# Major Search Engines (Priority Crawlers)
+# ============================================================================
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# ============================================================================
+# AI-Powered Search Engines (Allow for Discoverability)
+# ============================================================================
+User-agent: ChatGPT-User
+Allow: /
+Crawl-delay: 2
+
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: PerplexityBot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Anthropic-AI
+Allow: /
+Crawl-delay: 2
+
+# ============================================================================
+# Block Aggressive Scrapers & SEO Tools
+# ============================================================================
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+# ============================================================================
+# AI Training Bots (Restrict)
+# ============================================================================
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+# ============================================================================
+# Sitemap Location
+# ============================================================================
+Sitemap: https://www.justlay.me/sitemap.xml

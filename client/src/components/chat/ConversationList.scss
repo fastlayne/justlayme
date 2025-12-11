@@ -1,0 +1,140 @@
+@import '@/styles/variables.scss';
+
+.conversation-list {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+
+  &.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+
+    p {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+
+      &.text-sm {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.4);
+      }
+    }
+  }
+}
+
+.conversation-list-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+  flex-shrink: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+  }
+}
+
+.conversation-list-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(6, 182, 212, 0.02);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(6, 182, 212, 0.3);
+    }
+  }
+}
+
+.conversation-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: all 150ms ease-out;
+  color: inherit;
+  font-family: inherit;
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.05);
+    border-left-color: rgba(6, 182, 212, 0.3);
+  }
+
+  &.active {
+    background: rgba(6, 182, 212, 0.1);
+    border-left-color: #06b6d4;
+
+    .conversation-title {
+      color: #06b6d4;
+      font-weight: 600;
+    }
+  }
+}
+
+.conversation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.conversation-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  transition: color 150ms ease-out;
+}
+
+.conversation-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.conversation-preview {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 150ms ease-out;
+}
+
+.conversation-item:hover .conversation-preview {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.conversation-item.active .conversation-preview {
+  color: rgba(6, 182, 212, 0.8);
+}

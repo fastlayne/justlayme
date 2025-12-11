@@ -1,0 +1,73 @@
+.falling-text-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.falling-text-target {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+}
+
+.falling-text-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.falling-text-target .word {
+  display: inline-block;
+  margin: 0 0.2em;
+  cursor: grab;
+  user-select: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #00d4ff 0%, #4287f5 50%, #7b68ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s infinite;
+}
+
+.falling-text-target .word:hover {
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+}
+
+.falling-text-target .word.highlighted {
+  font-weight: 800;
+  background: linear-gradient(135deg, #00d4ff 0%, #00ff88 50%, #4287f5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.4));
+  animation: shimmer-bright 2s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer-bright {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}

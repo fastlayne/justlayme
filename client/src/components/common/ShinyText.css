@@ -1,0 +1,106 @@
+/* Shiny Text Component - Real Metallic Chrome Effect */
+.shiny-text {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(
+    110deg,
+    #6b7280 0%,
+    #9ca3af 10%,
+    #f3f4f6 20%,
+    #ffffff 30%,
+    #f9fafb 40%,
+    #ffffff 50%,
+    #f9fafb 60%,
+    #ffffff 70%,
+    #f3f4f6 80%,
+    #9ca3af 90%,
+    #6b7280 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shiny-shimmer var(--shimmer-speed, 3s) ease-in-out infinite;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))
+          drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+  will-change: background-position;
+  /* Force hardware acceleration */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.shiny-text-disabled {
+  animation: none;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Alternative variant - Polished Steel */
+.shiny-text.variant-cyan {
+  background: linear-gradient(
+    110deg,
+    #71717a 0%,
+    #a1a1aa 15%,
+    #e4e4e7 30%,
+    #ffffff 45%,
+    #fafafa 50%,
+    #ffffff 55%,
+    #e4e4e7 70%,
+    #a1a1aa 85%,
+    #71717a 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4))
+          drop-shadow(0 0 6px rgba(255, 255, 255, 0.3));
+}
+
+/* Subtle variant - Brushed Aluminum */
+.shiny-text.variant-subtle {
+  background: linear-gradient(
+    110deg,
+    #9ca3af 0%,
+    #d1d5db 20%,
+    #f3f4f6 35%,
+    #ffffff 50%,
+    #f3f4f6 65%,
+    #d1d5db 80%,
+    #9ca3af 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0.5px 1px rgba(0, 0, 0, 0.2))
+          drop-shadow(0 0 4px rgba(255, 255, 255, 0.15));
+}
+
+/* Shimmer animation */
+@keyframes shiny-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Hover pause effect */
+.shiny-text:hover {
+  animation-play-state: paused;
+}
+
+/* Accessibility - respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text {
+    animation: none;
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}

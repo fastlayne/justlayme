@@ -1,0 +1,39 @@
+.text-rotate {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  position: relative;
+}
+
+.text-rotate-lines {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.text-rotate-word {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.text-rotate-element {
+  display: inline-block;
+  white-space: pre;
+}
+
+.text-rotate-space {
+  display: inline-block;
+  width: 0.25em;
+}
+
+.text-rotate-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

@@ -1,0 +1,271 @@
+@import '@/styles/variables.scss';
+
+.sidebar-toggle {
+  background: rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #06b6d4;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  // Floating hamburger button (when sidebar is closed)
+  &.floating {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    // ARCHITECTURAL FIX: Ensure hamburger is ALWAYS visible on mobile
+    // Higher z-index than sidebar overlay (999) and sidebar (1000)
+    // CRITICAL: Must be highest z-index in chat interface for accessibility
+    z-index: 1003;
+  }
+
+  // ARCHITECTURAL FIX: Ensure touch events work properly on mobile
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  // CRITICAL: Ensure pointer events always work
+  pointer-events: auto;
+
+  // ARCHITECTURAL FIX: Enhanced tap target for mobile UX (Apple recommends 44x44px minimum)
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // ARCHITECTURAL FIX: Add box shadow for better visibility on light backgrounds
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 1px rgba(6, 182, 212, 0.2);
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.3);
+    border-color: #06b6d4;
+    box-shadow:
+      0 4px 12px rgba(6, 182, 212, 0.3),
+      inset 0 1px 1px rgba(6, 182, 212, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+    background: rgba(6, 182, 212, 0.4);
+  }
+
+  // CRITICAL FIX: Match JavaScript breakpoint exactly (768px)
+  // Hide on desktop only when screen is 768px or wider
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+
+  // ARCHITECTURAL FIX: Ensure button stays visible even when keyboard is open
+  @media (max-height: 500px) {
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background:
+    linear-gradient(135deg,
+      rgba(6, 18, 45, 0.4) 0%,
+      rgba(0, 0, 0, 0.5) 100%
+    );
+  border-right: 1px solid rgba(6, 182, 212, 0.15);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  overflow-y: auto;
+  transition: transform 300ms ease-out;
+  box-shadow:
+    2px 0 24px rgba(0, 0, 0, 0.3),
+    inset -1px 0 1px rgba(6, 182, 212, 0.1);
+
+  @media (max-width: 768px) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(6, 182, 212, 0.1);
+
+  .sidebar-logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #06b6d4;
+    margin: 0;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    transition: color 200ms ease-out;
+
+    &:hover {
+      color: #06b6d4;
+    }
+  }
+}
+
+.sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-top: 1px solid rgba(6, 182, 212, 0.15);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.15);
+  margin: 1rem 0;
+
+  .action-card {
+    padding: 0;
+    border-radius: 12px;
+  }
+
+  .action-btn {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: transparent;
+
+    .btn-icon {
+      font-size: 1.2rem;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    .btn-text {
+      flex: 1;
+      text-align: left;
+    }
+
+    &.primary {
+      background: linear-gradient(
+        135deg,
+        #06b6d4 0%,
+        #22d3ee 100%
+      );
+      color: #000000;
+      box-shadow:
+        0 4px 12px rgba(6, 182, 212, 0.3),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(
+          135deg,
+          #22d3ee 0%,
+          #67e8f9 100%
+        );
+        transform: translateY(-2px);
+        box-shadow:
+          0 6px 20px rgba(6, 182, 212, 0.4),
+          inset 0 1px 1px rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    &.secondary {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      color: #06b6d4;
+
+      &:hover:not(:disabled) {
+        border-color: rgba(6, 182, 212, 0.4);
+        background: rgba(6, 182, 212, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+      }
+    }
+
+    &.black-mirror-btn {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.05);
+
+      &:hover:not(:disabled) {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0) !important;
+    }
+  }
+}
+
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(6, 182, 212, 0.1);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+
+  .footer-btn {
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(6, 182, 212, 0.15);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    &:hover {
+      border-color: rgba(6, 182, 212, 0.35);
+      background: rgba(6, 182, 212, 0.08);
+      color: #06b6d4;
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
+    }
+
+    &:active {
+      transform: translateX(0);
+    }
+  }
+}
