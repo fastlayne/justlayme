@@ -16,6 +16,8 @@ Admin authentication configured with security features enabled
 [36mℹ Rate limiting using memory store (set REDIS_URL for distributed limiting)[0m
 SUCCESS EMAIL SERVICE: Configured with Custom SMTP (9b5c51001@smtp-brevo.com)
 SUCCESS: JWT_SECRET configured with adequate security for production
+🚀 Starting Grey Mirror job queue worker...
+✅ Grey Mirror job queue initialized
 🧠 Character Memory API routes registered
 ✅ Characters Bridge API endpoints configured (/api/characters)
 [BRIDGE] Conversations API bridge initialized
@@ -45,135 +47,7 @@ SQLite database initialized
 🔒 Loaded 0 blacklisted tokens
 SUCCESS Custom characters table schema verified
 [EmbeddingCache] Initialized with persistent SQLite storage
-[EmbeddingCache] Current cache size: 203 entries
-[AdvancedRAG INIT] Loaded 0 memories from database
-[AdvancedRAG INIT] HNSW state before insert: vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG INIT] Calling batchInsert with 0 valid items (filtered from 0)
-[HNSW BATCH] Starting batch insert of 0 vectors...
-[HNSW BATCH] Initial state: vectors=0, metadata=0, nodeCount=0
-[HNSW BATCH COMPLETE] Success: 0, Failed: 0, Time: 0ms, Speed: NaN vectors/s
-[HNSW BATCH FINAL STATE] vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG INIT] HNSW state AFTER insert: vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG] Index loaded in 25ms
-[AdvancedRAG] HNSW stats: {
-  insertions: 0,
-  searches: 0,
-  avgSearchTime: 0,
-  avgInsertTime: 0,
-  lockedInserts: 0,
-  nodeCount: 0,
-  avgConnectionsPerNode: 0,
-  layerDistribution: [
-    { layer: 0, nodes: 0 },
-    { layer: 1, nodes: 0 },
-    { layer: 2, nodes: 0 },
-    { layer: 3, nodes: 0 },
-    { layer: 4, nodes: 0 }
-  ],
-  mapState: { vectorsSize: 0, metadataSize: 0, mismatchDetected: false }
-}
-SUCCESS Advanced RAG Memory Engine initialized with optimizations: {
-  hnsw: 'enabled',
-  hybridSearch: 'enabled',
-  reranking: 'enabled',
-  temporalDecay: 'enabled',
-  multiLevelCache: 'L1+L2+L3'
-}
-LOADING Attempting to start server on port 3355
-SUCCESS AI Server started on alternative port 3355
-Access the website at http://localhost:3355
-SUCCESS Custom characters table initialized
-SUCCESS EMAIL SERVICE: Connection test successful
-💾 Memory usage: 44/49MB heap, 98MB RSS
-💾 Memory usage: 47/50MB heap, 97MB RSS
-💾 Memory usage: 42/50MB heap, 96MB RSS
-
-Received SIGTERM, initiating graceful shutdown...
-
-============================================================
-RESOURCE LIFECYCLE MANAGER - GRACEFUL SHUTDOWN (SIGTERM)
-============================================================
-Resources to clean up: {
-  intervals: 2,
-  timeouts: 0,
-  workers: 0,
-  connections: 0,
-  streams: 0,
-  customCleanups: 0,
-  totalResources: 2
-}
-Clearing 2 intervals...
-  Cleared interval: auth-service-token-cleanup
-  Cleared interval: admin-auth-session-cleanup
-Clearing 0 timeouts...
-Terminating 0 workers...
-Running 0 cleanup functions...
-📛 Received SIGTERM, shutting down gracefully
-🔄 Clearing interval timers...
-✅ Cleared healthCheck timer
-✅ Cleared fileCleanup timer
-✅ Cleared databaseCleanup timer
-✅ Cleared memoryCleanup timer
-✅ Cleared voiceCleanup timer
-✅ SecureResponseCache shutdown complete
-✅ AuthService shutdown complete
-✅ Registered interval: user-cache-cleanup (delay: 30000ms)
-✅ Cleared interval: user-cache-cleanup
-✅ UserCache shutdown complete
-ℹ️ [INFO] Received SIGTERM signal. Starting graceful shutdown...
-ℹ️ [INFO] Starting graceful shutdown due to SIGTERM...
-ℹ️ [INFO] Stopping server from accepting new connections...
-✅ Database connection closed
-👋 Graceful shutdown complete
-============================================================
-CONFIGURATION VALIDATION REPORT
-============================================================
-
-✅ Configuration is valid and ready for production!
-============================================================
-
-SUCCESS Stripe initialized successfully
-Using SQLite database (singleton instance)
-✅ ResourceLifecycleManager initialized
-✅ Registered interval: auth-service-token-cleanup (delay: 3600000ms)
-Admin authentication configured with security features enabled
-✅ Registered interval: admin-auth-session-cleanup (delay: 300000ms)
-✅ Email Service: Brevo configured successfully
-✅ Admin Notification Service: Ready (sending to mrweant@pm.me)
-[36mℹ Rate limiting using memory store (set REDIS_URL for distributed limiting)[0m
-SUCCESS EMAIL SERVICE: Configured with Custom SMTP (9b5c51001@smtp-brevo.com)
-SUCCESS: JWT_SECRET configured with adequate security for production
-🧠 Character Memory API routes registered
-✅ Characters Bridge API endpoints configured (/api/characters)
-[BRIDGE] Conversations API bridge initialized
-ℹ️ [INFO] Initializing Voice Cloning Service...
-ℹ️ [INFO] [[object Object]] Voice Cloning Service initialized
-[AdvancedRAG] Ollama connection pool initialized (5 concurrent)
-[AdvancedRAG] Batch embedding generator initialized
-[AdvancedRAG] Background job queue initialized (5 concurrent)
-[AdvancedRAG] Initialized with optimizations: {
-  hnsw: true,
-  semanticCache: true,
-  queryExpansion: true,
-  hybridSearch: true,
-  reranking: true,
-  temporalDecay: true,
-  persistentCache: true
-}
-INFO Initializing Advanced RAG Engine with HNSW index...
-[AdvancedRAG] Loading memory index into HNSW...
-ℹ️ [INFO] Voice samples database schema initialized
-ℹ️ [INFO] Voice Cloning API routes registered
-ℹ️ [INFO] Voice Cloning Service initialized successfully
-✅ Foreign keys ENABLED - Data integrity enforced
-SQLite database initialized
-ℹ️ [INFO] Feedback table initialized
-🔒 Loaded 0 blacklisted tokens
-🔒 Loaded 0 blacklisted tokens
-SUCCESS Custom characters table schema verified
-[EmbeddingCache] Initialized with persistent SQLite storage
-[EmbeddingCache] Current cache size: 203 entries
-SUCCESS Custom characters table initialized
+[EmbeddingCache] Current cache size: 230 entries
 [AdvancedRAG INIT] Loaded 0 memories from database
 [AdvancedRAG INIT] HNSW state before insert: vectors=0, metadata=0, nodeCount=0
 [AdvancedRAG INIT] Calling batchInsert with 0 valid items (filtered from 0)
@@ -207,9 +81,10 @@ SUCCESS Advanced RAG Memory Engine initialized with optimizations: {
   temporalDecay: 'enabled',
   multiLevelCache: 'L1+L2+L3'
 }
-LOADING Attempting to start server on port 3379
-SUCCESS AI Server started on alternative port 3379
-Access the website at http://localhost:3379
+LOADING Attempting to start server on port 3376
+SUCCESS AI Server started on alternative port 3376
+Access the website at http://localhost:3376
+SUCCESS Custom characters table initialized
 SUCCESS EMAIL SERVICE: Connection test successful
 
 Received SIGTERM, initiating graceful shutdown...
@@ -267,91 +142,9 @@ Admin authentication configured with security features enabled
 [36mℹ Rate limiting using memory store (set REDIS_URL for distributed limiting)[0m
 SUCCESS EMAIL SERVICE: Configured with Custom SMTP (9b5c51001@smtp-brevo.com)
 SUCCESS: JWT_SECRET configured with adequate security for production
-🧠 Character Memory API routes registered
-✅ Characters Bridge API endpoints configured (/api/characters)
-[BRIDGE] Conversations API bridge initialized
-ℹ️ [INFO] Initializing Voice Cloning Service...
-ℹ️ [INFO] [[object Object]] Voice Cloning Service initialized
-[AdvancedRAG] Ollama connection pool initialized (5 concurrent)
-[AdvancedRAG] Batch embedding generator initialized
-[AdvancedRAG] Background job queue initialized (5 concurrent)
-[AdvancedRAG] Initialized with optimizations: {
-  hnsw: true,
-  semanticCache: true,
-  queryExpansion: true,
-  hybridSearch: true,
-  reranking: true,
-  temporalDecay: true,
-  persistentCache: true
-}
-INFO Initializing Advanced RAG Engine with HNSW index...
-[AdvancedRAG] Loading memory index into HNSW...
-ℹ️ [INFO] Voice samples database schema initialized
-ℹ️ [INFO] Voice Cloning API routes registered
-ℹ️ [INFO] Voice Cloning Service initialized successfully
-✅ Foreign keys ENABLED - Data integrity enforced
-SQLite database initialized
-🔒 Loaded 0 blacklisted tokens
-🔒 Loaded 0 blacklisted tokens
-ℹ️ [INFO] Feedback table initialized
-SUCCESS Custom characters table schema verified
-[EmbeddingCache] Initialized with persistent SQLite storage
-[EmbeddingCache] Current cache size: 203 entries
-[AdvancedRAG INIT] Loaded 0 memories from database
-[AdvancedRAG INIT] HNSW state before insert: vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG INIT] Calling batchInsert with 0 valid items (filtered from 0)
-[HNSW BATCH] Starting batch insert of 0 vectors...
-[HNSW BATCH] Initial state: vectors=0, metadata=0, nodeCount=0
-[HNSW BATCH COMPLETE] Success: 0, Failed: 0, Time: 0ms, Speed: NaN vectors/s
-[HNSW BATCH FINAL STATE] vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG INIT] HNSW state AFTER insert: vectors=0, metadata=0, nodeCount=0
-[AdvancedRAG] Index loaded in 26ms
-[AdvancedRAG] HNSW stats: {
-  insertions: 0,
-  searches: 0,
-  avgSearchTime: 0,
-  avgInsertTime: 0,
-  lockedInserts: 0,
-  nodeCount: 0,
-  avgConnectionsPerNode: 0,
-  layerDistribution: [
-    { layer: 0, nodes: 0 },
-    { layer: 1, nodes: 0 },
-    { layer: 2, nodes: 0 },
-    { layer: 3, nodes: 0 },
-    { layer: 4, nodes: 0 }
-  ],
-  mapState: { vectorsSize: 0, metadataSize: 0, mismatchDetected: false }
-}
-SUCCESS Advanced RAG Memory Engine initialized with optimizations: {
-  hnsw: 'enabled',
-  hybridSearch: 'enabled',
-  reranking: 'enabled',
-  temporalDecay: 'enabled',
-  multiLevelCache: 'L1+L2+L3'
-}
-LOADING Attempting to start server on port 3366
-SUCCESS AI Server started on alternative port 3366
-Access the website at http://localhost:3366
-SUCCESS Custom characters table initialized
-SUCCESS EMAIL SERVICE: Connection test successful
-💾 Memory usage: 44/49MB heap, 99MB RSS
-💾 Memory usage: 47/50MB heap, 100MB RSS
-💾 Memory usage: 42/50MB heap, 98MB RSS
-💾 Memory usage: 44/50MB heap, 98MB RSS
-💾 Memory usage: 46/50MB heap, 98MB RSS
-💾 Memory usage: 42/51MB heap, 99MB RSS
-💾 Memory usage: 44/52MB heap, 99MB RSS
-💾 Memory usage: 47/52MB heap, 97MB RSS
-💾 Memory usage: 42/52MB heap, 97MB RSS
-💾 Memory usage: 44/51MB heap, 97MB RSS
-💾 Memory usage: 47/51MB heap, 97MB RSS
-💾 Memory usage: 42/51MB heap, 97MB RSS
-
-Received SIGTERM, initiating graceful shutdown...
 
 ============================================================
-RESOURCE LIFECYCLE MANAGER - GRACEFUL SHUTDOWN (SIGTERM)
+RESOURCE LIFECYCLE MANAGER - GRACEFUL SHUTDOWN (UNCAUGHT_EXCEPTION)
 ============================================================
 Resources to clean up: {
   intervals: 2,
@@ -368,20 +161,48 @@ Clearing 2 intervals...
 Clearing 0 timeouts...
 Terminating 0 workers...
 Running 0 cleanup functions...
-📛 Received SIGTERM, shutting down gracefully
-🔄 Clearing interval timers...
-✅ Cleared healthCheck timer
-✅ Cleared fileCleanup timer
-✅ Cleared databaseCleanup timer
-✅ Cleared memoryCleanup timer
-✅ Cleared voiceCleanup timer
-✅ SecureResponseCache shutdown complete
-✅ AuthService shutdown complete
-✅ Registered interval: user-cache-cleanup (delay: 30000ms)
-✅ Cleared interval: user-cache-cleanup
-✅ UserCache shutdown complete
-ℹ️ [INFO] Received SIGTERM signal. Starting graceful shutdown...
-ℹ️ [INFO] Starting graceful shutdown due to SIGTERM...
-ℹ️ [INFO] Stopping server from accepting new connections...
-✅ Database connection closed
-👋 Graceful shutdown complete
+============================================================
+✅ All resources cleaned up successfully
+============================================================
+
+============================================================
+CONFIGURATION VALIDATION REPORT
+============================================================
+
+✅ Configuration is valid and ready for production!
+============================================================
+
+SUCCESS Stripe initialized successfully
+Using SQLite database (singleton instance)
+✅ ResourceLifecycleManager initialized
+✅ Registered interval: auth-service-token-cleanup (delay: 3600000ms)
+Admin authentication configured with security features enabled
+✅ Registered interval: admin-auth-session-cleanup (delay: 300000ms)
+✅ Email Service: Brevo configured successfully
+✅ Admin Notification Service: Ready (sending to mrweant@pm.me)
+[36mℹ Rate limiting using memory store (set REDIS_URL for distributed limiting)[0m
+SUCCESS EMAIL SERVICE: Configured with Custom SMTP (9b5c51001@smtp-brevo.com)
+SUCCESS: JWT_SECRET configured with adequate security for production
+
+============================================================
+RESOURCE LIFECYCLE MANAGER - GRACEFUL SHUTDOWN (UNCAUGHT_EXCEPTION)
+============================================================
+Resources to clean up: {
+  intervals: 2,
+  timeouts: 0,
+  workers: 0,
+  connections: 0,
+  streams: 0,
+  customCleanups: 0,
+  totalResources: 2
+}
+Clearing 2 intervals...
+  Cleared interval: auth-service-token-cleanup
+  Cleared interval: admin-auth-session-cleanup
+Clearing 0 timeouts...
+Terminating 0 workers...
+Running 0 cleanup functions...
+============================================================
+✅ All resources cleaned up successfully
+============================================================
+

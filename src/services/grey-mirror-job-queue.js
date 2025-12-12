@@ -6,7 +6,7 @@
  * 1. Jobs are stored in SQLite database for persistence
  * 2. Background worker polls for pending jobs every 5 seconds
  * 3. SSE (Server-Sent Events) provides real-time progress updates
- * 4. Files are uploaded to /tmp, parsed server-side, then deleted
+ * 4. Files are uploaded to /home/fastl/JustLayMe/uploads/grey-mirror/, parsed server-side, then deleted
  * 5. Results are stored in database as JSON
  *
  * HANDLES:

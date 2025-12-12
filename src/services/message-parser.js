@@ -359,8 +359,8 @@ function normalizeMessages(messages, personalization = null) {
     // Match sender name to userName (case-insensitive, fuzzy match)
     const userName = personalization.userName.toLowerCase().trim()
     const matchingSender = senders.find(s =>
-      s && s.toLowerCase().trim().includes(userName) ||
-      userName.includes(s.toLowerCase().trim())
+      s && (s.toLowerCase().trim().includes(userName) ||
+      userName.includes(s.toLowerCase().trim()))
     )
 
     if (matchingSender) {
@@ -400,11 +400,11 @@ function normalizeMessages(messages, personalization = null) {
 
     // Determine direction:
     // 1. Use explicit _iMessageDirection if available
-    // 2. Otherwise infer from sender (first sender = sent, others = received)
+    // 2. Otherwise infer from sender (userSender = sent, others = received)
     let direction
     if (m._iMessageDirection) {
       direction = m._iMessageDirection
-    } else if (m.sender === userSender || m.sender === person1) {
+    } else if (m.sender === userSender) {
       direction = 'sent'
     } else {
       direction = 'received'

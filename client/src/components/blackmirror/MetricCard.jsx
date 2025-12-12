@@ -61,8 +61,6 @@ export default function MetricCard({
 
       {isExpanded && (
         <div className="card-content">
-          {description && <p className="metric-description">{description}</p>}
-
           {/* Summary */}
           {summary && <p className="metric-summary">{summary}</p>}
 
